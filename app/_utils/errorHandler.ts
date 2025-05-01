@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-export class ErrorHandler {
+export default class ErrorHandler {
   error = {
     message: '',
   };
