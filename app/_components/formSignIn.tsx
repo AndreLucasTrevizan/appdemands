@@ -1,12 +1,15 @@
 'use client';
 
 import { addToast, Button, Form, Input, Spinner } from "@heroui/react";
+import { useSetCookie } from 'cookies-next';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useActionState, useState } from "react";
 
 import { signInAction } from "../sign_in/actions";
 import { api } from "../_api/api";
 import ErrorHandler from "../_utils/errorHandler";
+import { redirect } from "next/navigation";
+import { useAuthContext } from "../_contexts/AuthContext";
 
 const initialState = {
   error: false,
@@ -14,11 +17,12 @@ const initialState = {
 };
 
 export default function FormSignIn() {
+  const { settingUserSigned } = useAuthContext();
+  const setCookie = useSetCookie();
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [apiError, setApiError] = useState('');
 
   const toggleVisible = () => setIsVisible(!isVisible);
 
@@ -36,8 +40,12 @@ export default function FormSignIn() {
         description: `Bem-vindo, ${response.data.userName}`,
         timeout: 3000,
         shouldShowTimeoutProgress: true,
-        color: 'success',
+        color: 'primary',
       });
+
+      setCookie("demands_signed_data", JSON.stringify(response.data));
+
+      settingUserSigned(response.data);
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
 
@@ -51,6 +59,8 @@ export default function FormSignIn() {
     } finally {
       setLoading(false);
     }
+
+    redirect('/');
   }
 
   if (loading) {
