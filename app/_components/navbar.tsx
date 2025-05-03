@@ -33,7 +33,7 @@ export default function Navbar() {
               as="button"
               avatarProps={{
                 isBordered: true,
-                src: `${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`,
+                src: userSigned?.avatar ? `${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}` : '',
               }}
               className="transition-transform"
               description={`@${userSigned?.email}`}

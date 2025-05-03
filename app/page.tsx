@@ -17,7 +17,7 @@ export default function Home() {
       <section className="container m-auto">
         <h1>Demandas</h1>
         <Spacer y={8} />
-        <DemandsTable topContent={<TopContent />} />
+        <DemandsTable />
       </section>
     </div>
   );

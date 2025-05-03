@@ -39,14 +39,17 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
 
   useEffect(() => {
     async function loadData() {
+      console.log('Ta rodando');
+
       const isSigned = await getCookie('demands_signed_data');
 
       if (isSigned) {
-        setSigned(true);
-
+        
         const userSignedJSON = JSON.parse(isSigned) as IUserSignedProps;
-
+        
         setUserSigned(userSignedJSON);
+        setSigned(true);
+        console.log(userSignedJSON);
       }
     }
 

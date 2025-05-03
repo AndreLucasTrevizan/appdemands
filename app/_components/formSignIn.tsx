@@ -8,8 +8,8 @@ import { useActionState, useState } from "react";
 import { signInAction } from "../sign_in/actions";
 import { api } from "../_api/api";
 import ErrorHandler from "../_utils/errorHandler";
-import { redirect } from "next/navigation";
 import { useAuthContext } from "../_contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 const initialState = {
   error: false,
@@ -17,6 +17,7 @@ const initialState = {
 };
 
 export default function FormSignIn() {
+  const router = useRouter();
   const { settingUserSigned } = useAuthContext();
   const setCookie = useSetCookie();
   const [isVisible, setIsVisible] = useState(false);
@@ -46,6 +47,8 @@ export default function FormSignIn() {
       setCookie("demands_signed_data", JSON.stringify(response.data));
 
       settingUserSigned(response.data);
+
+      router.push('/');
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
 
@@ -59,8 +62,6 @@ export default function FormSignIn() {
     } finally {
       setLoading(false);
     }
-
-    redirect('/');
   }
 
   if (loading) {
