@@ -3,18 +3,12 @@
 import { addToast, Button, Form, Input, Spinner } from "@heroui/react";
 import { useSetCookie } from 'cookies-next';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
-import { signInAction } from "../sign_in/actions";
-import { api } from "../_api/api";
 import ErrorHandler from "../_utils/errorHandler";
 import { useAuthContext } from "../_contexts/AuthContext";
 import { useRouter } from "next/navigation";
-
-const initialState = {
-  error: false,
-  message: '',
-};
+import { handleLogin } from "./actions";
 
 export default function FormSignIn() {
   const router = useRouter();
@@ -31,22 +25,19 @@ export default function FormSignIn() {
     try {
       setLoading(true);
       
-      const response = await api.post('/users/login', {
-        email,
-        password
-      });
+      const data = await handleLogin({ email, password });
 
       addToast({
         title: 'Bem-vindo',
-        description: `Bem-vindo, ${response.data.userName}`,
+        description: `Bem-vindo, ${data.userName}`,
         timeout: 3000,
         shouldShowTimeoutProgress: true,
         color: 'primary',
       });
 
-      setCookie("demands_signed_data", JSON.stringify(response.data));
+      setCookie("demands_signed_data", JSON.stringify(data));
 
-      settingUserSigned(response.data);
+      settingUserSigned(data);
 
       router.push('/');
     } catch (error) {

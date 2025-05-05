@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { getCookie } from 'cookies-next';
+import { gettingSigned } from '../_components/actions';
 
 export interface IUserSignedProps {
   id: number;
@@ -39,18 +40,10 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
 
   useEffect(() => {
     async function loadData() {
-      console.log('Ta rodando');
+      const signedData = await gettingSigned();
 
-      const isSigned = await getCookie('demands_signed_data');
-
-      if (isSigned) {
-        
-        const userSignedJSON = JSON.parse(isSigned) as IUserSignedProps;
-        
-        setUserSigned(userSignedJSON);
-        setSigned(true);
-        console.log(userSignedJSON);
-      }
+      setUserSigned(signedData);
+      setSigned(true);
     }
 
     loadData();

@@ -9,58 +9,46 @@ import {
   TableColumn,
   Input,
   Button,
-  addToast,
-  Spinner
+  Spinner,
+  addToast
 } from '@heroui/react';
-import { useEffect, useState } from 'react';
-import ErrorHandler from '../_utils/errorHandler';
 import { SearchIcon } from '@/components/icons';
 import { PlusIcon } from './plusIcon';
-import { api } from '../_api/api';
-import { useAuthContext } from '../_contexts/AuthContext';
 import { IDemandProps } from '@/types';
+import { useEffect, useState } from 'react';
+import ErrorHandler from '../_utils/errorHandler';
+import { loadDemands } from './actions';
 
 export default function DemandsTable() {
-  const {
-    userSigned
-  } = useAuthContext();
   const [demands, setDemands] = useState<IDemandProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  
   useEffect(() => {
-    async function loadDemands() {
+    async function loadData() {
       try {
         setLoading(true);
 
-        console.log(userSigned);
-
-        if (userSigned) {
-          const response = await api.get('/demands', {
-            headers: {
-              Authorization: `Bearer ${userSigned!.token}`
-            }
-          });
-  
-          setDemands(response.data.demands);
-        }
+        const data = await loadDemands();
+    
+        setDemands(data);
       } catch (error) {
         const errorHandler = new ErrorHandler(error);
-
+    
         addToast({
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: `${errorHandler.error.message}`,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
-          color: 'warning',
+          color: 'warning'
         });
       } finally {
         setLoading(false);
       }
     }
 
-    loadDemands();
+    loadData();
   }, []);
-
+  
   return (
     <Table
       aria-label="Tabela de Demandas"
@@ -76,6 +64,7 @@ export default function DemandsTable() {
           <TableRow key={item.id}>
             <TableCell>{item.title}</TableCell>
             <TableCell>{item.description}</TableCell>
+            <TableCell>{item.user.userName}</TableCell>
           </TableRow>
         )}
       </TableBody>
