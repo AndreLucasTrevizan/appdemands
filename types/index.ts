@@ -32,3 +32,22 @@ export interface IDemandProps {
   files: IFileProps[];
   user: IUserProps;
 }
+
+export interface IPositionProps {
+  id: number;
+  positionName: string;
+  slug: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserProfileProps {
+  id: number;
+  userName: string;
+  email: string;
+  avatar: string;
+  slug: string;
+  position: IPositionProps;
+  createdAt: Date;
+  updatedAt: Date;
+}
