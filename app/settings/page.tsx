@@ -7,6 +7,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Form,
   Input,
   Spacer,
   Spinner,
@@ -16,16 +17,22 @@ import DefaultLayout from "../_components/defaultLayout";
 import Navbar from "../_components/navbar";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
-import { gettingUserProfile } from "./actions";
+import { changingAvatar, gettingUserProfile } from "./actions";
 import { IUserProfileProps } from "@/types";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaSave } from "react-icons/fa";
+import { useAuthContext } from "../_contexts/AuthContext";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
+  const {
+    settingUserAvatar
+  } = useAuthContext();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingAvatar, setLoadingAvatar] = useState<boolean>(false);
   const [user, setUser] = useState<IUserProfileProps>();
   const [file, setFile] = useState<File | null>(null);
   const [fileUrlPreview, setFileUrlPreview] = useState<string>('');
+  const [confirmAvatar, setConfirmAvatar] = useState(false);
   
   useEffect(() => {
     async function loadData() {
@@ -49,16 +56,58 @@ export default function SettingsPage() {
       }
     }
 
-    loadData()
-  }, []);
+    loadData();
+  }, [  ]);
 
-  const changeFile = (e: ChangeEvent<HTMLInputElement>) => {
+  const changeFile = (e: ChangeEvent<HTMLInputElement>) => {    
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       setFileUrlPreview(URL.createObjectURL(e.target.files[0]));
     } else {
       setFile(null);
       setFileUrlPreview('');
+    }
+  }
+
+  const cancelAvatarChange = () => {
+    setFile(null);
+    setFileUrlPreview('');
+    if (inputFile.current) {
+      inputFile.current.value = '';
+    }
+  }
+
+  const handleChangeAvatar = async () => {
+    const formData = new FormData();
+
+    if (file) {
+      formData.append('avatar', file);
+
+      try {
+        setLoadingAvatar(true);
+
+        const data = await changingAvatar(formData);
+
+        settingUserAvatar(data);
+        setConfirmAvatar(!confirmAvatar);
+        addToast({
+          title: 'Sucesso',
+          description: `Sua foto de perfil foi atualizada`,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          title: 'Aviso',
+          description: `${errorHandler.error.message}`,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      } finally {
+        setLoadingAvatar(false);
+      }
     }
   }
 
@@ -79,25 +128,39 @@ export default function SettingsPage() {
               className="px-4"
             >
               <div className="flex items-center gap-4">
-                <Avatar
-                  name={user.userName}
-                  showFallback
-                  className="w-20 h-20 text-large"
-                  src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                />
-                <div className="flex flex-col">
-                  <Button
-                    startContent={
-                      <FaCamera />
-                    }
-                    type="button"
-                    variant="light"
-                    onPress={() => {
-                      inputFile.current?.click();
-                    }}
-                  >Trocar avatar</Button>
-                  <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
-                </div>
+                {loadingAvatar ? (
+                  <Spinner size="md" variant="dots" />
+                ) : (
+                  <>
+                    <Avatar
+                      name={user.userName}
+                      showFallback
+                      className="w-20 h-20 text-large"
+                      src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                    />
+                    <div className="flex flex-col">
+                      <div className="flex flex-col">
+                        <label className="flex gap-2 items-center hover:cursor-pointer" htmlFor="inputFile">
+                          <FaCamera />
+                          <small>Trocar Avatar</small>
+                        </label>
+                        <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
+                      </div>
+                      {file && (
+                        <>
+                          <Spacer y={4} />
+                          <div className="flex gap-4">
+                            <small className="text-red-500 hover:cursor-pointer" onClick={() => cancelAvatarChange()}>Cancelar</small>
+                            <small className="flex gap-2 items-center text-primary hover:cursor-pointer" onClick={() => handleChangeAvatar()}>
+                              <FaSave />
+                              Confirmar avatar
+                            </small>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
               <Spacer y={4} />
               <h1>{user.userName}</h1>

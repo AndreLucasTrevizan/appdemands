@@ -10,6 +10,7 @@ import {
 
 import { getCookie } from 'cookies-next';
 import { gettingSigned } from '../_components/actions';
+import { IAvatarResponse } from '@/types';
 
 export interface IUserSignedProps {
   id: number;
@@ -26,6 +27,7 @@ interface IAuthContextProps {
   signed: boolean,
   userSigned: IUserSignedProps | null,
   settingUserSigned: (data: IUserSignedProps) => void;
+  settingUserAvatar: (response: IAvatarResponse) => void;
 }
 
 export const AuthContext = createContext({} as IAuthContextProps);
@@ -53,11 +55,20 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
     setUserSigned(data);
   }
 
+  const settingUserAvatar = (response: IAvatarResponse) => {
+    if (userSigned) {
+      const data = userSigned;
+      data.avatar = response.avatar;
+      setUserSigned(data);
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       signed,
       userSigned,
-      settingUserSigned
+      settingUserSigned,
+      settingUserAvatar
     }}>
       {children}
     </AuthContext.Provider>

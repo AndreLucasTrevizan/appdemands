@@ -3,8 +3,8 @@ import FormSignIn from "../_components/formSignIn";
 
 export default function SignInPage() {
   return (
-    <DefaultLayout>
+    <div className="flex items-center justify-center h-screen">
       <FormSignIn />
-    </DefaultLayout>
+    </div>
   );
 }

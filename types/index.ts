@@ -51,3 +51,7 @@ export interface IUserProfileProps {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IAvatarResponse {
+  avatar: string;
+}

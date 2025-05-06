@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { api } from "../_api/api";
-import { ErrorHandler } from "../_utils/errorHandler";
+import ErrorHandler from "../_utils/errorHandler";
 import { redirect } from "next/navigation";
 
 interface IPrevState {

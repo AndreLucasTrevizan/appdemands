@@ -2,6 +2,7 @@
 
 import {
   addToast,
+  Avatar,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -59,7 +60,7 @@ export default function Navbar() {
     <HeroUINavbar isBordered>
       <NavbarContent>
         <NavbarBrand>
-          <h1>Demands</h1>
+          <Link href="/"><h1>Demands</h1></Link>
         </NavbarBrand>
       </NavbarContent>
       <NavbarContent justify='end'>
@@ -75,7 +76,7 @@ export default function Navbar() {
               as="button"
               avatarProps={{
                 isBordered: true,
-                src: userSigned.avatar ? `${process.env.baseUrl}/avatar/${userSigned.id}/${userSigned.avatar}` : '',
+                src: userSigned.avatar,
               }}
               className="transition-transform"
               description={`@${userSigned?.email}`}

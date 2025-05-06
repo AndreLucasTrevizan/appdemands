@@ -18,6 +18,7 @@ import { IDemandProps } from '@/types';
 import { useEffect, useState } from 'react';
 import ErrorHandler from '../_utils/errorHandler';
 import { loadDemands } from './actions';
+import { useRouter } from 'next/navigation';
 
 export default function DemandsTable() {
   const [demands, setDemands] = useState<IDemandProps[]>([]);
@@ -73,6 +74,12 @@ export default function DemandsTable() {
 }
 
 const TopContent = () => {
+  const router = useRouter();
+
+  const goToCreateDemandPage = () => {
+    router.push('/demands/new');
+  }
+
   return (
     <div className="flex justify-between">
       <Input
@@ -92,6 +99,7 @@ const TopContent = () => {
             props={<></>}
           />
         }
+        onPress={() => goToCreateDemandPage()}
       >Criar</Button>
     </div>
   );

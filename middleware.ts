@@ -4,9 +4,7 @@ import type { NextRequest } from 'next/server';
 export const config = {
   matcher: [
     '/',
-    '/posts/:path*',
-    '/profile',
-    '/my_posts',
+    '/settings',
     '/sign_in',
     '/sign_up',
   ],

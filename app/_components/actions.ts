@@ -9,11 +9,15 @@ export async function loadDemands(): Promise<IDemandProps[]> {
   try {
     const serverCookies = await cookies();
 
-    const signedDataJSON = JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;
+    let signedDataJSON: IUserSignedProps | null = null;
+
+    if (serverCookies.get('demands_signed_data')) {
+      signedDataJSON = JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;
+    }
 
     const response = await api.get('/demands', {
       headers: {
-        Authorization: `Bearer ${signedDataJSON.token}`
+        Authorization: `Bearer ${signedDataJSON?.token}`
       }
     });
 
@@ -36,11 +40,15 @@ export async function handleLogin(data: {
   }
 }
 
-export async function gettingSigned(): Promise<IUserSignedProps> {
+export async function gettingSigned(): Promise<IUserSignedProps | null> {
   try {
     const serverCookies = await cookies();
 
-    const signedDataJSON = JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;
+    let signedDataJSON: IUserSignedProps | null = null;
+
+    if (serverCookies.get('demands_signed_data')) {
+      signedDataJSON = JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;      
+    }
 
     return signedDataJSON;
   } catch (error) {
