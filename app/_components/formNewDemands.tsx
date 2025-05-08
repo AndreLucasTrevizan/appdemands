@@ -1,8 +1,9 @@
 'use client';
 
 import { Button, Divider, Form, Input, Spacer, Textarea } from "@heroui/react";
+import Image from "next/image";
 import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
-import { FaArrowUp, FaDemocrat, FaSave } from "react-icons/fa";
+import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaSave } from "react-icons/fa";
 
 export default function FormNewDemand() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -19,8 +20,11 @@ export default function FormNewDemand() {
 
     if (files) {
       for (let i = 0; i < files.length; i++) {
-        const ext = files[i].name.split('.')[1];
-        fileItems.push(<p key={files[i].name}>{files[i].name}</p>);
+        let element: JSX.Element = <></>
+
+        element = <FileItem file={files[i]} key={files[i].name} />
+
+        fileItems.push(element);
       }
     }
 
@@ -30,6 +34,8 @@ export default function FormNewDemand() {
   return (
     <Form>
       <Input
+        labelPlacement="outside"
+        label='Título'
         isRequired
         placeholder="Entre com um título para a demanda"
         type="text"
@@ -37,7 +43,10 @@ export default function FormNewDemand() {
           <FaDemocrat />
         }
       />
+      <Spacer y={4} />
       <Textarea
+        labelPlacement="outside"
+        label='Descrição'
         height={200}
         placeholder="Descreva a demanda"
       />
@@ -45,7 +54,6 @@ export default function FormNewDemand() {
       <Divider />
       <Spacer y={4} />
       <h2>Anexos</h2>
-      <Spacer y={4} />
       {files && (
         <div className="flex gap-2">
           {filesComponent()}
@@ -78,10 +86,21 @@ export default function FormNewDemand() {
   );
 }
 
-const FileItem = (file: File) => {
+const FileItem = ({
+  file
+}: {
+  file: File
+}) => {
+  const extArray = file.name.split('.');
+
+  const ext = extArray.pop();
+
   return (
-    <div className="p-2 rounded flex flex-col items-center justify-center">
-      <small>{JSON.stringify(file)}</small>
-    </div>
+    <div
+      className="flex items-center gap-2 p-2 border rounded hover:cursor-pointer"
+    >
+      <Image src={`/svgs/${ext}.svg`} width={20} height={20} alt={file.name} />
+      <small>{file.name}</small>
+  </div>
   );
 }
