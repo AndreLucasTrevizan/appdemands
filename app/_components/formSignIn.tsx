@@ -39,7 +39,7 @@ export default function FormSignIn() {
 
       settingUserSigned(data);
 
-      router.push('/');
+      window.location.reload();
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
 

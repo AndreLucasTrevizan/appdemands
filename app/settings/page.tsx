@@ -7,6 +7,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Divider,
   Form,
   Input,
   Spacer,
@@ -131,45 +132,49 @@ export default function SettingsPage() {
                 {loadingAvatar ? (
                   <Spinner size="md" variant="dots" />
                 ) : (
-                  <>
-                    <Avatar
-                      name={user.userName}
-                      showFallback
-                      className="w-20 h-20 text-large"
-                      src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                    />
-                    <div className="flex flex-col">
-                      <div className="flex flex-col">
-                        <label className="flex gap-2 items-center hover:cursor-pointer" htmlFor="inputFile">
-                          <FaCamera />
-                          <small>Trocar Avatar</small>
-                        </label>
-                        <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center gap-4">
+                      <Avatar
+                        name={user.userName}
+                        showFallback
+                        className="w-20 h-20 text-large"
+                        src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                      />
+                      <div className="flex flex-col items-center">
+                        <div className="flex flex-col">
+                          <label className="flex gap-2 items-center hover:cursor-pointer" htmlFor="inputFile">
+                            <FaCamera />
+                            <small>Trocar foto de perfil</small>
+                          </label>
+                          <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
+                        </div>
+                        {file && (
+                          <>
+                            <Spacer y={4} />
+                            <div className="flex gap-4">
+                              <small className="text-red-500 hover:cursor-pointer" onClick={() => cancelAvatarChange()}>Cancelar</small>
+                              <small className="flex gap-2 items-center text-primary hover:cursor-pointer" onClick={() => handleChangeAvatar()}>
+                                <FaSave />
+                                Confirmar avatar
+                              </small>
+                            </div>
+                          </>
+                        )}
                       </div>
-                      {file && (
-                        <>
-                          <Spacer y={4} />
-                          <div className="flex gap-4">
-                            <small className="text-red-500 hover:cursor-pointer" onClick={() => cancelAvatarChange()}>Cancelar</small>
-                            <small className="flex gap-2 items-center text-primary hover:cursor-pointer" onClick={() => handleChangeAvatar()}>
-                              <FaSave />
-                              Confirmar avatar
-                            </small>
-                          </div>
-                        </>
-                      )}
                     </div>
-                  </>
+                    <Divider orientation="vertical" />
+                    <div className="p-2">
+                      <h1>{user.userName}</h1>
+                      <Spacer y={4} />
+                      <p>{user.position.positionName} do sistema</p>
+                      <Spacer y={4} />
+                      <small>Criado em {new Date(user.createdAt).toLocaleDateString()}</small>
+                      <Spacer y={4} />
+                      <small>Modificado em {new Date(user.updatedAt).toLocaleDateString()}</small>
+                    </div>
+                  </div>
                 )}
               </div>
-              <Spacer y={4} />
-              <h1>{user.userName}</h1>
-              <Spacer y={4} />
-              <p>{user.position.positionName} do sistema</p>
-              <Spacer y={4} />
-              <small>Criado em {new Date(user.createdAt).toLocaleDateString()}</small>
-              <Spacer y={4} />
-              <small>Modificado em {new Date(user.updatedAt).toLocaleDateString()}</small>
             </div>
           ) : (
             <p>Nada encontrado</p>
