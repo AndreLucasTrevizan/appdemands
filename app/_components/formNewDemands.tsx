@@ -1,15 +1,28 @@
 'use client';
 
-import { Button, divider, Divider, Form, Input, Spacer, Textarea, Tooltip } from "@heroui/react";
+import { addToast, Button, divider, Divider, Form, Input, Modal, ModalBody, ModalContent, Spacer, Spinner, Textarea, Tooltip, useDisclosure } from "@heroui/react";
 import Image from "next/image";
 import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
 import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaPlus, FaPlusCircle, FaSave, FaTrash } from "react-icons/fa";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
+import { addingAttachments, creatingDemand } from "../demands/new/actions";
+import ErrorHandler from "../_utils/errorHandler";
 
 export default function FormNewDemand() {
   const inputFile = useRef<HTMLInputElement>(null);
+  const [loadingDemand, setLoadingDemand] = useState<boolean>(false);
+  const [loadingAttachments, setLoadingAttachments] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
+  const {
+    isOpen,
+    onOpen,
+    onClose,
+    onOpenChange
+  } = useDisclosure();
 
   const gettingAttachments = (e: ChangeEvent<HTMLInputElement>) => {
     let fileList: File[] = [];
@@ -54,14 +67,75 @@ export default function FormNewDemand() {
     }
   }
 
+  const handleCreateDemand = async () => {
+    try {
+      onOpen();
+      setLoadingDemand(true);
+      setMessage('Criando demanda...');
+
+      const response = await creatingDemand({
+        title,
+        description
+      });
+
+      if (files.length > 0) {
+        setLoadingAttachments(true);
+        setMessage('Enviando anexos...');
+
+        await addingAttachments({ demandId: response, files });
+
+        addToast({
+          title: 'Sucesso',
+          description: 'Anexos enviados',
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+
+      addToast({
+        title: 'Sucesso',
+        description: 'Demanda criada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+    } catch (error) {
+      const errorHandler = new ErrorHandler(error);
+
+      addToast({
+        title: 'Aviso',
+        description: errorHandler.error.message,
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+    } finally {
+      setLoadingDemand(false);
+      setLoadingAttachments(false);
+      onClose();
+    }
+  }
+
+  const showMessage = useCallback(() => {
+    return <p>{message}</p>;
+  }, [ message ]);
+
   return (
     <Form>
+      <Modal size="xs" backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalBody className="flex items-center">
+            <Spinner size="md" />
+            {showMessage()}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <Input
         labelPlacement="outside"
         label='Título'
         isRequired
         placeholder="Entre com um título para a demanda"
         type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
       <Spacer y={2} />
       <Textarea
@@ -69,6 +143,8 @@ export default function FormNewDemand() {
         label='Descrição'
         height={200}
         placeholder="Descreva a demanda"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
       />
       <Spacer y={2} />
       <Divider />
@@ -100,6 +176,7 @@ export default function FormNewDemand() {
             <FaSave />
           }
           type="button"
+          onPress={() => handleCreateDemand()}
         >Cadastrar</Button>
       </div>
     </Form>
