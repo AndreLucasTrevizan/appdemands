@@ -1,12 +1,9 @@
 'use client';
 
-import { SVGProps } from "react";
-
-export const PlusIcon = ({size = 24, width, height, ...props}: {
+export const PlusIcon = ({size = 24, width, height}: {
   size: number,
   width: number,
   height: number,
-  props: SVGProps<SVGSVGElement>
 }) => {
   return (
     <svg
@@ -17,7 +14,6 @@ export const PlusIcon = ({size = 24, width, height, ...props}: {
       role="presentation"
       viewBox="0 0 24 24"
       width={size || width}
-      {...props}
     >
       <g
         fill="none"

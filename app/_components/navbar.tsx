@@ -69,14 +69,14 @@ export default function Navbar() {
           <Spinner size='sm' variant='dots' />
         </NavbarContent>
       )}
-      {userSigned && (
+      {userSigned ? (
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <User
               as="button"
               avatarProps={{
                 isBordered: true,
-                src: userSigned.avatar,
+                src: `${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`,
               }}
               className="transition-transform"
               description={`@${userSigned?.email}`}
@@ -95,7 +95,7 @@ export default function Navbar() {
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-      )}
+      ) : <></>}
       </NavbarContent>
     </HeroUINavbar>
   );
