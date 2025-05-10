@@ -1,9 +1,10 @@
 'use client';
 
-import { Button, Divider, Form, Input, Spacer, Textarea } from "@heroui/react";
+import { Button, divider, Divider, Form, Input, Spacer, Textarea, Tooltip } from "@heroui/react";
 import Image from "next/image";
 import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
-import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaSave } from "react-icons/fa";
+import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaSave, FaTrash } from "react-icons/fa";
+import DeleteIcon from "./deleteIcon";
 
 export default function FormNewDemand() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -30,6 +31,14 @@ export default function FormNewDemand() {
 
     return fileItems;
   }, [ files ]);
+
+  const removingAttachment = (file: File) => {
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        
+      }
+    }
+  }
 
   return (
     <Form>
@@ -96,11 +105,18 @@ const FileItem = ({
   const ext = extArray.pop();
 
   return (
-    <div
-      className="flex items-center gap-2 p-2 border rounded hover:cursor-pointer"
-    >
-      <Image src={`/svgs/${ext}.svg`} width={20} height={20} alt={file.name} />
-      <small>{file.name}</small>
-  </div>
+    <div className="flex items-center border rounded">
+      <div
+        className="flex items-center gap-2 p-2"
+      >
+        <Image src={`/svgs/${ext}.svg`} width={20} height={20} alt={file.name} />
+        <small>{file.name}</small>
+      </div>
+      <Tooltip color="danger" content="Remover anexo" >
+        <span className="text-lg text-danger cursor-pointer active:opacity-50 p-2">
+          <DeleteIcon />
+        </span>
+      </Tooltip>
+    </div>
   );
 }
