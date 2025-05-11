@@ -50,7 +50,7 @@ export default function FormSignIn() {
         shouldShowTimeoutProgress: true,
         color: 'warning',
       });
-    } finally {
+
       setLoading(false);
     }
   }

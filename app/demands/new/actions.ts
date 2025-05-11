@@ -14,12 +14,12 @@ export const creatingDemand = async ({
     const signedData = await gettingSigned();
 
     if (signedData) {
-      const formData = new FormData();
-
-      formData.append('title', title);
-      formData.append('descrption', description);
+      const data = {
+        title,
+        description
+      };
     
-      const response = await api.post('/demands', formData, {
+      const response = await api.post('/demands', data, {
         headers: {
           Authorization: `Bearer ${signedData.token}`
         }
@@ -45,7 +45,7 @@ export const addingAttachments = async ({
 
     if (signedData) {
       files.forEach((file) => {
-        formData.append('', file);
+        formData.append('files', file);
       });
 
       await api.post('/files', formData, {
@@ -53,6 +53,7 @@ export const addingAttachments = async ({
           demandId,
         },
         headers: {
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${signedData.token}`,
         }
       });
