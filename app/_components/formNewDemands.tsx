@@ -1,6 +1,6 @@
 'use client';
 
-import { addToast, Button, divider, Divider, Form, Input, Modal, ModalBody, ModalContent, Spacer, Spinner, Textarea, Tooltip, useDisclosure } from "@heroui/react";
+import { addToast, Button, Card, CardBody, divider, Divider, Form, Input, Modal, ModalBody, ModalContent, Spacer, Spinner, Textarea, Tooltip, useDisclosure } from "@heroui/react";
 import Image from "next/image";
 import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
 import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaPlus, FaPlusCircle, FaSave, FaTrash } from "react-icons/fa";
@@ -119,67 +119,71 @@ export default function FormNewDemand() {
   }, [ message ]);
 
   return (
-    <Form>
-      <Modal size="xs" backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          <ModalBody className="flex items-center">
-            <Spinner size="md" />
-            {showMessage()}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-      <Input
-        labelPlacement="outside"
-        label='Título'
-        isRequired
-        placeholder="Entre com um título para a demanda"
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <Spacer y={2} />
-      <Textarea
-        labelPlacement="outside"
-        label='Descrição'
-        height={200}
-        placeholder="Descreva a demanda"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <Spacer y={2} />
-      <Divider />
-      <Spacer y={2} />
-      <label htmlFor="inputFile" className="flex items-center gap-2">
-        <h2>Anexos</h2>
-        <span className="border-2 rounded-full hover:cursor-pointer">
-          <PlusIcon size={20} height={20} width={20} />
-        </span>
-      </label>
-      {files && (
-        <div className="flex gap-2">
-          {filesComponent()}
-        </div>
-      )}
-      <Input
-        className="hidden"
-        type="file"
-        id="inputFile"
-        ref={inputFile}
-        multiple
-        onChange={(e) => gettingAttachments(e)}
-      />
-      <Spacer y={2} />
-      <div>
-        <Button
-          color="primary"
-          startContent={
-            <FaSave />
-          }
-          type="button"
-          onPress={() => handleCreateDemand()}
-        >Cadastrar</Button>
-      </div>
-    </Form>
+    <Card>
+      <CardBody>
+        <Form>
+          <Modal size="xs" backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
+            <ModalContent>
+              <ModalBody className="flex items-center">
+                <Spinner size="md" />
+                {showMessage()}
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+          <Input
+            labelPlacement="outside"
+            label='Título'
+            isRequired
+            placeholder="Entre com um título para a demanda"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <Spacer y={2} />
+          <Textarea
+            labelPlacement="outside"
+            label='Descrição'
+            height={200}
+            placeholder="Descreva a demanda"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <Spacer y={2} />
+          <Divider />
+          <Spacer y={2} />
+          <label htmlFor="inputFile" className="flex items-center gap-2">
+            <h2>Anexos</h2>
+            <span className="border-2 rounded-full hover:cursor-pointer">
+              <PlusIcon size={20} height={20} width={20} />
+            </span>
+          </label>
+          {files && (
+            <div className="flex gap-2">
+              {filesComponent()}
+            </div>
+          )}
+          <Input
+            className="hidden"
+            type="file"
+            id="inputFile"
+            ref={inputFile}
+            multiple
+            onChange={(e) => gettingAttachments(e)}
+          />
+          <Spacer y={2} />
+          <div>
+            <Button
+              color="primary"
+              startContent={
+                <FaSave />
+              }
+              type="button"
+              onPress={() => handleCreateDemand()}
+            >Cadastrar</Button>
+          </div>
+        </Form>
+      </CardBody>
+    </Card>
   );
 }
 

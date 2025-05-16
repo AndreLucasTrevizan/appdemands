@@ -5,10 +5,15 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export interface IUserProps {
-  id: number;
-  userName: string;
-  avatar: string;
-  slug: string;
+  id: number,
+  userName: string,
+  email: string,
+  slug: string,
+  avatar: string,
+  status: string,
+  emailVerified: boolean,
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 export interface IFileProps {

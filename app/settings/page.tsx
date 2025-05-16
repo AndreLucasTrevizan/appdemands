@@ -3,6 +3,8 @@
 import {
   addToast,
   Avatar,
+  BreadcrumbItem,
+  Breadcrumbs,
   Button,
   Card,
   CardBody,
@@ -114,8 +116,10 @@ export default function SettingsPage() {
 
   return (
     <DefaultLayout>
-      <Navbar />
-      <Spacer y={8} />
+      <Breadcrumbs>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem>Configurações</BreadcrumbItem>
+      </Breadcrumbs>
       <Card>
         <CardHeader>
           <h1>Configurações</h1>

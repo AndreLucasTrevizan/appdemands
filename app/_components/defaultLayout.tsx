@@ -6,7 +6,7 @@ export default function DefaultLayout({
   children: ReactNode
 }) {
   return (
-    <section className="m-auto container h-screen">
+    <section className="flex flex-col flex-1 gap-4 p-4">
       {children}
     </section>
   );

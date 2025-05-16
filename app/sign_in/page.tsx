@@ -1,9 +1,8 @@
-import DefaultLayout from "../_components/defaultLayout";
 import FormSignIn from "../_components/formSignIn";
 
 export default function SignInPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="w-screen h-screen flex flex-col items-center justify-center">
       <FormSignIn />
     </div>
   );

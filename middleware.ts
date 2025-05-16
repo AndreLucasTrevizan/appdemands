@@ -7,6 +7,11 @@ export const config = {
     '/settings',
     '/sign_in',
     '/sign_up',
+    '/users',
+    '/teams',
+    '/teams/:path*',
+    '/demands',
+    '/demands/:path*',
   ],
 };
 

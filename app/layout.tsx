@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import MenuLeft from "./_components/menuLeft";
 
 export const metadata: Metadata = {
   title: {
@@ -40,7 +41,8 @@ export default async function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen">
+          <div className="text-xs relative flex h-screen">
+            <MenuLeft />
             {children}
           </div>
         </Providers>

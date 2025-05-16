@@ -96,7 +96,6 @@ const TopContent = () => {
             width={24}
             height={24}
             size={24}
-            props={<></>}
           />
         }
         onPress={() => goToCreateDemandPage()}
