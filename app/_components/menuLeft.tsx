@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { deleteCookie } from "cookies-next";
 import { usePathname } from "next/navigation";
+import { ThemeSwitch } from "@/components/theme-switch";
 
 interface IMenuItem {
   route: string,
@@ -101,6 +102,7 @@ export default function MenuLeft() {
             src={`${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`}
           />
           <p>{userSigned?.userName}</p>
+          <ThemeSwitch />
         </div>
         <div className="flex flex-col border h-screen">
           <Listbox>

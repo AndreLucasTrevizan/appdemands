@@ -29,3 +29,21 @@ export const listSingleTeamInfo = async (slug: string) => {
     throw error;
   }
 }
+
+export const listUsersAvailable = async () => {
+  try {
+    const signedData = await gettingSigned();
+    
+    if (signedData) {
+      const response = await api.get(`/users/available`, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
+
+      return response.data.users;
+    }
+  } catch (error) {
+    throw error;
+  }
+}

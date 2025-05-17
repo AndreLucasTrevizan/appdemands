@@ -76,17 +76,19 @@ export default function TeamsPage() {
                 </CardHeader>
                 <Divider />
                 <CardBody className="flex flex-col gap-4">
-                  <AvatarGroup max={15}>
-                    {team.subTeams.map((subTeam) => (
-                      subTeam.user.map((user) => (
-                        <Avatar
-                          showFallback={user.avatar == ""}
-                          key={user.id}
-                          src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                        />
-                      ))
-                    ))}
-                  </AvatarGroup>
+                  {team.subTeams.length > 0 && (
+                    <AvatarGroup max={15}>
+                      {team.subTeams.map((subTeam) => (
+                        subTeam.user.map((user) => (
+                          <Avatar
+                            showFallback={user.avatar == ""}
+                            key={user.id}
+                            src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                          />
+                        ))
+                      ))}
+                    </AvatarGroup>
+                  )}
                   <Chip
                     color={team.status == "disponivel" ? "success" : "danger"}
                     title="Disponível"
