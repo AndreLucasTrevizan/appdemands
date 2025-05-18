@@ -23,11 +23,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  ScrollShadow,
   Spinner,
   useDisclosure
 } from "@heroui/react";
-import { FaTeamspeak } from "react-icons/fa6";
-import { useCallback, useEffect, useState } from "react";
+import { FaCheck, FaTeamspeak } from "react-icons/fa6";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import DefaultLayout from "@/app/_components/defaultLayout";
 import ErrorHandler from "@/app/_utils/errorHandler";
 import { listSingleTeamInfo, listUsersAvailable } from "./actions";
@@ -44,6 +45,10 @@ export default function TeamPage({
   const [loading, setLoading] = useState<boolean>(false);
   const [team, setTeam] = useState<ITeams>();
   const [users, setUsers] = useState<IUserProps[]>([]);
+  const [userList, setUserList] = useState<IUserProps[]>([]);
+  const [values, setValues] = useState(new Set(""));
+
+  const arrayValues = Array.from(values);
 
   useEffect(() => {
     async function loadData() {
@@ -76,6 +81,27 @@ export default function TeamPage({
     loadData();
   }, []);
 
+  const selectedUsers = useMemo(() => {
+    if (!arrayValues.length) {
+      return null;
+    } else {
+      return (
+        <ScrollShadow>
+          {arrayValues.map((value) => (
+            <Chip
+              color="default"
+              key={value}
+              endContent={
+                <FaCheck />
+              }
+            >{users.find((user) => `${user.id}` === `${value}`)?.userName}</Chip>
+          ))}
+        </ScrollShadow>
+      );
+    }
+
+  }, [ arrayValues.length ]);
+
   return (
     <DefaultLayout>
       <Breadcrumbs>
@@ -96,11 +122,19 @@ export default function TeamPage({
               color="primary"
               onPress={onOpen}
             >Criar Sub-Equipe</Button>
-            <Modal size="4xl" isOpen={true} placement="top-center" onOpenChange={onOpenChange}>
+            <Modal
+              size="4xl"
+              isOpen={isOpen}
+              placement="top-center"
+              onOpenChange={onOpenChange}
+              className="h-2/3"
+              backdrop="blur"
+            >
               <ModalContent>
                 <ModalHeader className="flex flex-col gap-1">Criar Sub-Equipe</ModalHeader>
-                <ModalBody className="flex flex-row">
-                  <div className="flex-1">
+                <Divider />
+                <ModalBody className="pt-4 flex flex-row">
+                  <div className="flex-1 flex flex-col gap-4">
                     <Input
                       label='Nome da sub-equipe'
                       labelPlacement="outside"
@@ -111,17 +145,30 @@ export default function TeamPage({
                       placeholder="Nome da sub-equipe..."
                       type="text"
                     />
+                    <Divider />
+                    <p className="text-sm">Usuários a serem adicionados</p>
+                    {selectedUsers}
                   </div>
-                  <div className="flex-1">
-                    <p>Adicionar membros</p>
-                    <Listbox>
-                      {users.map((user) => (
-                        <ListboxItem key={user.id}>
+                  <div className="flex-1 flex flex-col gap-4">
+                    <h2>Usuários Disponíveis</h2>
+                    <Listbox
+                      classNames={{
+                        base: "max-w-xs",
+                        list: "max-h-[300px]",
+                      }}
+                      variant="flat"
+                      items={users}
+                      selectionMode="multiple"
+                      onSelectionChange={(keys) => setValues(keys as Set<string>)}
+                    >
+                      {(user) => (
+                        <ListboxItem key={user.id} textValue={user.userName}>
                           <div className="flex gap-2 items-center">
                             <Avatar
                               alt={user.userName}
                               className="flex-shrink-0"
                               size="sm"
+                              showFallback={user.avatar == ""}
                               src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
                             />
                             <div className="flex flex-col">
@@ -130,7 +177,7 @@ export default function TeamPage({
                             </div>
                           </div>
                         </ListboxItem>
-                      ))}
+                      )}
                     </Listbox>
                   </div>
                 </ModalBody>

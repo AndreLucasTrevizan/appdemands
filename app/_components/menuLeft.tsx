@@ -105,12 +105,12 @@ export default function MenuLeft() {
           <ThemeSwitch />
         </div>
         <div className="flex flex-col border h-screen">
-          <Listbox>
-            {menuItems.map((item) => (
+          <Listbox selectionMode="none" items={menuItems}>
+            {(item) => (
               <ListboxItem key={item.name} startContent={item.icon}>
                 <Link href={item.route}>{item.name}</Link>
               </ListboxItem>
-            ))}
+            )}
           </Listbox>
         </div>
         <Listbox>
