@@ -20,12 +20,15 @@ import {
 import DefaultLayout from "../_components/defaultLayout";
 import { FaTeamspeak } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { ITeams, listTeams } from "./actions";
+import { ITeams, listPersonalTeams, listTeams } from "./actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { PlusIcon } from "../_components/plusIcon";
+import TeamComponent from "../_components/team";
 
 export default function TeamsPage() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingPersonalTeams, setLoadingPersonalTeams] = useState<boolean>(false);
+  const [personalTeams, setPersonalTeams] = useState<ITeams[]>([]);
   const [teams, setTeams] = useState<ITeams[]>([]);
 
   useEffect(() => {
@@ -52,73 +55,77 @@ export default function TeamsPage() {
       }
     }
 
+    async function loadPersonalTeamsData() {
+      try {
+        setLoadingPersonalTeams(true);
+
+        const personalTeams = await listPersonalTeams();
+
+        setPersonalTeams(personalTeams);
+
+        setLoadingPersonalTeams(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.error.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+
+        setLoadingPersonalTeams(false);
+      }
+    }
+
     loadData();
+    loadPersonalTeamsData()
   }, []);
 
   return (
     <DefaultLayout>
-      <Breadcrumbs>
+      <Breadcrumbs className="sticky top-0 self-start z-50 p-4 bg-white border-b-1 w-full">
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem>Equipes</BreadcrumbItem>
       </Breadcrumbs>
-      <Divider />
-      <div className="flex flex-col flex-wrap gap-4">
-        {loading ? (
-          <Spinner className="m-4" />
-        ) : (
-          <div className="flex flex-col gap-4">
-            <h2 className="text-lg">Minhas Equipes</h2>
-            <span>Você ainda não faz parte de nenhuma equipe</span>
-            <Divider />
-            <h2 className="text-lg">Equipes disponíveis</h2>
-            <div>
-              <Button
-                color="primary"
-                startContent={
-                  <PlusIcon size={20} height={20} width={20} />
-                }
-              >Criar Equipe</Button>
+      <div className="flex flex-col flex-wrap gap-4 px-4 pb-4">
+        <div className="flex flex-col gap-4">
+          <h2 className="text-lg">Minhas Equipes</h2>
+          {loadingPersonalTeams ? (
+            <div className="flex items-start">
+              <Spinner size="md" />
             </div>
-            {teams.map((team) => (
-              <Card className="w-1/6" key={team.id}>
-                <CardHeader className="flex gap-4 items-center">
-                  <FaTeamspeak size={45} />
-                  <div className="flex flex-col gap-2">
-                    <p className="text-base">{team.name}</p>
-                    <p>@{team.slug}</p>
-                  </div>
-                </CardHeader>
-                <Divider />
-                <CardBody className="flex flex-col gap-4">
-                  {team.subTeams.length > 0 && (
-                    <AvatarGroup max={15}>
-                      {team.subTeams.map((subTeam) => (
-                        subTeam.user.map((user) => (
-                          <Avatar
-                            showFallback={user.avatar == ""}
-                            key={user.id}
-                            src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                          />
-                        ))
-                      ))}
-                    </AvatarGroup>
-                  )}
-                  <Chip
-                    color={team.status == "disponivel" ? "success" : "danger"}
-                    title="Disponível"
-                    className="text-sm text-white"
-                  >
-                    {team.status == "disponivel" ? "Disponivel" : "Indisponivel"}
-                  </Chip>
-                </CardBody>
-                <Divider />
-                <CardFooter>
-                  <Link href={`/teams/${team.slug}`} className="text-sm">Acessar</Link>
-                </CardFooter>
-              </Card>
-            ))}
+          ) : (
+            <div className="flex items-start">
+              {personalTeams.length == 0 && <span>Você ainda não faz parte de nenhuma equipe</span>}
+              {personalTeams.map((team) => (
+                <TeamComponent key={team.id} team={team} />
+              ))}
+            </div>
+          )}
+          <Divider />
+          <h2 className="text-lg">Equipes disponíveis</h2>
+          <div>
+            <Button
+              color="primary"
+              startContent={
+                <PlusIcon size={20} height={20} width={20} />
+              }
+            >Criar Equipe</Button>
           </div>
-        )}
+          {loading ? (
+            <div className="flex items-start">
+              <Spinner size="md" />
+            </div>
+          ) : (
+            <div className="flex items-start justify-start gap-4 flex-wrap">
+              {teams.length == 0 && <span>Nenhuma equipe disponível</span>}
+              {teams.map((team) => (
+                <TeamComponent key={team.id} team={team} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </DefaultLayout>
   );

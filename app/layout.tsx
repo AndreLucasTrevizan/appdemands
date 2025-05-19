@@ -32,7 +32,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="pt-br">
       <head />
       <body
         className={clsx(
@@ -41,7 +41,7 @@ export default async function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="text-xs relative flex h-screen">
+          <div className="text-xs flex overflow-auto h-screen">
             <MenuLeft />
             {children}
           </div>

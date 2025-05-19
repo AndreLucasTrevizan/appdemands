@@ -6,7 +6,7 @@ import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
 import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaPlus, FaPlusCircle, FaSave, FaTrash } from "react-icons/fa";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
-import { addingAttachments, creatingDemand } from "../demands/new/actions";
+import { addingAttachments, creatingDemand } from "../demands/actions";
 import ErrorHandler from "../_utils/errorHandler";
 
 export default function FormNewDemand() {

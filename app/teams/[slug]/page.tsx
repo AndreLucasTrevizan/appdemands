@@ -17,25 +17,22 @@ import {
   Link,
   Listbox,
   ListboxItem,
-  ListboxSection,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ScrollShadow,
   Spinner,
   useDisclosure
 } from "@heroui/react";
 import { FaCheck, FaTeamspeak } from "react-icons/fa6";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DefaultLayout from "@/app/_components/defaultLayout";
 import ErrorHandler from "@/app/_utils/errorHandler";
-import { createSubTeam, listSingleTeamInfo, listUsersAvailable } from "./actions";
-import { ITeams } from "../actions";
+import { ITeams, listSingleTeamInfo, listUsersAvailable } from "../actions";
 import { PlusIcon } from "@/app/_components/plusIcon";
 import { IUserProps } from "@/types";
-import { ISubTeam } from "@/app/subteams/[slug]/actions";
+import { addingMembersOnSubTeam, createSubTeam, ISubTeam } from "@/app/subteams/actions";
 
 export default function TeamPage({
   params,
@@ -44,7 +41,9 @@ export default function TeamPage({
 }) {
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
   const [loadingCreateSubTeam, setLoadingCreateSubTeam] = useState<boolean>(false);
+  const [loadingAddingMembers, setLoadingAddingMembers] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [team, setTeam] = useState<ITeams>();
   const [subTeams, setSubTeams] = useState<ISubTeam[]>([]);
@@ -62,12 +61,10 @@ export default function TeamPage({
         let { slug } = await params;
 
         const data = await listSingleTeamInfo(slug);
-        const usersData = await listUsersAvailable();
 
         setTeam(data);
         setSubTeams(data.subTeams);
-        setUsers(usersData);
-        
+ 
         setLoading(false);
       } catch (error) {
         const errorHandler = new ErrorHandler(error);
@@ -83,7 +80,31 @@ export default function TeamPage({
       }
     }
 
+    async function loadUsersAvailable() {
+      try {
+        setLoadingUsers(true);
+
+        const data = await listUsersAvailable();
+
+        setUsers(data);
+
+        setLoadingUsers(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+        
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.error.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+
+        setLoadingUsers(false);
+      }
+    }
+
     loadData();
+    loadUsersAvailable();
   }, []);
 
   const selectedUsers = useMemo(() => {
@@ -118,11 +139,24 @@ export default function TeamPage({
         name,
       };
 
+      const dataMembers = {
+        slug,
+        userList: JSON.stringify(userList),
+      }
+
       const subTeam = await createSubTeam(data);
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'Sub-equipe criada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+      setLoadingCreateSubTeam(false);
 
-
-
-      setLoadingCreateSubTeam(true);
+      setLoadingAddingMembers(true);
+      const responseMembers = await addingMembersOnSubTeam(dataMembers);
+      setLoadingAddingMembers(false);
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
         
@@ -134,18 +168,18 @@ export default function TeamPage({
       });
 
       setLoadingCreateSubTeam(false);
+      setLoadingAddingMembers(false);
     }
   }
 
   return (
     <DefaultLayout>
-      <Breadcrumbs>
+      <Breadcrumbs className="sticky top-0 self-start z-50 p-4 bg-white border-b-1 w-full">
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/teams">Equipes</BreadcrumbItem>
         <BreadcrumbItem>Equipe {team?.name}</BreadcrumbItem>
       </Breadcrumbs>
-      <Divider />
-      <div className="flex flex-col flex-wrap gap-4">
+      <div className="flex flex-col flex-wrap gap-4 px-4">
         {loading ? (
           <Spinner className="m-4" />
         ) : (
@@ -231,42 +265,44 @@ export default function TeamPage({
                 </ModalFooter>
               </ModalContent>
             </Modal>
-            {subTeams.map((subTeam) => (
-              <Card className="w-1/6" key={subTeam.id}>
-                <CardHeader className="flex gap-4 items-center">
-                  <FaTeamspeak size={45} />
-                  <div className="flex flex-col gap-2">
-                    <p className="text-base">{subTeam.name}</p>
-                    <p>@{subTeam.slug}</p>
-                  </div>
-                </CardHeader>
-                <Divider />
-                <CardBody className="flex flex-col gap-4">
-                  {subTeam.user.length > 0 && (
-                    <AvatarGroup max={15}>
-                      {subTeam.user.map((user) => (
-                        <Avatar
-                          showFallback={user.avatar == ""}
-                          key={user.id}
-                          src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                        />
-                      ))}
-                    </AvatarGroup>
-                  )}
-                  <Chip
-                    color={subTeam.status == "disponivel" ? "success" : "danger"}
-                    title="Disponível"
-                    className="text-sm text-white"
-                  >
-                    {subTeam.status == "disponivel" ? "Disponivel" : "Indisponivel"}
-                  </Chip>
-                </CardBody>
-                <Divider />
-                <CardFooter>
-                  <Link href={`/subteams/${subTeam.slug}`} className="text-sm">Acessar</Link>
-                </CardFooter>
-              </Card>
-            ))}
+            <div className="flex flex-wrap gap-4">
+              {subTeams.map((subTeam) => (
+                <Card className="w-1/6" key={subTeam.id}>
+                  <CardHeader className="flex gap-4 items-center">
+                    <FaTeamspeak size={45} />
+                    <div className="flex flex-col gap-2">
+                      <p className="text-base">{subTeam.name}</p>
+                      <p>@{subTeam.slug}</p>
+                    </div>
+                  </CardHeader>
+                  <Divider />
+                  <CardBody className="flex flex-col gap-4">
+                    {/* {subTeam.user.length > 0 && (
+                      <AvatarGroup max={15}>
+                        {subTeam.user.map((user) => (
+                          <Avatar
+                            showFallback={user.avatar == ""}
+                            key={user.id}
+                            src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                          />
+                        ))}
+                      </AvatarGroup>
+                    )} */}
+                    <Chip
+                      color={subTeam.status == "disponivel" ? "success" : "danger"}
+                      title="Disponível"
+                      className="text-sm text-white"
+                    >
+                      {subTeam.status == "disponivel" ? "Disponivel" : "Indisponivel"}
+                    </Chip>
+                  </CardBody>
+                  <Divider />
+                  <CardFooter>
+                    <Link href={`/subteams/${subTeam.slug}`} className="text-sm">Acessar</Link>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
       </div>

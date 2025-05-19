@@ -95,7 +95,7 @@ export default function MenuLeft() {
 
   if (!pathname.includes('sign_in')) {
     return (
-      <div className="flex flex-col">
+      <nav className="sticky top-0 self-start h-screen" >
         <div className="flex flex-col items-center gap-2 p-4 border">
           <Avatar
             isBordered
@@ -104,7 +104,7 @@ export default function MenuLeft() {
           <p>{userSigned?.userName}</p>
           <ThemeSwitch />
         </div>
-        <div className="flex flex-col border h-screen">
+        <div className="flex flex-col border-b-0 border-r-1">
           <Listbox selectionMode="none" items={menuItems}>
             {(item) => (
               <ListboxItem key={item.name} startContent={item.icon}>
@@ -113,10 +113,10 @@ export default function MenuLeft() {
             )}
           </Listbox>
         </div>
-        <Listbox>
+        <Listbox className="border-b-1 border-r-1">
           <ListboxItem startContent={<FaArrowLeft />} onPress={() => handleLogout()} className="text-danger">Sair</ListboxItem>
         </Listbox>
-      </div>
+      </nav>
     );
   }
 }
