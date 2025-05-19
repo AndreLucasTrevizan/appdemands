@@ -47,3 +47,26 @@ export const listUsersAvailable = async () => {
     throw error;
   }
 }
+
+interface ICreateSubTeamFormProps {
+  teamSlug: string,
+  name: string,
+}
+
+export const createSubTeam = async (data: ICreateSubTeamFormProps) => {
+  try {
+    const signedData = await gettingSigned();
+    
+    if (signedData) {
+      const response = await api.post(`/subteams`, data, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
+
+      return response.data.subTeam;
+    }
+  } catch (error) {
+    throw error;
+  }
+}

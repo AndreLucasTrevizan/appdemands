@@ -31,10 +31,11 @@ import { FaCheck, FaTeamspeak } from "react-icons/fa6";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DefaultLayout from "@/app/_components/defaultLayout";
 import ErrorHandler from "@/app/_utils/errorHandler";
-import { listSingleTeamInfo, listUsersAvailable } from "./actions";
+import { createSubTeam, listSingleTeamInfo, listUsersAvailable } from "./actions";
 import { ITeams } from "../actions";
 import { PlusIcon } from "@/app/_components/plusIcon";
 import { IUserProps } from "@/types";
+import { ISubTeam } from "@/app/subteams/[slug]/actions";
 
 export default function TeamPage({
   params,
@@ -43,7 +44,10 @@ export default function TeamPage({
 }) {
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingCreateSubTeam, setLoadingCreateSubTeam] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
   const [team, setTeam] = useState<ITeams>();
+  const [subTeams, setSubTeams] = useState<ISubTeam[]>([]);
   const [users, setUsers] = useState<IUserProps[]>([]);
   const [userList, setUserList] = useState<IUserProps[]>([]);
   const [values, setValues] = useState(new Set(""));
@@ -61,6 +65,7 @@ export default function TeamPage({
         const usersData = await listUsersAvailable();
 
         setTeam(data);
+        setSubTeams(data.subTeams);
         setUsers(usersData);
         
         setLoading(false);
@@ -83,10 +88,10 @@ export default function TeamPage({
 
   const selectedUsers = useMemo(() => {
     if (!arrayValues.length) {
-      return null;
+      return <small>Nenhum usuário selecionado</small>;
     } else {
       return (
-        <ScrollShadow>
+        <div>
           {arrayValues.map((value) => (
             <Chip
               color="default"
@@ -96,11 +101,41 @@ export default function TeamPage({
               }
             >{users.find((user) => `${user.id}` === `${value}`)?.userName}</Chip>
           ))}
-        </ScrollShadow>
+        </div>
       );
     }
 
   }, [ arrayValues.length ]);
+
+  const creatingSubteam = async () => {
+    try {
+      setLoadingCreateSubTeam(true);
+
+      const { slug } = await params;
+
+      const data = {
+        teamSlug: slug,
+        name,
+      };
+
+      const subTeam = await createSubTeam(data);
+
+
+
+      setLoadingCreateSubTeam(true);
+    } catch (error) {
+      const errorHandler = new ErrorHandler(error);
+        
+      addToast({
+        title: 'Aviso',
+        description: errorHandler.error.message,
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
+      setLoadingCreateSubTeam(false);
+    }
+  }
 
   return (
     <DefaultLayout>
@@ -110,18 +145,20 @@ export default function TeamPage({
         <BreadcrumbItem>Equipe {team?.name}</BreadcrumbItem>
       </Breadcrumbs>
       <Divider />
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col flex-wrap gap-4">
         {loading ? (
           <Spinner className="m-4" />
         ) : (
-          <>
-            <Button
-              startContent={
-                <PlusIcon size={20} height={20} width={20} />
-              }
-              color="primary"
-              onPress={onOpen}
-            >Criar Sub-Equipe</Button>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Button
+                startContent={
+                  <PlusIcon size={20} height={20} width={20} />
+                }
+                color="primary"
+                onPress={onOpen}
+              >Criar Sub-Equipe</Button>
+            </div>
             <Modal
               size="4xl"
               isOpen={isOpen}
@@ -144,11 +181,14 @@ export default function TeamPage({
                       required
                       placeholder="Nome da sub-equipe..."
                       type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                     <Divider />
-                    <p className="text-sm">Usuários a serem adicionados</p>
+                    <p className="text-sm">Usuários a serem adicionados:</p>
                     {selectedUsers}
                   </div>
+                  <Divider orientation="vertical"/>
                   <div className="flex-1 flex flex-col gap-4">
                     <h2>Usuários Disponíveis</h2>
                     <Listbox
@@ -191,7 +231,7 @@ export default function TeamPage({
                 </ModalFooter>
               </ModalContent>
             </Modal>
-            {team?.subTeams.map((subTeam) => (
+            {subTeams.map((subTeam) => (
               <Card className="w-1/6" key={subTeam.id}>
                 <CardHeader className="flex gap-4 items-center">
                   <FaTeamspeak size={45} />
@@ -202,15 +242,17 @@ export default function TeamPage({
                 </CardHeader>
                 <Divider />
                 <CardBody className="flex flex-col gap-4">
-                  <AvatarGroup max={15}>
-                    {subTeam.user.map((user) => (
-                      <Avatar
-                        showFallback={user.avatar == ""}
-                        key={user.id}
-                        src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                      />
-                    ))}
-                  </AvatarGroup>
+                  {subTeam.user.length > 0 && (
+                    <AvatarGroup max={15}>
+                      {subTeam.user.map((user) => (
+                        <Avatar
+                          showFallback={user.avatar == ""}
+                          key={user.id}
+                          src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                        />
+                      ))}
+                    </AvatarGroup>
+                  )}
                   <Chip
                     color={subTeam.status == "disponivel" ? "success" : "danger"}
                     title="Disponível"
@@ -225,7 +267,7 @@ export default function TeamPage({
                 </CardFooter>
               </Card>
             ))}
-          </>
+          </div>
         )}
       </div>
     </DefaultLayout>
