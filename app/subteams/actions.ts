@@ -79,7 +79,7 @@ export const addingMembersOnSubTeam = async (data: IAddSubTeamMembersFormProps) 
       }
     });
 
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }

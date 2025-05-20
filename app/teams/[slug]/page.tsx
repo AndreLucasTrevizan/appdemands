@@ -145,6 +145,9 @@ export default function TeamPage({
       }
 
       const subTeam = await createSubTeam(data);
+
+      setSubTeams(prevArray => [...prevArray, subTeam]);
+
       addToast({
         color: 'success',
         title: 'Sucesso',
@@ -152,11 +155,15 @@ export default function TeamPage({
         timeout: 3000,
         shouldShowTimeoutProgress: true
       });
+
       setLoadingCreateSubTeam(false);
 
-      setLoadingAddingMembers(true);
-      const responseMembers = await addingMembersOnSubTeam(dataMembers);
-      setLoadingAddingMembers(false);
+      if (userList.length > 0) {
+        setLoadingAddingMembers(true);
+        const responseMembers = await addingMembersOnSubTeam(dataMembers);
+        setUsers(prevArray => [...prevArray, responseMembers]);
+        setLoadingAddingMembers(false);
+      }
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
         
@@ -205,64 +212,82 @@ export default function TeamPage({
                 <ModalHeader className="flex flex-col gap-1">Criar Sub-Equipe</ModalHeader>
                 <Divider />
                 <ModalBody className="pt-4 flex flex-row">
-                  <div className="flex-1 flex flex-col gap-4">
-                    <Input
-                      label='Nome da sub-equipe'
-                      labelPlacement="outside"
-                      startContent={
-                        <FaTeamspeak />
-                      }
-                      required
-                      placeholder="Nome da sub-equipe..."
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <Divider />
-                    <p className="text-sm">Usuários a serem adicionados:</p>
-                    {selectedUsers}
-                  </div>
-                  <Divider orientation="vertical"/>
-                  <div className="flex-1 flex flex-col gap-4">
-                    <h2>Usuários Disponíveis</h2>
-                    <Listbox
-                      classNames={{
-                        base: "max-w-xs",
-                        list: "max-h-[300px]",
-                      }}
-                      variant="flat"
-                      items={users}
-                      selectionMode="multiple"
-                      onSelectionChange={(keys) => setValues(keys as Set<string>)}
-                    >
-                      {(user) => (
-                        <ListboxItem key={user.id} textValue={user.userName}>
-                          <div className="flex gap-2 items-center">
-                            <Avatar
-                              alt={user.userName}
-                              className="flex-shrink-0"
-                              size="sm"
-                              showFallback={user.avatar == ""}
-                              src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
-                            />
-                            <div className="flex flex-col">
-                              <span className="text-small">{user.userName}</span>
-                              <span className="text-tiny text-default-400">{user.email}</span>
-                            </div>
-                          </div>
-                        </ListboxItem>
-                      )}
-                    </Listbox>
-                  </div>
+                  {loadingCreateSubTeam && (
+                    <div className="w-full flex gap-4 flex-col items-center justify-center">
+                      <Spinner size="md" />
+                      <p>Criando sub-equipe...</p>
+                    </div>
+                  )}
+                  {loadingAddingMembers && (
+                    <div className="w-full flex gap-4 flex-col items-center justify-center">
+                      <Spinner size="md" />
+                      <p>Adicionando membros...</p>
+                    </div>
+                  )}
+                  {(!loadingCreateSubTeam && !loadingAddingMembers) && (
+                    <div className="w-full flex flex-row gap-4">
+                      <div className="flex-1 flex flex-col gap-4">
+                        <Input
+                          label='Nome da sub-equipe'
+                          labelPlacement="outside"
+                          startContent={
+                            <FaTeamspeak />
+                          }
+                          required
+                          placeholder="Nome da sub-equipe..."
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                        <Divider />
+                        <p className="text-sm">Usuários a serem adicionados:</p>
+                        {selectedUsers}
+                      </div>
+                      <Divider orientation="vertical"/>
+                      <div className="flex-1 flex flex-col gap-4">
+                        <h2>Usuários Disponíveis</h2>
+                        <Listbox
+                          classNames={{
+                            base: "max-w-xs",
+                            list: "max-h-[300px]",
+                          }}
+                          variant="flat"
+                          items={users}
+                          selectionMode="multiple"
+                          onSelectionChange={(keys) => setValues(keys as Set<string>)}
+                        >
+                          {(user) => (
+                            <ListboxItem key={user.id} textValue={user.userName}>
+                              <div className="flex gap-2 items-center">
+                                <Avatar
+                                  alt={user.userName}
+                                  className="flex-shrink-0"
+                                  size="sm"
+                                  showFallback={user.avatar == ""}
+                                  src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                                />
+                                <div className="flex flex-col">
+                                  <span className="text-small">{user.userName}</span>
+                                  <span className="text-tiny text-default-400">{user.email}</span>
+                                </div>
+                              </div>
+                            </ListboxItem>
+                          )}
+                        </Listbox>
+                      </div>
+                    </div>
+                  )}
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="flat" onPress={onClose}>
-                    Fechar
-                  </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Criar
-                  </Button>
-                </ModalFooter>
+                {(!loadingCreateSubTeam && !loadingAddingMembers) && (
+                  <ModalFooter>
+                    <Button color="danger" variant="flat" onPress={onClose}>
+                      Fechar
+                    </Button>
+                    <Button color="primary" onPress={() => creatingSubteam()}>
+                      Criar
+                    </Button>
+                  </ModalFooter>
+                )}
               </ModalContent>
             </Modal>
             <div className="flex flex-wrap gap-4">
