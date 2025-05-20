@@ -13,7 +13,7 @@ export default class ErrorHandler {
         }
       } else if (error.response?.status != 400) {
         this.error = {
-          message: error.message,
+          message: error.response?.data.message,
         }
       } else {
         this.error = {
