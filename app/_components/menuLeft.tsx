@@ -7,6 +7,7 @@ import ErrorHandler from "../_utils/errorHandler";
 import {
   addToast,
   Avatar,
+  Button,
   Listbox,
   ListboxItem,
 } from "@heroui/react";
@@ -95,27 +96,41 @@ export default function MenuLeft() {
 
   if (!pathname.includes('sign_in')) {
     return (
-      <nav className="sticky top-0 self-start h-screen" >
-        <div className="flex flex-col items-center gap-2 p-4 border">
+      <nav className="sticky top-0 self-start h-screen border-r-1">
+        <div className="flex flex-col items-center gap-2 p-4">
           <Avatar
+            showFallback
             isBordered
             src={`${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`}
           />
           <p>{userSigned?.userName}</p>
           <ThemeSwitch />
         </div>
-        <div className="flex flex-col border-b-0 border-r-1">
-          <Listbox selectionMode="none" items={menuItems}>
-            {(item) => (
-              <ListboxItem key={item.name} startContent={item.icon}>
-                <Link href={item.route}>{item.name}</Link>
-              </ListboxItem>
-            )}
-          </Listbox>
+        <div className="flex flex-col">
+          {menuItems.map((item) => (
+            <Link key={item.name} href={item.route}>
+              <Button
+                radius="none"
+                variant="light"
+                startContent={item.icon}
+                className="flex items-center justify-start w-full"
+              >
+                {item.name}
+              </Button>
+            </Link>
+          ))}
+          <Button
+            radius="none"
+            variant="light"
+            key={'logout'}
+            startContent={<FaArrowLeft />}
+            className="flex items-center justify-start"
+            onPress={() => handleLogout()}
+            color="danger"
+          >
+            Sair
+          </Button>
         </div>
-        <Listbox className="border-b-1 border-r-1">
-          <ListboxItem startContent={<FaArrowLeft />} onPress={() => handleLogout()} className="text-danger">Sair</ListboxItem>
-        </Listbox>
       </nav>
     );
   }

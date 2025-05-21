@@ -4,6 +4,24 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface IUsersReport {
+  id: number,
+  avatar: string,
+  userName: string,
+  userSlug: string,
+  email: string,
+  status: string,
+  emailVerified: boolean,
+  positionName: string,
+  positionSlug: string,
+  teamName: string | null,
+  teamSlug: string | null,
+  subTeamName: string | null,
+  subTeamSlug: string | null,
+  createdAt: Date,
+  updatedAt: Date
+}
+
 export interface IUserProps {
   id: number,
   userName: string,
@@ -12,6 +30,8 @@ export interface IUserProps {
   avatar: string,
   status: string,
   emailVerified: boolean,
+  isOnTeam: boolean,
+  position: IPositionProps,
   createdAt: Date,
   updatedAt: Date,
 }

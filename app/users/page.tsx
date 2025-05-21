@@ -1,7 +1,8 @@
 'use client';
 
-import { BreadcrumbItem, Breadcrumbs, Card, CardBody, Divider } from "@heroui/react";
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
+import UsersTable from "../_components/usersTable";
 
 export default function UsersPage() {
   return (
@@ -10,10 +11,9 @@ export default function UsersPage() {
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem>Usuários</BreadcrumbItem>
       </Breadcrumbs>
-      <div className="p-4">
-        <Card>
-          <CardBody></CardBody>
-        </Card>
+      <div className="flex flex-col gap-4 p-4">
+        <h1 className="text-lg">Usuários</h1>
+        <UsersTable />
       </div>
     </DefaultLayout>
   );
