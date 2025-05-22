@@ -1,9 +1,13 @@
 'use client';
 
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
+import DefaultLayout from "./_components/defaultLayout";
+import Nav from "./_components/nav";
+
 export default function Home() {
   return (
-    <div className="flex flex-1 p-4">
-      
-    </div>
+    <DefaultLayout>
+      <Nav />
+    </DefaultLayout>
   );
 }

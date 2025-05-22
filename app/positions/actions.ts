@@ -22,3 +22,27 @@ export const listPositions = async () => {
     throw error;
   }
 }
+
+export const createPositions = async ({
+  positionName
+}: {
+  positionName: string,
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      throw "Você não está autenticado";
+    }
+
+    const response = await api.post('/positions', { positionName }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.position;
+  } catch (error) {
+    throw error;
+  }
+}

@@ -24,6 +24,7 @@ import { changingAvatar, gettingUserProfile } from "./actions";
 import { IUserProfileProps } from "@/types";
 import { FaCamera, FaSave } from "react-icons/fa";
 import { useAuthContext } from "../_contexts/AuthContext";
+import Nav from "../_components/nav";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -116,12 +117,13 @@ export default function SettingsPage() {
 
   return (
     <DefaultLayout>
-      <Breadcrumbs className="sticky top-0 self-start z-50 p-4 bg-white border-b-1 w-full">
-        <BreadcrumbItem href="/">Home</BreadcrumbItem>
-        <BreadcrumbItem>Configurações</BreadcrumbItem>
-      </Breadcrumbs>
-      <div className="p-4">
-        <h1>Configurações</h1>
+      <Nav />
+      <div className="flex flex-col gap-4 px-4 pb-4">
+        <Breadcrumbs>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem>Configurações</BreadcrumbItem>
+        </Breadcrumbs>
+        <Divider />
         <Card>
           <CardBody>
           {loading ? (

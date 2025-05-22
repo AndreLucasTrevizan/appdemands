@@ -1,24 +1,44 @@
 'use client';
 
-import { IUserProps, IUsersReport } from "@/types";
-import { addToast, Avatar, Button, Chip, Input, Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@heroui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { IUsersReport } from "@/types";
+import {
+  addToast,
+  Avatar,
+  Button,
+  Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Link,
+  Pagination,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  useDisclosure
+} from "@heroui/react";
+import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
 import { listUsers } from "../users/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
 import ModalCreateUser from "./modalCreateUser";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function UsersTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
   const [filterValue, setFilterValue] = useState<string>('');
-  const [users, setUsers] = useState<IUsersReport[]>([]);
   const [page, setPage] = useState<number>(1);
   const [rows, setRows] = useState<number>(5);
-  const [loadingUpdateUserList, setLoadingUpdateUserList] = useState<boolean>(false);
+  const [users, setUsers] = useState<IUsersReport[]>([]);
   const [userCreated, setUserCreated] = useState<boolean>(false);
-  const [updateUsers, setUpdatedUsers] = useState<boolean>(false);
 
   const pages = Math.ceil(users.length / rows);
 
@@ -163,10 +183,6 @@ export default function UsersTable() {
           <TableColumn key={'emailVerified'}>E-mail Verificado</TableColumn>
           <TableColumn key={'positionName'}>Função</TableColumn>
           <TableColumn key={'teamName'}>Equipe</TableColumn>
-          <TableColumn key={'createdAt'}>Data de criação</TableColumn>
-          <TableColumn key={'createdTime'}>Hora de criação</TableColumn>
-          <TableColumn key={'updatedAt'}>Data de modificação</TableColumn>
-          <TableColumn key={'updatedTime'}>Hora de modificação</TableColumn>
         </TableHeader>
         <TableBody
           items={loadingUsers ? [] : items}
@@ -187,7 +203,8 @@ export default function UsersTable() {
                   size="sm"
                   src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
                 />
-                <span>{user.userName}</span>
+                <span>
+                  <Link className="text-sm" href={`/users/${user.userSlug}`}>{user.userName}</Link></span>
               </TableCell>
               <TableCell>
                 <span>{user.email}</span>
@@ -206,10 +223,6 @@ export default function UsersTable() {
               </TableCell>
               <TableCell>{user.positionName}</TableCell>
               <TableCell>{user.teamName ? user.teamName : (<Chip color="warning">Sem equipe</Chip>)}</TableCell>
-              <TableCell>{new Date(user.createdAt).toLocaleDateString('pt-br')}</TableCell>
-              <TableCell>{new Date(user.createdAt).toLocaleTimeString('pt-br')}</TableCell>
-              <TableCell>{new Date(user.updatedAt).toLocaleDateString('pt-br')}</TableCell>
-              <TableCell>{new Date(user.updatedAt).toLocaleTimeString('pt-br')}</TableCell>
             </TableRow>
           )}
         </TableBody>

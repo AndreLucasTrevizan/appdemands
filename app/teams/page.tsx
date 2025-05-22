@@ -24,6 +24,7 @@ import { ITeams, listPersonalTeams, listTeams } from "./actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { PlusIcon } from "../_components/plusIcon";
 import TeamComponent from "../_components/team";
+import Nav from "../_components/nav";
 
 export default function TeamsPage() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -84,11 +85,13 @@ export default function TeamsPage() {
 
   return (
     <DefaultLayout>
-      <Breadcrumbs className="sticky top-0 self-start z-50 p-4 bg-white border-b-1 w-full">
-        <BreadcrumbItem href="/">Home</BreadcrumbItem>
-        <BreadcrumbItem>Equipes</BreadcrumbItem>
-      </Breadcrumbs>
+      <Nav />
       <div className="flex flex-col flex-wrap gap-4 px-4 pb-4">
+        <Breadcrumbs>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem>Equipes</BreadcrumbItem>
+        </Breadcrumbs>
+        <Divider />
         <div className="flex flex-col gap-4">
           <h2 className="text-lg">Minhas Equipes</h2>
           {loadingPersonalTeams ? (
