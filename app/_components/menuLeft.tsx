@@ -8,8 +8,6 @@ import {
   addToast,
   Avatar,
   Button,
-  Listbox,
-  ListboxItem,
 } from "@heroui/react";
 import {
   FaArrowLeft,
@@ -19,6 +17,7 @@ import {
   FaHouse,
   FaListCheck
 } from "react-icons/fa6";
+import { RiUserSettingsLine } from "react-icons/ri";
 import Link from "next/link";
 import { deleteCookie } from "cookies-next";
 import { usePathname } from "next/navigation";
@@ -60,6 +59,11 @@ export default function MenuLeft() {
       route: '/settings',
       name: 'Configurações',
       icon: <FaGear />
+    },
+    {
+      route: '/positions',
+      name: 'Funções de Usuário',
+      icon: <RiUserSettingsLine />
     }
   ];
 

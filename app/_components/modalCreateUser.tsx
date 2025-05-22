@@ -1,28 +1,17 @@
 'use client';
 
-import { IUserProps } from "@/types";
 import {
-  addToast,
-  Avatar,
   Button,
-  Chip,
   Divider,
   Input,
-  Listbox,
-  ListboxItem,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner
 } from "@heroui/react";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { FaCheck, FaMailchimp, FaTeamspeak, FaUser } from "react-icons/fa6";
-import { FiMail, FiRefreshCcw, FiUser } from "react-icons/fi";
-import { listUsersAvailable } from "../teams/actions";
-import ErrorHandler from "../_utils/errorHandler";
-import { addingMembersOnSubTeam, createSubTeam, ISubTeam } from "../subteams/actions";
+import { Dispatch, SetStateAction, useState } from "react";
+import { FiMail, FiUser } from "react-icons/fi";
 
 export default function ModalCreateUser({
   isOpen,
@@ -41,6 +30,7 @@ export default function ModalCreateUser({
 }) {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  
 
   return (
     <Modal
