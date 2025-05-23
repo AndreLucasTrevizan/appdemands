@@ -1,6 +1,6 @@
 'use client';
 
-import { IPositionProps } from "@/types";
+import { IPositionProps, IUsersReport } from "@/types";
 import {
   addToast,
   Button,
@@ -26,17 +26,17 @@ export default function ModalCreateUser({
   onOpen,
   onClose,
   onOpenChange,
-  userCreated,
-  setUserCreated
+  users,
+  setUsers
 }: {
   isOpen: boolean,
   onOpen: () => void,
   onClose: () => void,
   onOpenChange: () => void,
-  userCreated: boolean,
-  setUserCreated: Dispatch<SetStateAction<boolean>>,
+  users: IUsersReport[],
+  setUsers: Dispatch<SetStateAction<IUsersReport[]>>,
 }) {
-  const [name, setName] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [positionId, setPositionId] = useState<string>('');
   const [positions, setPositions] = useState<IPositionProps[]>([]);
@@ -75,9 +75,9 @@ export default function ModalCreateUser({
     try {
       setLoadingCreateUser(true);
 
-      const position = await createUser({ name, email, positionId: Number(positionId) });
+      const user = await createUser({ userName, email, positionId: Number(positionId) });
 
-      setPositions(prevArray => [...prevArray, position]);
+      setUsers(prevArray => [...prevArray, user]);
 
       onClose();
 
@@ -90,12 +90,12 @@ export default function ModalCreateUser({
       });
 
       setLoadingCreateUser(false);
-      setName("");
+      setUserName("");
       setEmail("");
       setPositionId("");
     } catch (error) {
       setLoadingCreateUser(false);
-      setName("");
+      setUserName("");
       setEmail("");
       setPositionId("");
       const errorHandler = new ErrorHandler(error);
@@ -130,8 +130,8 @@ export default function ModalCreateUser({
               type="text"
               placeholder="Digite o nome do usuário..."
               startContent={<FiUser />}
-              value={name}
-              onChange={(e) => setName(e.target.value)} className="flex-1"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)} className="flex-1"
             />
             <Input
               label="E-mail"
@@ -142,11 +142,12 @@ export default function ModalCreateUser({
               value={email}
               onChange={(e) => setEmail(e.target.value)} className="flex-1"
             />
-            <Select value={positionId} label="Função do usuário" labelPlacement="outside" className="flex-2">
+            <Select onChange={(e) => setPositionId(e.target.value)} label="Função do usuário" labelPlacement="outside" className="flex-2">
               {positions.map(((position) => (
                 <SelectItem key={position.id}>{position.positionName}</SelectItem>
               )))}
             </Select>
+            <span>Lembrando que senha inicial do usuário vai ser <strong>inicial</strong>.</span>
           </div>
         </ModalBody>
         <ModalFooter>

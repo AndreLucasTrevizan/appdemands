@@ -45,11 +45,11 @@ export const getUserDetails = async (slug: string) => {
 }
 
 export const createUser = async ({
-  name,
+  userName,
   email,
   positionId
 }: {
-  name: string,
+  userName: string,
   email: string,
   positionId: number,
 }) => {
@@ -61,7 +61,7 @@ export const createUser = async ({
     }
 
     const response = await api.post(`/users`, {
-        name,
+        userName,
         email,
         positionId
       }, {
@@ -70,7 +70,7 @@ export const createUser = async ({
       }
     });
 
-    return response.data.newUser;
+    return response.data.newUser[0];
   } catch (error) {
     throw error;
   }

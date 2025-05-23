@@ -1,6 +1,20 @@
 'use client';
 
-import { addToast, Button, Input, Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Input,
+  Pagination,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  useDisclosure,
+} from "@heroui/react";
 import ModalCreatePosition from "./modalCreatePosition";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";

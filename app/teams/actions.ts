@@ -101,3 +101,23 @@ export const listUsersAvailable = async () => {
     throw error;
   }
 }
+
+export const listTeamMembers = async (slug: string) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      throw "Você não está autenticado";
+    }
+
+    const response = await api.get(`/teams/${slug}/members`, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`
+      }
+    });
+
+    return response.data.members;
+  } catch (error) {
+    throw error;
+  }
+}

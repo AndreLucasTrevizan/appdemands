@@ -22,6 +22,18 @@ export interface IUsersReport {
   updatedAt: Date
 }
 
+export interface ITeamMember {
+  id: number,
+  avatar: string,
+  email: string,
+  userName: string,
+  userSlug: string,
+  teamName: string | null,
+  teamSlug: string | null,
+  subTeamName: string | null,
+  subTeamSlug: string | null,
+}
+
 export interface IUserProps {
   id: number,
   userName: string,

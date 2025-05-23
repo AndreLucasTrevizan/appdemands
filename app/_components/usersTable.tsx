@@ -126,8 +126,8 @@ export default function UsersTable() {
         onClose={onClose}
         onOpen={onOpen}
         onOpenChange={onOpenChange}
-        setUserCreated={setUserCreated}
-        userCreated
+        users={users}
+        setUsers={setUsers}
         key={'createUsers'}
       />
       <Table

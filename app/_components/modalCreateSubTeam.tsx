@@ -30,16 +30,16 @@ export default function ModalCreateSubTeam({
   onClose,
   onOpenChange,
   params,
-  subTeamCreated,
-  setSubTeamCreated
+  subTeams,
+  setSubTeams
 }: {
   isOpen: boolean,
   onOpen: () => void,
   onClose: () => void,
   onOpenChange: () => void,
   params: Promise<{slug: string}>,
-  subTeamCreated: boolean,
-  setSubTeamCreated: Dispatch<SetStateAction<boolean>>,
+  subTeams: ISubTeam[],
+  setSubTeams: Dispatch<SetStateAction<ISubTeam[]>>,
 }) {
   const [name, setName] = useState<string>('');
   const [values, setValues] = useState(new Set(''));
@@ -99,9 +99,11 @@ export default function ModalCreateSubTeam({
         shouldShowTimeoutProgress: true
       });
 
-      setSubTeamCreated(!subTeamCreated);
+      setSubTeams(prevArray => [...prevArray, subTeam]);
 
       setLoadingCreateSubTeam(false);
+
+      setName('');
 
       if (arrayValues.length > 0) {
         setLoadingAddingMembers(true);
@@ -126,8 +128,11 @@ export default function ModalCreateSubTeam({
 
         setUpdatedUsers(!updatedUser);
         setLoadingAddingMembers(false);
+        setValues(new Set(''));
       }
     } catch (error) {
+      setName('');
+      setValues(new Set(''));
       const errorHandler = new ErrorHandler(error);
 
       addToast({
