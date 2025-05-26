@@ -13,7 +13,11 @@ export default class ErrorHandler {
         this.message = 'Nossos serviços podem estar indisponívels no momento, tente novamente mais tarde...';
       
         return { message: this.message };
-      } else if (error.response?.status != 400) {
+      } else if (error.response?.status == 400) {
+        this.message = error.response?.data.message;
+      
+        return { message: this.message };
+      } else if (error.response?.status == 401) {
         this.message = error.response?.data.message;
       
         return { message: this.message };

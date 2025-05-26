@@ -4,6 +4,64 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface ITicketReportProps {
+  id: number,
+  ticketTitle: string,
+  ticketDescription: string,
+  ticketCategory: string,
+  ticketPriority: string,
+  ticketPriorityTime: number,
+  ticketStatus: string,
+  createdAt: string,
+  updatedAt: string,
+  avatar: string,
+  userName: string,
+  userSlug: string,
+  email: string,
+  teamName: string,
+  teamSlug: string,
+  subTeamName: string,
+  subTeamSlug: string,
+}
+
+export interface ITicketProps {
+  id: number;
+  title: string;
+  description: string;
+  team: string;
+  priority: string;
+  category: string;
+  status: string;
+  user: IUserProps;
+  createdAt: Date,
+  updatedAt: Date
+}
+
+export interface ITicketPriorityProps {
+  id: number,
+  name: string,
+  slug: string,
+  hours: number,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+export interface ITicketStatusProps {
+  id: number,
+  name: string,
+  slug: string,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+export interface ITicketCategoryProps {
+  id: number,
+  name: string,
+  slug: string,
+  createdAt: Date,
+  updatedAt: Date
+}
+
 export interface IUsersReport {
   id: number,
   avatar: string,
@@ -12,6 +70,28 @@ export interface IUsersReport {
   email: string,
   status: string,
   emailVerified: boolean,
+  isOnTeam: boolean,
+  isAttendant: boolean,
+  positionName: string,
+  positionSlug: string,
+  teamName: string | null,
+  teamSlug: string | null,
+  subTeamName: string | null,
+  subTeamSlug: string | null,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+export interface IAttendantsReport {
+  id: number,
+  avatar: string,
+  userName: string,
+  userSlug: string,
+  email: string,
+  status: string,
+  emailVerified: boolean,
+  isOnTeam: boolean,
+  isAttendant: boolean,
   positionName: string,
   positionSlug: string,
   teamName: string | null,
@@ -43,6 +123,7 @@ export interface IUserProps {
   status: string,
   emailVerified: boolean,
   isOnTeam: boolean,
+  isAttendant: boolean,
   position: IPositionProps,
   createdAt: Date,
   updatedAt: Date,

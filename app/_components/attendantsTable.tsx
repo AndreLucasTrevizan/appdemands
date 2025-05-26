@@ -1,15 +1,11 @@
 'use client';
 
-import { IUsersReport } from "@/types";
+import { IAttendantsReport, IUsersReport } from "@/types";
 import {
   addToast,
   Avatar,
   Button,
   Chip,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
   Link,
   Pagination,
@@ -26,36 +22,33 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
-import { listUsers } from "../users/actions";
+import { listAttendants, listUsers } from "../users/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
-import ModalCreateUser from "./modalCreateUser";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import ModalCreateAttendant from "./modalCreateAttendant";
 
-export default function UsersTable() {
+export default function AttendantsTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
   const [filterValue, setFilterValue] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [rows, setRows] = useState<number>(5);
-  const [users, setUsers] = useState<IUsersReport[]>([]);
-  const [userCreated, setUserCreated] = useState<boolean>(false);
+  const [attendants, setAttendants] = useState<IAttendantsReport[]>([]);
+  const [loadingAttendants, setLoadingAttendants] = useState<boolean>(false);
 
-  const pages = Math.ceil(users.length / rows);
-
-  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+  const pages = Math.ceil(attendants.length / rows);
 
   useEffect(() => {
-    async function loadUsersData() {
+    async function loadAttendantsData() {
       try {
-        setLoadingUsers(true);
+        setLoadingAttendants(true);
 
-        const usersData = await listUsers();
+        const attendantsData = await listAttendants();
 
-        setUsers(usersData);
+        setAttendants(attendantsData);
 
-        setLoadingUsers(false);
+        setLoadingAttendants(false);
       } catch (error) {
-        setLoadingUsers(false);
+        setLoadingAttendants(false);
         
         const errorHandler = new ErrorHandler(error);
       
@@ -69,16 +62,16 @@ export default function UsersTable() {
       }
     }
 
-    loadUsersData();
+    loadAttendantsData();
   }, []);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredAttendants = [...attendants];
 
-    filteredUsers = users.filter((user) => user.userName.toLowerCase().includes(filterValue.toLowerCase()));
+    filteredAttendants = attendants.filter((attendant) => attendant.userName.toLowerCase().includes(filterValue.toLowerCase()));
     
-    return filteredUsers;
-  }, [ users, filterValue ]);
+    return filteredAttendants;
+  }, [ attendants, filterValue ]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rows;
@@ -87,28 +80,28 @@ export default function UsersTable() {
     return filteredItems.slice(start, end);
   }, [ page, rows, filteredItems ]);
 
-  async function loadUserData() {
+  async function loadAttendantsData() {
     try {
-      setLoadingUsers(true);
+      setLoadingAttendants(true);
 
-      const usersData = await listUsers();
+      const attendantsData = await listAttendants();
 
-      setUsers(usersData);
+      setAttendants(attendantsData);
 
       addToast({
         color: 'success',
         title: 'Sucesso',
-        description: 'Lista de usuários atualizadas',
+        description: 'Lista de atendentes atualizada',
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingUsers(false);
+      setLoadingAttendants(false);
     } catch (error) {
-      setLoadingUsers(false);
-        
-      const errorHandler = new ErrorHandler(error);
+      setLoadingAttendants(false);
       
+      const errorHandler = new ErrorHandler(error);
+    
       addToast({
         title: 'Aviso',
         description: errorHandler.message,
@@ -121,21 +114,21 @@ export default function UsersTable() {
 
   return (
     <div>
-      <ModalCreateUser
+      <ModalCreateAttendant
         isOpen={isOpen}
         onClose={onClose}
         onOpen={onOpen}
         onOpenChange={onOpenChange}
-        users={users}
-        setUsers={setUsers}
-        key={'createUsers'}
+        attendants={attendants}
+        setAttendants={setAttendants}
+        key={'createAttendants'}
       />
       <Table
         isStriped
         isCompact
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de Usuários Padrão</h1>
+            <h1>Lista de Usuários Atendentes</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={
@@ -153,8 +146,8 @@ export default function UsersTable() {
                   <option value="10">10</option>
                   <option value="100">100</option>
                 </select>
-                <Tooltip content="Atualizar lista de usuários">
-                  <Button isIconOnly variant="light" onPress={() => loadUserData()}><FiRefreshCcw /></Button>
+                <Tooltip content="Atualizar lista de atendentes">
+                  <Button isIconOnly variant="light" onPress={() => loadAttendantsData()}><FiRefreshCcw /></Button>
                 </Tooltip>
                 <Button
                   color="primary"
@@ -188,14 +181,14 @@ export default function UsersTable() {
           <TableColumn key={'teamName'}>Equipe</TableColumn>
         </TableHeader>
         <TableBody
-          items={loadingUsers ? [] : items}
+          items={loadingAttendants ? [] : items}
           emptyContent={
             <div className="flex flex-col gap-4 items-center justify-center">
               <SearchIcon />
               <span>Nenhum usuário encontrado</span>
             </div>
           }
-          isLoading={loadingUsers}
+          isLoading={loadingAttendants}
           loadingContent={<Spinner size="md" />}
         >
           {(user) => (

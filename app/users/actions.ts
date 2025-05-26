@@ -27,6 +27,28 @@ export const listUsers = async () => {
   }
 }
 
+export const listAttendants = async () => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.get('/attendants', {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.attendants;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
 export const getUserDetails = async (slug: string) => {
   try {
     const signedData = await gettingSigned();
@@ -50,10 +72,12 @@ export const getUserDetails = async (slug: string) => {
 }
 
 export const createUser = async ({
+  isAttendant,
   userName,
   email,
   positionId
 }: {
+  isAttendant: string,
   userName: string,
   email: string,
   positionId: number,
@@ -66,6 +90,7 @@ export const createUser = async ({
     }
 
     const response = await api.post(`/users`, {
+        isAttendant,
         userName,
         email,
         positionId
@@ -75,7 +100,7 @@ export const createUser = async ({
       }
     });
 
-    return response.data.newUser[0];
+    return response.data.newAttendant[0];
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

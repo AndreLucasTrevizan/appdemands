@@ -5,6 +5,7 @@ import DefaultLayout from "./_components/defaultLayout";
 import Nav from "./_components/nav";
 import { PlusIcon } from "./_components/plusIcon";
 import ModalCreateTicket from "./_components/modalCreateTicket";
+import TicketsTable from "./_components/ticketsTable";
 
 export default function Home() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -27,6 +28,7 @@ export default function Home() {
             onPress={() => onOpenChange()}
           >Abrir Chamado</Button>
         </div>
+        <TicketsTable />
       </div>
     </DefaultLayout>
   );

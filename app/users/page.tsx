@@ -1,9 +1,10 @@
 'use client';
 
-import { BreadcrumbItem, Breadcrumbs, Divider } from "@heroui/react";
+import { BreadcrumbItem, Breadcrumbs, Divider, Tab, Tabs } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
 import UsersTable from "../_components/usersTable";
 import Nav from "../_components/nav";
+import AttendantsTable from "../_components/attendantsTable";
 
 export default function UsersPage() {
   return (
@@ -15,8 +16,22 @@ export default function UsersPage() {
           <BreadcrumbItem>Usuários</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
-        <h1 className="text-lg">Usuários</h1>
-        <UsersTable />
+        <Tabs
+          variant="underlined"
+        >
+          <Tab
+            key={'padrões'}
+            title="Padrão"
+          >
+            <UsersTable />
+          </Tab>
+          <Tab
+            key={'atendentes'}
+            title="Atendentes"
+          >
+            <AttendantsTable />
+          </Tab>
+        </Tabs>
       </div>
     </DefaultLayout>
   );

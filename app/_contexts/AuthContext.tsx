@@ -18,6 +18,8 @@ export interface IUserSignedProps {
   email: string;
   slug: string;
   avatar: string;
+  isOnTeam: boolean;
+  isAttendant: boolean;
   createdAt: Date;
   updatedAt: Date;
   token: string;

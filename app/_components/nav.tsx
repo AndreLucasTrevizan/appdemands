@@ -49,7 +49,7 @@ export default function Nav() {
   const [loading, setLoading] = useState<boolean>(false);
   const [userSigned, setUserSigned] = useState<IUserSignedProps | null>(null);
 
-  const menuItems: IMenuItem[] = [
+  const menuAdminItems: IMenuItem[] = [
     {
       route: '/',
       name: 'Home',
@@ -80,6 +80,19 @@ export default function Nav() {
       name: 'Funções de Usuário',
       icon: <RiUserSettingsLine />
     }
+  ];
+
+  const menuItems: IMenuItem[] = [
+    {
+      route: '/',
+      name: 'Home',
+      icon: <FaHouse />
+    },
+    {
+      route: '/settings',
+      name: 'Configurações',
+      icon: <FaGear />
+    },
   ];
 
   useEffect(() => {
@@ -155,15 +168,27 @@ export default function Nav() {
                   <ThemeSwitch />
                 </div>
                 <Divider />
-                {menuItems.map((item) => (
-                  <Link key={item.name} href={item.route}>
-                    <Button
-                      className="w-full"
-                      variant="light"
-                      startContent={item.icon}
-                    >{item.name}</Button>
-                  </Link>
-                ))}
+                {userSigned?.isAttendant ? (
+                  menuAdminItems.map((item) => (
+                    <Link key={item.name} href={item.route}>
+                      <Button
+                        className="w-full"
+                        variant="light"
+                        startContent={item.icon}
+                      >{item.name}</Button>
+                    </Link>
+                  ))
+                ) : (
+                  menuItems.map((item) => (
+                    <Link key={item.name} href={item.route}>
+                      <Button
+                        className="w-full"
+                        variant="light"
+                        startContent={item.icon}
+                      >{item.name}</Button>
+                    </Link>
+                  ))
+                )}
                 <Button
                   onPress={() => handleLogout()}
                   color="danger"
