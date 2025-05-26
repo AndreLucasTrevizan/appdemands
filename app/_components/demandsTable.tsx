@@ -37,7 +37,7 @@ export default function DemandsTable() {
     
         addToast({
           title: 'Aviso',
-          description: `${errorHandler.error.message}`,
+          description: `${errorHandler.message}`,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
           color: 'warning'

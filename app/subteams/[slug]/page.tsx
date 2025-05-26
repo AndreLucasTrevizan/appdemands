@@ -50,7 +50,7 @@ export default function SubTeamDetailsPage({
         
         addToast({
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true
         });
@@ -75,7 +75,7 @@ export default function SubTeamDetailsPage({
         
         addToast({
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true
         });

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { gettingSigned } from "../_components/actions";
 import { api } from "../_api/api";
+import ErrorHandler from "../_utils/errorHandler";
 
 export const listUsers = async () => {
   try {
@@ -20,7 +21,9 @@ export const listUsers = async () => {
 
     return response.data.users;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -40,7 +43,9 @@ export const getUserDetails = async (slug: string) => {
 
     return response.data.user;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -72,7 +77,9 @@ export const createUser = async ({
 
     return response.data.newUser[0];
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 

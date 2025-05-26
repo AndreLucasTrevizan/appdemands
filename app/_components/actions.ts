@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { IDemandProps } from "@/types";
 import { api } from "../_api/api";
 import { IUserSignedProps } from "../_contexts/AuthContext";
+import ErrorHandler from "../_utils/errorHandler";
 
 export async function loadDemands(): Promise<IDemandProps[]> {
   try {
@@ -23,20 +24,28 @@ export async function loadDemands(): Promise<IDemandProps[]> {
 
     return response.data.demands;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
 export async function handleLogin(data: {
   email: string,
   password: string
-}): Promise<IUserSignedProps> {
+}) {
   try {
-    const response = await api.post('/users/login', data);
+    const response = await api.post('/users/login', data, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
 
     return response.data;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -52,6 +61,8 @@ export async function gettingSigned(): Promise<IUserSignedProps | null> {
 
     return signedDataJSON;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

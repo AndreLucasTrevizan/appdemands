@@ -2,6 +2,7 @@
 
 import { api } from "../_api/api";
 import { gettingSigned } from "../_components/actions";
+import ErrorHandler from "../_utils/errorHandler";
 import { ISubTeam } from "../subteams/actions";
 
 export interface ITeams {
@@ -37,7 +38,9 @@ export const listSingleTeamInfo = async (slug: string) => {
       return response.data.team;
     }
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -55,7 +58,9 @@ export const listTeams = async () => {
       return response.data.teams;
     }
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -75,7 +80,9 @@ export const listPersonalTeams = async () => {
 
     return response.data.teams;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -98,7 +105,9 @@ export const listUsersAvailable = async () => {
 
     return response.data.users;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -118,6 +127,8 @@ export const listTeamMembers = async (slug: string) => {
 
     return response.data.members;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

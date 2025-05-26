@@ -2,6 +2,7 @@
 
 import { api } from "../_api/api";
 import { gettingSigned } from "../_components/actions";
+import ErrorHandler from "../_utils/errorHandler";
 import { ITeams } from "../teams/actions";
 
 interface ICreateSubTeamFormProps {
@@ -36,7 +37,9 @@ export const gettingAllMembersFromSubTeam = async (slug: string) => {
 
     return response.data.members;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -56,7 +59,9 @@ export const createSubTeam = async (data: ICreateSubTeamFormProps) => {
 
     return response.data.subTeam;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -81,7 +86,9 @@ export const addingMembersOnSubTeam = async (data: IAddSubTeamMembersFormProps) 
 
     return response.data;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -99,6 +106,8 @@ export const listSingleSubTeamInfo = async (slug: string) => {
       return response.data.subTeam;
     }
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

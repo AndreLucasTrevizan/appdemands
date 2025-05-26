@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { gettingSigned } from "./_components/actions";
 import { api } from "./_api/api";
+import ErrorHandler from "./_utils/errorHandler";
 
 export const getUserDetailsForTicket = async () => {
   try {
@@ -20,6 +21,8 @@ export const getUserDetailsForTicket = async () => {
 
     return response.data.user[0];
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

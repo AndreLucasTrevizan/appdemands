@@ -2,6 +2,7 @@
 
 import { api } from "@/app/_api/api";
 import { gettingSigned } from "@/app/_components/actions";
+import ErrorHandler from "../_utils/errorHandler";
 
 export const creatingDemand = async ({
   title,
@@ -28,7 +29,9 @@ export const creatingDemand = async ({
       return response.data.demand.id;
     }
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -61,6 +64,8 @@ export const addingAttachments = async ({
       return 'Arquivos anexados';
     }
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

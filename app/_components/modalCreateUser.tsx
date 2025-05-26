@@ -61,7 +61,7 @@ export default function ModalCreateUser({
         addToast({
           color: 'warning',
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
         });
@@ -98,12 +98,15 @@ export default function ModalCreateUser({
       setUserName("");
       setEmail("");
       setPositionId("");
+      
+      onClose();
+
       const errorHandler = new ErrorHandler(error);
 
       addToast({
         color: 'warning',
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });
@@ -142,7 +145,12 @@ export default function ModalCreateUser({
               value={email}
               onChange={(e) => setEmail(e.target.value)} className="flex-1"
             />
-            <Select onChange={(e) => setPositionId(e.target.value)} label="Função do usuário" labelPlacement="outside" className="flex-2">
+            <Select
+              onChange={(e) => setPositionId(e.target.value)}
+              label="Função do usuário"
+              labelPlacement="outside"
+              className="flex-2"
+            >
               {positions.map(((position) => (
                 <SelectItem key={position.id}>{position.positionName}</SelectItem>
               )))}

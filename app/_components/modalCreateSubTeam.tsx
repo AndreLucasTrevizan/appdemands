@@ -66,7 +66,7 @@ export default function ModalCreateSubTeam({
         
         addToast({
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true
         });
@@ -138,7 +138,7 @@ export default function ModalCreateSubTeam({
       addToast({
         color: 'warning',
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true
       });
@@ -179,7 +179,7 @@ export default function ModalCreateSubTeam({
       addToast({
         color: 'warning',
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true
       });

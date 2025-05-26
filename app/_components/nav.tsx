@@ -92,12 +92,13 @@ export default function Nav() {
         setUserSigned(data);
       } catch (error) {
         const errorHandler = new ErrorHandler(error);
-
+              
         addToast({
           title: 'Aviso',
-          description: `${errorHandler.error.message}`,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
+          color: 'warning',
         });
       } finally {
         setLoading(false);

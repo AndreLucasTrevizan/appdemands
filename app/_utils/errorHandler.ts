@@ -1,29 +1,35 @@
 import { AxiosError } from "axios";
 
 export default class ErrorHandler {
-  error = {
-    message: '',
-  };
+  message: string;
 
   constructor(error: Error | AxiosError | unknown) {
     if (error instanceof AxiosError) {
-      if (error.response?.status == 500) {
-        this.error = {
-          message: 'Nossos serviços podem estar indisponívels no momento, tente novamente mais tarde...',
-        }
+      if (error.code == 'ECONNREFUSED') {
+        this.message = 'Nossos serviços podem estar indisponívels no momento, tente novamente mais tarde...';
+      
+        return { message: this.message };
+      } else if (error.response?.status == 500) {
+        this.message = 'Nossos serviços podem estar indisponívels no momento, tente novamente mais tarde...';
+      
+        return { message: this.message };
       } else if (error.response?.status != 400) {
-        this.error = {
-          message: error.response?.data.message,
-        }
+        this.message = error.response?.data.message;
+      
+        return { message: this.message };
       } else {
-        this.error = {
-          message: error.response?.data.message,
-        };
+        this.message = error.response?.data.message;
+
+        return { message: this.message };
       }
     } else if (error instanceof Error) {
-      this.error = {
-        message: error.message
-      };
+      this.message = error.message;
+
+      return { message: this.message };
+    } else {
+      this.message = 'Erro desconhecido, entre em contato com a T.I';
+
+      return { message: this.message };
     }
   }
 }

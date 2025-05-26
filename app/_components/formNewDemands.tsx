@@ -1,9 +1,25 @@
 'use client';
 
-import { addToast, Button, Card, CardBody, divider, Divider, Form, Input, Modal, ModalBody, ModalContent, Spacer, Spinner, Textarea, Tooltip, useDisclosure } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  Spacer,
+  Spinner,
+  Textarea,
+  Tooltip,
+  useDisclosure
+} from "@heroui/react";
 import Image from "next/image";
-import { ChangeEvent, ReactNode, useCallback, useRef, useState } from "react";
-import { FaArrowUp, FaDemocrat, FaFileExcel, FaFilePdf, FaFileWord, FaPlus, FaPlusCircle, FaSave, FaTrash } from "react-icons/fa";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { FaSave } from "react-icons/fa";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { addingAttachments, creatingDemand } from "../demands/actions";
@@ -103,7 +119,7 @@ export default function FormNewDemand() {
 
       addToast({
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });

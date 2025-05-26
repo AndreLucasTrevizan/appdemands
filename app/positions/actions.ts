@@ -2,6 +2,7 @@
 
 import { api } from "../_api/api";
 import { gettingSigned } from "../_components/actions";
+import ErrorHandler from "../_utils/errorHandler";
 
 export const listPositions = async () => {
   try {
@@ -19,7 +20,9 @@ export const listPositions = async () => {
 
     return response.data.positions;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -43,6 +46,8 @@ export const createPositions = async ({
 
     return response.data.position;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

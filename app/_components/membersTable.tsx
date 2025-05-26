@@ -41,7 +41,7 @@ export default function MembersTable({
         
         addToast({
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true
         });
@@ -77,7 +77,7 @@ export default function MembersTable({
       
       addToast({
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true
       });
@@ -160,6 +160,12 @@ export default function MembersTable({
           items={items}
           isLoading={loadingUpdateMemberList}
           loadingContent={<Spinner size="md" />}
+          emptyContent={
+            <div className="flex flex-col gap-4 items-center">
+              <SearchIcon />
+              <span>Nenhum membro encontrado...</span>
+            </div>
+          }
         >
           {(item) => (
             <TableRow key={item.id}>

@@ -48,13 +48,13 @@ export default function PositionsTable() {
         setLoadingPositions(false);
 
         const errorHandler = new ErrorHandler(error);
-
+              
         addToast({
-          color: 'warning',
           title: 'Aviso',
-          description: errorHandler.error.message,
+          description: errorHandler.message,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
+          color: 'warning',
         });
       }
     }
@@ -98,13 +98,13 @@ export default function PositionsTable() {
       setLoadingPositions(false);
 
       const errorHandler = new ErrorHandler(error);
-
+            
       addToast({
-        color: 'warning',
         title: 'Aviso',
-        description: errorHandler.error.message,
+        description: errorHandler.message,
         timeout: 3000,
         shouldShowTimeoutProgress: true,
+        color: 'warning',
       });
     }
   }

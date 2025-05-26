@@ -4,6 +4,7 @@ import { IAvatarResponse, IUserProfileProps } from "@/types";
 import { api } from "../_api/api";
 import { cookies, headers } from "next/headers";
 import { IUserSignedProps } from "../_contexts/AuthContext";
+import ErrorHandler from "../_utils/errorHandler";
 
 export async function gettingUserProfile(): Promise<IUserProfileProps> {
   try {
@@ -19,7 +20,9 @@ export async function gettingUserProfile(): Promise<IUserProfileProps> {
 
     return response.data.user;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }
 
@@ -37,6 +40,8 @@ export async function changingAvatar(data: FormData): Promise<IAvatarResponse> {
 
     return response.data.avatar;
   } catch (error) {
-    throw error;
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
   }
 }

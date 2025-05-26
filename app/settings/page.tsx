@@ -5,19 +5,14 @@ import {
   Avatar,
   BreadcrumbItem,
   Breadcrumbs,
-  Button,
   Card,
   CardBody,
-  CardHeader,
   Divider,
-  Form,
   Input,
   Spacer,
   Spinner,
-  User
 } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
-import Navbar from "../_components/navbar";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { changingAvatar, gettingUserProfile } from "./actions";
@@ -51,7 +46,7 @@ export default function SettingsPage() {
         
         addToast({
           title: 'Aviso',
-          description: `${errorHandler.error.message}`,
+          description: `${errorHandler.message}`,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
         });
@@ -105,7 +100,7 @@ export default function SettingsPage() {
 
         addToast({
           title: 'Aviso',
-          description: `${errorHandler.error.message}`,
+          description: `${errorHandler.message}`,
           timeout: 3000,
           shouldShowTimeoutProgress: true,
         });
