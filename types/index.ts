@@ -129,6 +129,21 @@ export interface IUserProps {
   updatedAt: Date,
 }
 
+export interface IAttendantProps {
+  id: number,
+  userName: string,
+  email: string,
+  slug: string,
+  avatar: string,
+  status: string,
+  emailVerified: boolean,
+  isOnTeam: boolean,
+  isAttendant: boolean,
+  position: IPositionProps,
+  createdAt: Date,
+  updatedAt: Date,
+}
+
 export interface IFileProps {
   id: number;
   fileName: string;

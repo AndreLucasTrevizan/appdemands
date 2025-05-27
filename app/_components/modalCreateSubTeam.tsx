@@ -1,6 +1,6 @@
 'use client';
 
-import { IUserProps } from "@/types";
+import { IAttendantProps, IUserProps } from "@/types";
 import {
   addToast,
   Avatar,
@@ -15,14 +15,16 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner
+  Spinner,
+  Switch
 } from "@heroui/react";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { FaCheck, FaTeamspeak } from "react-icons/fa6";
 import { FiRefreshCcw } from "react-icons/fi";
 import { listUsersAvailable } from "../teams/actions";
 import ErrorHandler from "../_utils/errorHandler";
-import { addingMembersOnSubTeam, createSubTeam, ISubTeam } from "../subteams/actions";
+import { addingMembersOnClientSubTeam, addingMembersOnServiceSubTeam, addingMembersOnSubTeam, createSubTeam, ISubTeam } from "../subteams/actions";
+import { listAvailableAttendants } from "../attendants/actions";
 
 export default function ModalCreateSubTeam({
   isOpen,
@@ -44,8 +46,12 @@ export default function ModalCreateSubTeam({
   const [name, setName] = useState<string>('');
   const [values, setValues] = useState(new Set(''));
   const [users, setUsers] = useState<IUserProps[]>([]);
+  const [attendants, setAttendants] = useState<IAttendantProps[]>([]);
+  const [isServiceTeam, setIsServiceTeam] = useState<boolean>(false);
   const [updatedUser, setUpdatedUsers] = useState<boolean>(false);
   const [loadingUsers, setLoadingUsers] = useState<Boolean>(false);
+  const [loadingAttendants, setLoadingAttendants] = useState<Boolean>(false);
+  const [updatedAttendants, setUpdatedAttendants] = useState<boolean>(false);
   const [loadingCreateSubTeam, setLoadingCreateSubTeam] = useState<Boolean>(false);
   const [loadingAddingMembers, setLoadingAddingMembers] = useState<Boolean>(false);
 
@@ -74,8 +80,32 @@ export default function ModalCreateSubTeam({
         setLoadingUsers(false);
       }
     }
+    
+    async function loadAttendantsAvailable() {
+      try {
+        setLoadingAttendants(true);
+
+        const data = await listAvailableAttendants();
+
+        setAttendants(data);
+
+        setLoadingAttendants(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+        
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+
+        setLoadingAttendants(false);
+      }
+    }
 
     loadUsersAvailable();
+    loadAttendantsAvailable();
   }, [ updatedUser ]);
 
   const creatingSubteam = async () => {
@@ -85,6 +115,7 @@ export default function ModalCreateSubTeam({
       const { slug } = await params;
 
       const data = {
+        isService: isServiceTeam ? "true" : "false",
         teamSlug: slug,
         name,
       };
@@ -107,28 +138,56 @@ export default function ModalCreateSubTeam({
 
       if (arrayValues.length > 0) {
         setLoadingAddingMembers(true);
-        let selectedUsers: IUserProps[] = [];
 
-        selectedUsers = await handleGettingUsers();
+        console.log(isServiceTeam);
 
-        const dataMembers = {
-          slug: subTeam.slug,
-          userList: JSON.stringify(selectedUsers),
+        if (isServiceTeam) {
+          let selectedUsers: IAttendantProps[] = [];
+
+          selectedUsers = await handleGettingUsers();
+          
+          const dataMembers = {
+            slug: subTeam.slug,
+            attendantsList: JSON.stringify(selectedUsers),
+          };
+
+          await addingMembersOnServiceSubTeam(dataMembers);
+
+          addToast({
+            color: 'success',
+            title: 'Sucesso',
+            description: 'Membros da sub-equipe adicionados',
+            timeout: 3000,
+            shouldShowTimeoutProgress: true
+          });
+
+          setUpdatedUsers(!updatedUser);
+          setLoadingAddingMembers(false);
+          setValues(new Set(''));
+        } else {
+          let selectedUsers: IUserProps[] = [];
+
+          selectedUsers = await handleGettingUsers();
+
+          const dataMembers = {
+            slug: subTeam.slug,
+            userList: JSON.stringify(selectedUsers),
+          };
+
+          await addingMembersOnClientSubTeam(dataMembers);
+
+          addToast({
+            color: 'success',
+            title: 'Sucesso',
+            description: 'Membros da sub-equipe adicionados',
+            timeout: 3000,
+            shouldShowTimeoutProgress: true
+          });
+
+          setUpdatedUsers(!updatedUser);
+          setLoadingAddingMembers(false);
+          setValues(new Set(''));
         }
-
-        await addingMembersOnSubTeam(dataMembers);
-
-        addToast({
-          color: 'success',
-          title: 'Sucesso',
-          description: 'Membros da sub-equipe adicionados',
-          timeout: 3000,
-          shouldShowTimeoutProgress: true
-        });
-
-        setUpdatedUsers(!updatedUser);
-        setLoadingAddingMembers(false);
-        setValues(new Set(''));
       }
     } catch (error) {
       setName('');
@@ -149,17 +208,31 @@ export default function ModalCreateSubTeam({
   }
 
   const handleGettingUsers = async () => {
-    let newUsers: IUserProps[] = [];
+    if (isServiceTeam) {
+      let newAttendants: IAttendantProps[] = [];
     
-    arrayValues.forEach((value) => {
-      let user = users.find((user) => `${user.id}` === `${value}`);
+      arrayValues.forEach((value) => {
+        let attendant = attendants.find((attendant) => `${attendant.id}` === `${value}`);
 
-      if (user) {
-        newUsers.push(user);
-      }
-    });
+        if (attendant) {
+          newAttendants.push(attendant);
+        }
+      });
 
-    return newUsers;
+      return newAttendants;
+    } else {
+      let newUsers: IUserProps[] = [];
+    
+      arrayValues.forEach((value) => {
+        let user = users.find((user) => `${user.id}` === `${value}`);
+
+        if (user) {
+          newUsers.push(user);
+        }
+      });
+
+      return newUsers;
+    }
   }
 
   const updateListUsers = async () => {
@@ -168,9 +241,15 @@ export default function ModalCreateSubTeam({
 
       const data = await listUsersAvailable();
 
-      console.log(`Alow`);
-
       setUsers(data);
+
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'Lista de usuários atualizada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
 
       setLoadingUsers(false);
     } catch (error) {
@@ -187,8 +266,59 @@ export default function ModalCreateSubTeam({
       setLoadingUsers(false);
     }
   };
+  
+  const updateListAttendants = async () => {
+    try {
+      setLoadingAttendants(true);
+
+      const data = await listAvailableAttendants();
+
+      setAttendants(data);
+
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'Lista de atendentes atualizada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
+      setLoadingAttendants(false);
+    } catch (error) {
+      const errorHandler = new ErrorHandler(error);
+      
+      addToast({
+        color: 'warning',
+        title: 'Aviso',
+        description: errorHandler.message,
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
+      setLoadingAttendants(false);
+    }
+  };
 
   const selectedUsers = useMemo(() => {
+    if (isServiceTeam) {
+      if (!arrayValues.length) {
+        return <small>Nenhum atendente selecionado</small>;
+      } else {
+        return (
+          <div className="flex gap-2 flex-wrap">
+            {arrayValues.map((value) => (
+              <Chip
+                color="default"
+                key={value}
+                endContent={
+                  <FaCheck />
+                }
+              >{attendants.find((attendant) => `${attendant.id}` === `${value}`)?.userName}</Chip>
+            ))}
+          </div>
+        );
+      }
+    } else {
       if (!arrayValues.length) {
         return <small>Nenhum usuário selecionado</small>;
       } else {
@@ -206,8 +336,8 @@ export default function ModalCreateSubTeam({
           </div>
         );
       }
-  
-    }, [ arrayValues.length ]);
+    }
+  }, [ arrayValues.length, isServiceTeam ]);
 
   return (
     <Modal
@@ -235,6 +365,14 @@ export default function ModalCreateSubTeam({
           {(!loadingCreateSubTeam && !loadingAddingMembers) && (
             <div className="w-full flex flex-row gap-4">
               <div className="flex-1 flex flex-col gap-4">
+                <Switch
+                  isSelected={isServiceTeam}
+                  onValueChange={setIsServiceTeam}
+                  color="success"
+                  size="sm"
+                >
+                  Equipe de serviço
+                </Switch>
                 <Input
                   label='Nome da sub-equipe'
                   labelPlacement="outside"
@@ -254,34 +392,44 @@ export default function ModalCreateSubTeam({
               <Divider orientation="vertical"/>
               <div className="flex-1 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <h2>Usuários Disponíveis</h2>
-                  <Button isIconOnly variant="light" onPress={() => updateListUsers()}>
+                  {isServiceTeam ? (
+                    <h2>Atendentes Disponíveis</h2>
+                  ) : (
+                    <h2>Usuários Disponíveis</h2>
+                  )}
+                  <Button isIconOnly variant="light" onPress={() => {
+                    if (isServiceTeam) {
+                      updateListAttendants();
+                    } else {
+                      updateListUsers();
+                    }
+                  }}>
                     <FiRefreshCcw />
                   </Button>
                 </div>
-                {loadingUsers ? (
+                {loadingUsers || loadingAttendants ? (
                   <Spinner size="md" />
                 ) : (
                   <Listbox
                     variant="flat"
-                    items={users}
+                    items={isServiceTeam ? attendants : users}
                     selectionMode="multiple"
                     onSelectionChange={(keys) => setValues(keys as Set<string>)}
                     className="overflow-scroll scrollbar-hide"
                   >
-                    {(user) => (
-                      <ListboxItem key={user.id} textValue={user.userName}>
+                    {(person) => (
+                      <ListboxItem key={person.id} textValue={person.userName}>
                         <div className="flex gap-2 items-center">
                           <Avatar
-                            alt={user.userName}
+                            alt={person.userName}
                             className="flex-shrink-0"
                             size="sm"
-                            showFallback={user.avatar == ""}
-                            src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                            showFallback={person.avatar == ""}
+                            src={`${process.env.baseUrl}/avatar/${person.slug}/${person.avatar}`}
                           />
                           <div className="flex flex-col">
-                            <span className="text-small">{user.userName}</span>
-                            <span className="text-tiny text-default-400">{user.email}</span>
+                            <span className="text-small">{person.userName}</span>
+                            <span className="text-tiny text-default-400">{person.email}</span>
                           </div>
                         </div>
                       </ListboxItem>

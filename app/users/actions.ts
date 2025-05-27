@@ -27,28 +27,6 @@ export const listUsers = async () => {
   }
 }
 
-export const listAttendants = async () => {
-  try {
-    const signedData = await gettingSigned();
-
-    if (!signedData) {
-      redirect('/sign_in');
-    }
-
-    const response = await api.get('/attendants', {
-      headers: {
-        Authorization: `Bearer ${signedData.token}`,
-      }
-    });
-
-    return response.data.attendants;
-  } catch (error) {
-    const errorHandler = new ErrorHandler(error);
-
-    throw errorHandler.message;
-  }
-}
-
 export const getUserDetails = async (slug: string) => {
   try {
     const signedData = await gettingSigned();
@@ -89,18 +67,33 @@ export const createUser = async ({
       redirect('/sign_in');
     }
 
-    const response = await api.post(`/users`, {
-        isAttendant,
-        userName,
-        email,
-        positionId
-      }, {
-      headers: {
-        Authorization: `Bearer ${signedData.token}`,
-      }
-    });
+    if (isAttendant == "true") {
+      const response = await api.post(`/users`, {
+          isAttendant,
+          userName,
+          email,
+          positionId
+        }, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`,
+        }
+      });
 
-    return response.data.newAttendant[0];
+      return response.data.newAttendant[0];
+    } else {
+      const response = await api.post(`/users`, {
+          isAttendant,
+          userName,
+          email,
+          positionId
+        }, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`,
+        }
+      });
+
+      return response.data.newUser[0];
+    }
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

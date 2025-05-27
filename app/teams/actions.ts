@@ -111,7 +111,15 @@ export const listUsersAvailable = async () => {
   }
 }
 
-export const listTeamMembers = async (slug: string) => {
+export const listMembers = async ({
+  isTeam,
+  isService,
+  endpoint,
+}: {
+  isTeam: string,
+  isService: string,
+  endpoint: string,
+}) => {
   try {
     const signedData = await gettingSigned();
 
@@ -119,13 +127,26 @@ export const listTeamMembers = async (slug: string) => {
       throw "Você não está autenticado";
     }
 
-    const response = await api.get(`/teams/${slug}/members`, {
-      headers: {
-        Authorization: `Bearer ${signedData.token}`
-      }
-    });
+    if (isTeam == "true") {
+      const response = await api.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
 
-    return response.data.members;
+      return response.data.members;
+    } else {
+      const response = await api.get(endpoint, {
+        params: {
+          isService,
+        },
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
+
+      return response.data.members;
+    }
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

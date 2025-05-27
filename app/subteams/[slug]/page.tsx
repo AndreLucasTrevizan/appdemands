@@ -21,6 +21,7 @@ import { gettingAllMembersFromSubTeam, ISubTeam, listSingleSubTeamInfo } from ".
 import Nav from "@/app/_components/nav";
 import { FaTasks } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
+import MembersTable from "@/app/_components/membersTable";
 
 
 export default function SubTeamDetailsPage({
@@ -122,7 +123,14 @@ export default function SubTeamDetailsPage({
                   <span>Membros</span>
                 </div>
               }
-            />
+            >
+              <MembersTable
+                isTeam="false"
+                isService={subTeam?.subTeamCategory.slug == "serviço" ? "true" : "false"}
+                endpoint={`/subteams/${subTeam?.slug}/members`}
+                params={params}
+              />
+            </Tab>
           </Tabs>
         </Card>
       </div>

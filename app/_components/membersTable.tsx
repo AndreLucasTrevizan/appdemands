@@ -2,18 +2,41 @@
 
 import { ITeamMember } from "@/types";
 import { useEffect, useMemo, useState } from "react";
-import { listTeamMembers } from "../teams/actions";
+import { listMembers } from "../teams/actions";
 import ErrorHandler from "../_utils/errorHandler";
-import { addToast, Button, Input, Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, User } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Input,
+  Pagination,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  useDisclosure,
+  User
+} from "@heroui/react";
 import { SearchIcon } from "./searchIcon";
 import { FiRefreshCcw } from "react-icons/fi";
 import { PlusIcon } from "./plusIcon";
+import ModalAddMembers from "./modalAddMembers";
 
 export default function MembersTable({
+  isTeam,
+  isService,
+  endpoint,
   params
 }: {
+  isTeam: string,
+  isService: string,
+  endpoint: string,
   params: Promise<{slug: string}>
 }) {
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [members, setMembers] = useState<ITeamMember[]>([]);
   const [loadingUpdateMemberList, setLoadingUpdateMemberList] = useState<boolean>(false);
   const [filterValue, setFilterValue] = useState<string>('');
@@ -27,9 +50,7 @@ export default function MembersTable({
       try {
         setLoadingUpdateMemberList(true);
 
-        let { slug } = await params;
-
-        const data = await listTeamMembers(slug);
+        const data = await listMembers({isTeam, isService, endpoint});
 
         setMembers(data);
 
@@ -57,7 +78,7 @@ export default function MembersTable({
 
       let { slug } = await params;
 
-      const data = await listTeamMembers(slug);
+      const data = await listMembers({isTeam, isService, endpoint});
 
       setMembers(data);
 
@@ -87,7 +108,9 @@ export default function MembersTable({
   const filteredItems = useMemo(() => {
     let filteredMembers = [...members];
 
-    filteredMembers = members.filter((member) => member.userName.toLowerCase().includes(filterValue.toLowerCase()));
+    console.log(members);
+
+    filteredMembers = members.filter((member) => member.userName?.toLowerCase().includes(filterValue.toLowerCase()));
     
     return filteredMembers;
   }, [ members, filterValue ]);
@@ -121,6 +144,11 @@ export default function MembersTable({
           <Tooltip content="Atualizar lista de membros">
             <Button isIconOnly variant="light" onPress={() => handleUpdateMemberList()}><FiRefreshCcw /></Button>
           </Tooltip>
+          <Button
+            color="primary"
+            startContent={<PlusIcon size={20} width={20} height={20} />}
+            onPress={() => onOpenChange()}
+          >Adicionar Membros</Button>
         </div>
       </div>
     );
@@ -144,6 +172,14 @@ export default function MembersTable({
 
   return (
     <div className="p-4">
+      <ModalAddMembers
+        isTeam={isTeam}
+        isService={isService}
+        onOpen={onOpen}
+        onClose={onClose}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      />
       <Table
         topContent={topContent}
         bottomContent={bottomContent}
@@ -151,7 +187,6 @@ export default function MembersTable({
         isStriped
       >
         <TableHeader>
-          <TableColumn>ID</TableColumn>
           <TableColumn>NOME</TableColumn>
           <TableColumn>EQUIPE</TableColumn>
           <TableColumn>SUB-EQUIPE</TableColumn>
@@ -168,15 +203,14 @@ export default function MembersTable({
           }
         >
           {(item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.id}</TableCell>
+            <TableRow key={item.userSlug}>
               <TableCell>
                 <User
                   name={item.userName}
                   description={`@${item.email}`}
                   avatarProps={{
                     name: item.userName,
-                    src: `${process.env.baseUrl}/avatar/${item.id}/${item.avatar}`,
+                    src: `${process.env.baseUrl}/avatar/${item.userSlug}/${item.avatar}`,
                     showFallback: true,
                   }}
                 />

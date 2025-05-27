@@ -22,10 +22,10 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
-import { listAttendants, listUsers } from "../users/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
 import ModalCreateAttendant from "./modalCreateAttendant";
+import { listAvailableAttendants } from "../attendants/actions";
 
 export default function AttendantsTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
@@ -42,7 +42,7 @@ export default function AttendantsTable() {
       try {
         setLoadingAttendants(true);
 
-        const attendantsData = await listAttendants();
+        const attendantsData = await listAvailableAttendants();
 
         setAttendants(attendantsData);
 
@@ -84,7 +84,7 @@ export default function AttendantsTable() {
     try {
       setLoadingAttendants(true);
 
-      const attendantsData = await listAttendants();
+      const attendantsData = await listAvailableAttendants();
 
       setAttendants(attendantsData);
 

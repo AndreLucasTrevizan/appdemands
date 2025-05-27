@@ -10,7 +10,7 @@ import {
 
 import { getCookie } from 'cookies-next';
 import { gettingSigned } from '../_components/actions';
-import { IAvatarResponse } from '@/types';
+import { IAvatarResponse, IPositionProps } from '@/types';
 
 export interface IUserSignedProps {
   id: number;
@@ -20,6 +20,7 @@ export interface IUserSignedProps {
   avatar: string;
   isOnTeam: boolean;
   isAttendant: boolean;
+  position: IPositionProps,
   createdAt: Date;
   updatedAt: Date;
   token: string;

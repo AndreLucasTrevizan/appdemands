@@ -144,7 +144,7 @@ export default function Nav() {
               avatarProps={{
                 name: userSigned?.userName,
                 showFallback: true,
-                src: `${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`
+                src: `${process.env.baseUrl}/avatar/${userSigned?.slug}/${userSigned?.avatar}`
               }}
               name={`${userSigned?.userName}`}
               description={`@${userSigned?.email}`}
@@ -161,14 +161,14 @@ export default function Nav() {
                   <Avatar
                     name={userSigned?.userName}
                     isBordered
-                    src={`${process.env.baseUrl}/avatar/${userSigned?.id}/${userSigned?.avatar}`}
+                    src={`${process.env.baseUrl}/avatar/${userSigned?.slug}/${userSigned?.avatar}`}
                     showFallback
                   />
                   <span>{userSigned?.userName}</span>
                   <ThemeSwitch />
                 </div>
                 <Divider />
-                {userSigned?.isAttendant ? (
+                {userSigned?.isAttendant || userSigned?.position.slug == "administrador" ? (
                   menuAdminItems.map((item) => (
                     <Link key={item.name} href={item.route}>
                       <Button

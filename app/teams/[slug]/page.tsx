@@ -8,31 +8,25 @@ import {
   Card,
   CardBody,
   Divider,
-  Input,
-  Listbox,
-  ListboxItem,
   Spinner,
   Tab,
   Tabs,
   Tooltip,
   useDisclosure,
-  User
 } from "@heroui/react";
 import { useEffect, useState } from "react";
 import DefaultLayout from "@/app/_components/defaultLayout";
 import ErrorHandler from "@/app/_utils/errorHandler";
-import { ITeams, listSingleTeamInfo, listTeamMembers } from "../actions";
+import { ITeams, listMembers, listSingleTeamInfo } from "../actions";
 import { PlusIcon } from "@/app/_components/plusIcon";
 import { ISubTeam } from "@/app/subteams/actions";
-import TeamComponent from "@/app/_components/team";
 import ModalCreateSubTeam from "@/app/_components/modalCreateSubTeam";
 import SubTeamComponent from "@/app/_components/subTeam";
 import Nav from "@/app/_components/nav";
 import { FaTeamspeak, FaUsers } from "react-icons/fa6";
-import { SearchIcon } from "@/components/icons";
 import { FaTasks } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
-import { ITeamMember, IUserProps } from "@/types";
+import { ITeamMember } from "@/types";
 import MembersTable from "@/app/_components/membersTable";
 
 export default function TeamPage({
@@ -81,7 +75,11 @@ export default function TeamPage({
 
           let { slug } = await params;
 
-          const data = await listTeamMembers(slug);
+          const data = await listMembers({
+            isTeam: "true",
+            isService: "",
+            endpoint: `/teams/${slug}/members`,
+          });
 
           setMembers(data);
 
@@ -223,7 +221,12 @@ export default function TeamPage({
                 </div>
               }
             >
-              <MembersTable params={params} />
+              <MembersTable
+                isTeam="true"
+                isService=""
+                endpoint={`/teams/${team?.slug}/members`}
+                params={params}
+              />
             </Tab>
           </Tabs>
         </Card>

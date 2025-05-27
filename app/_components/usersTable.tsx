@@ -204,7 +204,7 @@ export default function UsersTable() {
                 <Avatar
                   showFallback
                   size="sm"
-                  src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                  src={`${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`}
                 />
                 <span>
                   <Link className="text-sm" href={`/users/${user.userSlug}`}>{user.userName}</Link></span>

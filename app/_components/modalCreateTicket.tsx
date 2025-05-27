@@ -274,7 +274,7 @@ export default function ModalCreateTicket({
                       avatarProps={{
                         name: userDetails?.userName,
                         showFallback: true,
-                        src: `${process.env.baseUrl}/avatar/${userDetails?.id}/${userDetails?.avatar}`
+                        src: `${process.env.baseUrl}/avatar/${userDetails?.userSlug}/${userDetails?.avatar}`
                       }}
                     />
                   </div>

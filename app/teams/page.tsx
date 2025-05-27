@@ -2,23 +2,13 @@
 
 import {
   addToast,
-  Avatar,
-  AvatarGroup,
   BreadcrumbItem,
   Breadcrumbs,
   Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Chip,
   Divider,
-  Link,
-  Spacer,
   Spinner
 } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
-import { FaTeamspeak } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import { ITeams, listPersonalTeams, listTeams } from "./actions";
 import ErrorHandler from "../_utils/errorHandler";
