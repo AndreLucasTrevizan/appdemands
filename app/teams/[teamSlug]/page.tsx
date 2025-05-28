@@ -14,12 +14,11 @@ import {
   Tooltip,
   useDisclosure,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DefaultLayout from "@/app/_components/defaultLayout";
 import ErrorHandler from "@/app/_utils/errorHandler";
 import { ITeams, listMembers, listSingleTeamInfo } from "../actions";
 import { PlusIcon } from "@/app/_components/plusIcon";
-import { ISubTeam } from "@/app/subteams/actions";
 import ModalCreateSubTeam from "@/app/_components/modalCreateSubTeam";
 import SubTeamComponent from "@/app/_components/subTeam";
 import Nav from "@/app/_components/nav";
@@ -28,13 +27,15 @@ import { FaTasks } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { ITeamMember } from "@/types";
 import MembersTable from "@/app/_components/membersTable";
+import { ISubTeam } from "./subteams/actions";
 
 export default function TeamPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ teamSlug: string }>
 }) {
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
+  const [paramsData, setParamsData] = useState<{ teamSlug: string, subTeamSlug: string }>({ teamSlug: '', subTeamSlug: ''});
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingUpdateSubTeams, setLoadingUpdateSubTeams] = useState<boolean>(false);
   const [loadingTeamMembers, setLoadingTeamMembers] = useState<boolean>(false);
@@ -43,87 +44,23 @@ export default function TeamPage({
   const [members, setMembers] = useState<ITeamMember[]>([]);
 
   useEffect(() => {
-      async function loadData() {
-        try {
-          setLoading(true);
-  
-          let { slug } = await params;
-  
-          const data = await listSingleTeamInfo(slug);
-  
-          setTeam(data);
-          setSubTeams(data.subTeams);
-   
-          setLoading(false);
-        } catch (error) {
-          const errorHandler = new ErrorHandler(error);
-          
-          addToast({
-            title: 'Aviso',
-            description: errorHandler.message,
-            timeout: 3000,
-            shouldShowTimeoutProgress: true
-          });
-  
-          setLoading(false);
-        }
-      }
-
-      async function loadMembersData() {
-        try {
-          setLoadingTeamMembers(true);
-
-          let { slug } = await params;
-
-          const data = await listMembers({
-            isTeam: "true",
-            isService: "",
-            endpoint: `/teams/${slug}/members`,
-          });
-
-          setMembers(data);
-
-          setLoadingTeamMembers(false);
-        } catch (error) {
-          setLoadingTeamMembers(false);
-          const errorHandler = new ErrorHandler(error);
-          
-          addToast({
-            title: 'Aviso',
-            description: errorHandler.message,
-            timeout: 3000,
-            shouldShowTimeoutProgress: true
-          });
-        }
-      }
-  
-      loadData();
-      loadMembersData();
-    }, []);
-
-    async function updateSubTeamsList() {
+    async function loadData() {
       try {
-        setLoadingUpdateSubTeams(true);
+        setLoading(true);
 
-        let { slug } = await params;
+        let { teamSlug } = await params;
 
-        const data = await listSingleTeamInfo(slug);
+        setParamsData({ teamSlug, subTeamSlug: '' });
+
+        const data = await listSingleTeamInfo(teamSlug);
 
         setTeam(data);
         setSubTeams(data.subTeams);
-
-        addToast({
-          color: 'success',
-          title: 'Sucesso',
-          description: 'A lista de sub-equipes foi atualizada',
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
   
-        setLoadingUpdateSubTeams(false);
+        setLoading(false);
       } catch (error) {
         const errorHandler = new ErrorHandler(error);
-
+        
         addToast({
           title: 'Aviso',
           description: errorHandler.message,
@@ -131,9 +68,75 @@ export default function TeamPage({
           shouldShowTimeoutProgress: true
         });
 
-        setLoadingUpdateSubTeams(false);
+        setLoading(false);
       }
     }
+
+    async function loadMembersData() {
+      try {
+        setLoadingTeamMembers(true);
+
+        let { teamSlug } = await params;
+
+        const data = await listMembers({
+          isTeam: "true",
+          isService: "",
+          endpoint: `/teams/${teamSlug}/members`,
+        });
+
+        setMembers(data);
+
+        setLoadingTeamMembers(false);
+      } catch (error) {
+        setLoadingTeamMembers(false);
+        const errorHandler = new ErrorHandler(error);
+        
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+      }
+    }
+
+    loadData();
+    loadMembersData();
+  }, []);
+
+  async function updateSubTeamsList() {
+    try {
+      setLoadingUpdateSubTeams(true);
+
+      let { teamSlug } = await params;
+
+      const data = await listSingleTeamInfo(teamSlug);
+
+      setTeam(data);
+      setSubTeams(data.subTeams);
+
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'A lista de sub-equipes foi atualizada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+
+      setLoadingUpdateSubTeams(false);
+    } catch (error) {
+      const errorHandler = new ErrorHandler(error);
+
+      addToast({
+        title: 'Aviso',
+        description: errorHandler.message,
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
+      setLoadingUpdateSubTeams(false);
+    }
+  }
 
   return (
     <DefaultLayout>
@@ -204,7 +207,13 @@ export default function TeamPage({
                         </div>
                       ) : (
                         subTeams.map((subTeam) => (
-                          <SubTeamComponent key={subTeam.id} subTeam={subTeam} />
+                          team && (
+                            <SubTeamComponent
+                              teamSlug={team.slug}
+                              key={subTeam.id}
+                              subTeam={subTeam}
+                            />
+                          )
                         ))
                       )}
                     </div>
@@ -225,7 +234,7 @@ export default function TeamPage({
                 isTeam="true"
                 isService=""
                 endpoint={`/teams/${team?.slug}/members`}
-                params={params}
+                params={paramsData}
               />
             </Tab>
           </Tabs>

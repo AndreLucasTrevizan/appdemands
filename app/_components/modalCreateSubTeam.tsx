@@ -23,7 +23,12 @@ import { FaCheck, FaTeamspeak } from "react-icons/fa6";
 import { FiRefreshCcw } from "react-icons/fi";
 import { listUsersAvailable } from "../teams/actions";
 import ErrorHandler from "../_utils/errorHandler";
-import { addingMembersOnClientSubTeam, addingMembersOnServiceSubTeam, addingMembersOnSubTeam, createSubTeam, ISubTeam } from "../subteams/actions";
+import {
+  addingMembersOnClientSubTeam,
+  addingMembersOnServiceSubTeam,
+  createSubTeam,
+  ISubTeam
+} from "../teams/[teamSlug]/subteams/actions";
 import { listAvailableAttendants } from "../attendants/actions";
 
 export default function ModalCreateSubTeam({
@@ -32,14 +37,13 @@ export default function ModalCreateSubTeam({
   onClose,
   onOpenChange,
   params,
-  subTeams,
   setSubTeams
 }: {
   isOpen: boolean,
   onOpen: () => void,
   onClose: () => void,
   onOpenChange: () => void,
-  params: Promise<{slug: string}>,
+  params: Promise<{teamSlug: string}>,
   subTeams: ISubTeam[],
   setSubTeams: Dispatch<SetStateAction<ISubTeam[]>>,
 }) {
@@ -112,11 +116,11 @@ export default function ModalCreateSubTeam({
     try {
       setLoadingCreateSubTeam(true);
 
-      const { slug } = await params;
+      const { teamSlug } = await params;
 
       const data = {
         isService: isServiceTeam ? "true" : "false",
-        teamSlug: slug,
+        teamSlug,
         name,
       };
 
@@ -138,8 +142,6 @@ export default function ModalCreateSubTeam({
 
       if (arrayValues.length > 0) {
         setLoadingAddingMembers(true);
-
-        console.log(isServiceTeam);
 
         if (isServiceTeam) {
           let selectedUsers: IAttendantProps[] = [];

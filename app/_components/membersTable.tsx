@@ -24,6 +24,7 @@ import { SearchIcon } from "./searchIcon";
 import { FiRefreshCcw } from "react-icons/fi";
 import { PlusIcon } from "./plusIcon";
 import ModalAddMembers from "./modalAddMembers";
+import { usePathname } from "next/navigation";
 
 export default function MembersTable({
   isTeam,
@@ -34,8 +35,9 @@ export default function MembersTable({
   isTeam: string,
   isService: string,
   endpoint: string,
-  params: Promise<{slug: string}>
+  params: { teamSlug: string, subTeamSlug: string  }
 }) {
+  const pathname = usePathname();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [members, setMembers] = useState<ITeamMember[]>([]);
   const [loadingUpdateMemberList, setLoadingUpdateMemberList] = useState<boolean>(false);
@@ -76,8 +78,6 @@ export default function MembersTable({
     try {
       setLoadingUpdateMemberList(true);
 
-      let { slug } = await params;
-
       const data = await listMembers({isTeam, isService, endpoint});
 
       setMembers(data);
@@ -107,8 +107,6 @@ export default function MembersTable({
 
   const filteredItems = useMemo(() => {
     let filteredMembers = [...members];
-
-    console.log(members);
 
     filteredMembers = members.filter((member) => member.userName?.toLowerCase().includes(filterValue.toLowerCase()));
     
@@ -144,11 +142,13 @@ export default function MembersTable({
           <Tooltip content="Atualizar lista de membros">
             <Button isIconOnly variant="light" onPress={() => handleUpdateMemberList()}><FiRefreshCcw /></Button>
           </Tooltip>
-          <Button
-            color="primary"
-            startContent={<PlusIcon size={20} width={20} height={20} />}
-            onPress={() => onOpenChange()}
-          >Adicionar Membros</Button>
+          {pathname.includes('/subteams') && (
+            <Button
+              color="primary"
+              startContent={<PlusIcon size={20} width={20} height={20} />}
+              onPress={() => onOpenChange()}
+            >Adicionar Membros</Button>
+          )}
         </div>
       </div>
     );
@@ -173,8 +173,7 @@ export default function MembersTable({
   return (
     <div className="p-4">
       <ModalAddMembers
-        isTeam={isTeam}
-        isService={isService}
+        params={params}
         onOpen={onOpen}
         onClose={onClose}
         isOpen={isOpen}

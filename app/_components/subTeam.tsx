@@ -1,11 +1,20 @@
-import { Card, CardBody, CardFooter, CardHeader, Chip, Divider, Link } from "@heroui/react";
-import { ITeams } from "../teams/actions";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Chip,
+  Divider,
+  Link
+} from "@heroui/react";
 import { FaTeamspeak } from "react-icons/fa6";
-import { ISubTeam } from "../subteams/actions";
+import { ISubTeam } from "../teams/[teamSlug]/subteams/actions";
 
 export default function SubTeamComponent({
+  teamSlug,
   subTeam
 }: {
+  teamSlug: string,
   subTeam: ISubTeam
 }) {
   return (
@@ -29,7 +38,7 @@ export default function SubTeamComponent({
       </CardBody>
       <Divider />
       <CardFooter>
-        <Link href={`/subteams/${subTeam.slug}`} className="text-sm">Acessar</Link>
+        <Link href={`/teams/${teamSlug}/subteams/${subTeam.slug}`} className="text-sm">Acessar</Link>
       </CardFooter>
     </Card>
   );

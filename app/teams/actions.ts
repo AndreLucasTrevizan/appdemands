@@ -136,6 +136,7 @@ export const listMembers = async ({
 
       return response.data.members;
     } else {
+
       const response = await api.get(endpoint, {
         params: {
           isService,
@@ -147,6 +148,28 @@ export const listMembers = async ({
 
       return response.data.members;
     }
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const createTeam = async (name: string) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      throw "Você não está autenticado";
+    }
+
+    const response = await api.post('/teams', { name }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.team;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

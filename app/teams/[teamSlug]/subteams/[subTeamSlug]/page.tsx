@@ -9,26 +9,23 @@ import {
   Breadcrumbs,
   Card,
   CardBody,
-  CardHeader,
-  divider,
   Divider,
   Tab,
   Tabs
 } from "@heroui/react";
-import { IoMdAttach } from "react-icons/io";
 import { useEffect, useState } from "react";
-import { gettingAllMembersFromSubTeam, ISubTeam, listSingleSubTeamInfo } from "../actions";
 import Nav from "@/app/_components/nav";
 import { FaTasks } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
 import MembersTable from "@/app/_components/membersTable";
-
+import { gettingAllMembersFromSubTeam, ISubTeam, listSingleSubTeamInfo } from "../actions";
 
 export default function SubTeamDetailsPage({
   params
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ subTeamSlug: string }>
 }) {
+  const [paramsData, setParamsData] = useState<{ teamSlug: string, subTeamSlug: string }>({ teamSlug: '', subTeamSlug: ''});
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMembers, setLoadingMembers] = useState<boolean>(false);
   const [subTeam, setSubTeam] = useState<ISubTeam>();
@@ -39,9 +36,11 @@ export default function SubTeamDetailsPage({
       try {
         setLoading(true);
 
-        let { slug } = await params;
+        let { subTeamSlug } = await params;
 
-        const data = await listSingleSubTeamInfo(slug);
+        setParamsData({ teamSlug: '', subTeamSlug });
+
+        const data = await listSingleSubTeamInfo(subTeamSlug);
 
         setSubTeam(data);
         
@@ -64,9 +63,9 @@ export default function SubTeamDetailsPage({
       try {
         setLoadingMembers(true);
 
-        let { slug } = await params;
+        let { subTeamSlug } = await params;
 
-        const data = await gettingAllMembersFromSubTeam(slug);
+        const data = await gettingAllMembersFromSubTeam(subTeamSlug);
 
         setMembers(data);
 
@@ -124,12 +123,14 @@ export default function SubTeamDetailsPage({
                 </div>
               }
             >
-              <MembersTable
-                isTeam="false"
-                isService={subTeam?.subTeamCategory.slug == "serviço" ? "true" : "false"}
-                endpoint={`/subteams/${subTeam?.slug}/members`}
-                params={params}
-              />
+              {subTeam && (
+                <MembersTable
+                  isTeam="false"
+                  isService={subTeam.subTeamCategory.slug == "serviço" ? "true" : "false"}
+                  endpoint={`/subteams/${subTeam.slug}/members`}
+                  params={params}
+                />
+              )}
             </Tab>
           </Tabs>
         </Card>

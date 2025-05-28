@@ -1,9 +1,9 @@
 'use server';
 
-import { api } from "../_api/api";
-import { gettingSigned } from "../_components/actions";
-import ErrorHandler from "../_utils/errorHandler";
-import { ITeams } from "../teams/actions";
+import { gettingSigned } from "@/app/_components/actions";
+import { ITeams } from "../../actions";
+import { api } from "@/app/_api/api";
+import ErrorHandler from "@/app/_utils/errorHandler";
 
 interface ICreateSubTeamFormProps {
   isService: string,
