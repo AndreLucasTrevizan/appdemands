@@ -21,7 +21,8 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  useDisclosure
+  useDisclosure,
+  User
 } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
@@ -30,7 +31,6 @@ import { listUsers } from "../users/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
 import ModalCreateUser from "./modalCreateUser";
-import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function UsersTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
@@ -201,13 +201,15 @@ export default function UsersTable() {
           {(user) => (
             <TableRow>
               <TableCell className="flex gap-2 items-center">
-                <Avatar
-                  showFallback
-                  size="sm"
-                  src={`${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`}
+                <User
+                  avatarProps={{
+                    showFallback: true,
+                    name: user.userName,
+                    src: `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`
+                  }}
+                  name={user.userName}
+                  description={user.userSlug}
                 />
-                <span>
-                  <Link className="text-sm" href={`/users/${user.userSlug}`}>{user.userName}</Link></span>
               </TableCell>
               <TableCell>
                 <span>{user.email}</span>

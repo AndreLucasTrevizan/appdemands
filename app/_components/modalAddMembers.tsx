@@ -36,7 +36,7 @@ export default function ModalAddMembers({
   onClose,
   onOpenChange
 }: {
-  params: Promise<{slug: string}>,
+  params: {teamSlug: string, subTeamSlug: string},
   isOpen: boolean,
   onOpen: () => void,
   onClose: () => void,
@@ -60,9 +60,9 @@ export default function ModalAddMembers({
       try {
         setLoadingSubTeam(true);
 
-        const { slug } = await params;
+        const { subTeamSlug } = params;
 
-        const data = await listSingleSubTeamInfo(slug);
+        const data = await listSingleSubTeamInfo(subTeamSlug);
 
         setSubTeam(data);
 
@@ -250,13 +250,13 @@ export default function ModalAddMembers({
     if (subTeam?.subTeamCategory.slug == 'client') {
       let members = [...users];
 
-      members = users.filter((user) => user.userName.includes(filterValue));
+      members = users.filter((user) => user.userName.toLowerCase().includes(filterValue.toLowerCase()));
 
       return members;
     } else {
       let members = [...attendants];
 
-      members = attendants.filter((attendant) => attendant.userName.includes(filterValue));
+      members = attendants.filter((attendant) => attendant.userName.toLowerCase().includes(filterValue.toLowerCase()));
 
       return members;
     }

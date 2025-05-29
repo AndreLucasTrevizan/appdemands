@@ -128,7 +128,7 @@ export default function SubTeamDetailsPage({
                   isTeam="false"
                   isService={subTeam.subTeamCategory.slug == "serviço" ? "true" : "false"}
                   endpoint={`/subteams/${subTeam.slug}/members`}
-                  params={params}
+                  params={paramsData}
                 />
               )}
             </Tab>

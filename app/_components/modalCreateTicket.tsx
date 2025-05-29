@@ -330,7 +330,15 @@ export default function ModalCreateTicket({
           )}
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" variant="flat" onPress={onClose}>
+          <Button color="danger" variant="flat" onPress={() => {
+            setTitle('');
+            setDescription('');
+            setPrioritySelected(undefined);
+            setCategorySelected(undefined);
+            setFiles([]);
+
+            onClose();
+          }}>
             Cancelar
           </Button>
           <Button color="primary" onPress={() => handleCreateTicket()}>

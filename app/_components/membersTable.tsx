@@ -122,33 +122,36 @@ export default function MembersTable({
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex justify-between items-center">
-        <Input
-          startContent={
-            <SearchIcon />
-          }
-          placeholder="Buscar membro..."
-          type="search"
-          className="max-w-[40%]"
-          onChange={(e) => setFilterValue(e.target.value)}
-        />
-        <div className="flex gap-2 items-center">
-          <span>Linhas por página</span>
-          <select onChange={(e) => setRows(Number(e.target.value))}>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="100">100</option>
-          </select>
-          <Tooltip content="Atualizar lista de membros">
-            <Button isIconOnly variant="light" onPress={() => handleUpdateMemberList()}><FiRefreshCcw /></Button>
-          </Tooltip>
-          {pathname.includes('/subteams') && (
-            <Button
-              color="primary"
-              startContent={<PlusIcon size={20} width={20} height={20} />}
-              onPress={() => onOpenChange()}
-            >Adicionar Membros</Button>
-          )}
+      <div className="flex flex-col gap-4">
+        <h1>Membros da Equipe</h1>
+        <div className="flex justify-between items-center">
+          <Input
+            startContent={
+              <SearchIcon />
+            }
+            placeholder="Buscar membro..."
+            type="search"
+            className="max-w-[40%]"
+            onChange={(e) => setFilterValue(e.target.value)}
+          />
+          <div className="flex gap-2 items-center">
+            <span>Linhas por página</span>
+            <select onChange={(e) => setRows(Number(e.target.value))}>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="100">100</option>
+            </select>
+            <Tooltip content="Atualizar lista de membros">
+              <Button isIconOnly variant="light" onPress={() => handleUpdateMemberList()}><FiRefreshCcw /></Button>
+            </Tooltip>
+            {pathname.includes('/subteams') && (
+              <Button
+                color="primary"
+                startContent={<PlusIcon size={20} width={20} height={20} />}
+                onPress={() => onOpenChange()}
+              >Adicionar Membros</Button>
+            )}
+          </div>
         </div>
       </div>
     );

@@ -49,17 +49,11 @@ export async function handleLogin(data: {
   }
 }
 
-export async function gettingSigned(): Promise<IUserSignedProps | null> {
+export async function gettingSigned() {
   try {
     const serverCookies = await cookies();
 
-    let signedDataJSON: IUserSignedProps | null = null;
-
-    if (serverCookies.get('demands_signed_data')) {
-      signedDataJSON = JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;      
-    }
-
-    return signedDataJSON;
+    return JSON.parse(String(serverCookies.get('demands_signed_data')?.value)) as IUserSignedProps;      
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

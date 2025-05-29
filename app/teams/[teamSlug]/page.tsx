@@ -206,15 +206,21 @@ export default function TeamPage({
                           <Spinner size="md" />
                         </div>
                       ) : (
-                        subTeams.map((subTeam) => (
-                          team && (
-                            <SubTeamComponent
-                              teamSlug={team.slug}
-                              key={subTeam.id}
-                              subTeam={subTeam}
-                            />
-                          )
-                        ))
+                        subTeams.length > 0 ? (
+                          subTeams.map((subTeam) => (
+                            team && (
+                              <SubTeamComponent
+                                teamSlug={team.slug}
+                                key={subTeam.id}
+                                subTeam={subTeam}
+                              />
+                            )
+                          ))
+                        ) : (
+                          <div>
+                            <span>Nenhuma sub-equipe encontrada</span>
+                          </div>
+                        )
                       )}
                     </div>
                   </div>

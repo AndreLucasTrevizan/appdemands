@@ -1,14 +1,47 @@
 'use client';
 
-import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardHeader, useDisclosure } from "@heroui/react";
+import { addToast, BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardHeader, Divider, Listbox, ListboxItem, useDisclosure } from "@heroui/react";
 import DefaultLayout from "./_components/defaultLayout";
 import Nav from "./_components/nav";
 import { PlusIcon } from "./_components/plusIcon";
 import ModalCreateTicket from "./_components/modalCreateTicket";
 import TicketsTable from "./_components/ticketsTable";
+import { useEffect, useState } from "react";
+import { IUserSignedProps } from "./_contexts/AuthContext";
+import ErrorHandler from "./_utils/errorHandler";
+import { gettingSigned } from "./_components/actions";
 
 export default function Home() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [userSigned, setUserSigned] = useState<IUserSignedProps>();
+
+  useEffect(() => {
+    async function loadSignedUser() {
+      try {
+        setLoading(true);
+
+        const signedInfo = await gettingSigned();
+
+        setUserSigned(signedInfo);
+        
+        setLoading(false);
+      } catch (error) {
+
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+    }
+
+    loadSignedUser();
+  }, []);
 
   return (
     <DefaultLayout>
@@ -28,7 +61,9 @@ export default function Home() {
             onPress={() => onOpenChange()}
           >Abrir Chamado</Button>
         </div>
-        <TicketsTable />
+        <div className="flex flex-row gap-2">
+          
+        </div>
       </div>
     </DefaultLayout>
   );

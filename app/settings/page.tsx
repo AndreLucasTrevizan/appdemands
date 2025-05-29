@@ -5,21 +5,27 @@ import {
   Avatar,
   BreadcrumbItem,
   Breadcrumbs,
+  Button,
   Card,
   CardBody,
   Divider,
   Input,
   Spacer,
   Spinner,
+  Tooltip,
 } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { changingAvatar, gettingUserProfile } from "./actions";
-import { IUserProfileProps } from "@/types";
+import { IUsersReport } from "@/types";
 import { FaCamera, FaSave } from "react-icons/fa";
 import { useAuthContext } from "../_contexts/AuthContext";
 import Nav from "../_components/nav";
+import { FiMail, FiStar, FiUser } from "react-icons/fi";
+import { RiUserSettingsLine } from "react-icons/ri";
+import { LiaToolsSolid } from "react-icons/lia";
+import { FaTeamspeak } from "react-icons/fa6";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -28,7 +34,7 @@ export default function SettingsPage() {
   } = useAuthContext();
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingAvatar, setLoadingAvatar] = useState<boolean>(false);
-  const [user, setUser] = useState<IUserProfileProps>();
+  const [user, setUser] = useState<IUsersReport>();
   const [file, setFile] = useState<File | null>(null);
   const [fileUrlPreview, setFileUrlPreview] = useState<string>('');
   const [confirmAvatar, setConfirmAvatar] = useState(false);
@@ -90,6 +96,7 @@ export default function SettingsPage() {
         settingUserAvatar(data);
         setConfirmAvatar(!confirmAvatar);
         addToast({
+          color: 'success',
           title: 'Sucesso',
           description: `Sua foto de perfil foi atualizada`,
           timeout: 3000,
@@ -132,13 +139,13 @@ export default function SettingsPage() {
                   {loadingAvatar ? (
                     <Spinner size="md" variant="dots" />
                   ) : (
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center gap-4">
+                    <div className="flex gap-4 w-full">
+                      <div className="flex flex-col items-center justify-center gap-4">
                         <Avatar
                           name={user.userName}
                           showFallback
                           className="w-20 h-20 text-large"
-                          src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                          src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`}
                         />
                         <div className="flex flex-col items-center">
                           <div className="flex flex-col">
@@ -162,15 +169,61 @@ export default function SettingsPage() {
                           )}
                         </div>
                       </div>
-                      <Divider orientation="vertical" />
-                      <div className="p-2">
-                        <h1>{user.userName}</h1>
-                        <Spacer y={4} />
-                        <p>{user.position.positionName} do sistema</p>
-                        <Spacer y={4} />
-                        <small>Criado em {new Date(user.createdAt).toLocaleDateString()}</small>
-                        <Spacer y={4} />
-                        <small>Modificado em {new Date(user.updatedAt).toLocaleDateString()}</small>
+                      <div>
+                        <Divider orientation="vertical" />
+                      </div>
+                      <div className="flex flex-wrap flex-row gap-4 flex-1">
+                        <Input
+                          readOnly
+                          startContent={<FiUser />}
+                          value={user.userName}
+                          label="Nome"
+                          className="max-w-[430px]"
+                        />
+                        <Input
+                          readOnly
+                          startContent={<RiUserSettingsLine />}
+                          value={user.positionName}
+                          label="Função no Sistema"
+                          className="max-w-[430px]"
+                        />
+                        <Input
+                          readOnly
+                          startContent={<FiMail />}
+                          value={user.email}
+                          label="E-mail"
+                          className="max-w-[430px]"
+                        />
+                        <Input
+                          readOnly
+                          startContent={<FaTeamspeak />}
+                          value={user.teamName ?? "Não atribuido"}
+                          label="Equipe"
+                          className="max-w-[430px]"
+                        />
+                        <Input
+                          readOnly
+                          startContent={<FaTeamspeak />}
+                          value={user.subTeamName ?? "Não atribuido"}
+                          label="Sub-Equipe"
+                          className="max-w-[430px]"
+                        />
+                        <Tooltip
+                          className="flex gap-2 items-center"
+                          content="Criado em"
+                        >
+                          <Button variant="light" startContent={<FiStar />}>
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </Button>
+                        </Tooltip>
+                        <Tooltip
+                          className="flex gap-2 items-center"
+                          content="Atualizado em"
+                        >
+                          <Button variant="light" startContent={<LiaToolsSolid />}>
+                            {new Date(user.updatedAt).toLocaleDateString()}
+                          </Button>
+                        </Tooltip>
                       </div>
                     </div>
                   )}

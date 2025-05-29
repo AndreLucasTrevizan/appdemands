@@ -17,7 +17,8 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  useDisclosure
+  useDisclosure,
+  User
 } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
@@ -25,7 +26,7 @@ import { PlusIcon } from "./plusIcon";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
 import ModalCreateAttendant from "./modalCreateAttendant";
-import { listAvailableAttendants } from "../attendants/actions";
+import { listAttendants } from "../attendants/actions";
 
 export default function AttendantsTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
@@ -42,7 +43,7 @@ export default function AttendantsTable() {
       try {
         setLoadingAttendants(true);
 
-        const attendantsData = await listAvailableAttendants();
+        const attendantsData = await listAttendants();
 
         setAttendants(attendantsData);
 
@@ -84,7 +85,7 @@ export default function AttendantsTable() {
     try {
       setLoadingAttendants(true);
 
-      const attendantsData = await listAvailableAttendants();
+      const attendantsData = await listAttendants();
 
       setAttendants(attendantsData);
 
@@ -129,14 +130,14 @@ export default function AttendantsTable() {
         topContent={
           <div className="flex flex-col gap-4">
             <h1>Lista de Usuários Atendentes</h1>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between flex-wrap items-center">
               <Input
                 startContent={
                   <SearchIcon />
                 }
                 placeholder="Buscar usuário..."
                 type="search"
-                className="max-w-[40%]"
+                className="sm:max-w-[40%]"
                 onChange={(e) => setFilterValue(e.target.value)}
               />
               <div className="flex gap-2 items-center">
@@ -194,13 +195,15 @@ export default function AttendantsTable() {
           {(user) => (
             <TableRow>
               <TableCell className="flex gap-2 items-center">
-                <Avatar
-                  showFallback
-                  size="sm"
-                  src={`${process.env.baseUrl}/avatar/${user.id}/${user.avatar}`}
+                <User
+                  avatarProps={{
+                    showFallback: true,
+                    name: `${user.userName}`,
+                    src: `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`
+                  }}
+                  name={user.userName}
+                  description={user.userSlug}
                 />
-                <span>
-                  <Link className="text-sm" href={`/users/${user.userSlug}`}>{user.userName}</Link></span>
               </TableCell>
               <TableCell>
                 <span>{user.email}</span>

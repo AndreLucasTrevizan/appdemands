@@ -29,3 +29,25 @@ export const listAvailableAttendants = async () => {
     throw errorHandler.message;
   }
 }
+
+export const listAttendants = async () => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.get('/attendants', {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.attendants;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}

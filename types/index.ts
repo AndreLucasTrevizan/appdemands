@@ -74,10 +74,10 @@ export interface IUsersReport {
   isAttendant: boolean,
   positionName: string,
   positionSlug: string,
-  teamName: string | null,
-  teamSlug: string | null,
-  subTeamName: string | null,
-  subTeamSlug: string | null,
+  teamName: string | undefined,
+  teamSlug: string | undefined,
+  subTeamName: string | undefined,
+  subTeamSlug: string | undefined,
   createdAt: Date,
   updatedAt: Date
 }
@@ -94,10 +94,10 @@ export interface IAttendantsReport {
   isAttendant: boolean,
   positionName: string,
   positionSlug: string,
-  teamName: string | null,
-  teamSlug: string | null,
-  subTeamName: string | null,
-  subTeamSlug: string | null,
+  teamName: string | undefined,
+  teamSlug: string | undefined,
+  subTeamName: string | undefined,
+  subTeamSlug: string | undefined,
   createdAt: Date,
   updatedAt: Date
 }

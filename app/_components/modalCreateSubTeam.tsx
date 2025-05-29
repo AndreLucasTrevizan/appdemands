@@ -1,6 +1,6 @@
 'use client';
 
-import { IAttendantProps, IUserProps } from "@/types";
+import { IAttendantProps, IAttendantsReport, IUserProps, IUsersReport } from "@/types";
 import {
   addToast,
   Avatar,
@@ -49,8 +49,8 @@ export default function ModalCreateSubTeam({
 }) {
   const [name, setName] = useState<string>('');
   const [values, setValues] = useState(new Set(''));
-  const [users, setUsers] = useState<IUserProps[]>([]);
-  const [attendants, setAttendants] = useState<IAttendantProps[]>([]);
+  const [users, setUsers] = useState<IUsersReport[]>([]);
+  const [attendants, setAttendants] = useState<IAttendantsReport[]>([]);
   const [isServiceTeam, setIsServiceTeam] = useState<boolean>(false);
   const [updatedUser, setUpdatedUsers] = useState<boolean>(false);
   const [loadingUsers, setLoadingUsers] = useState<Boolean>(false);
@@ -144,7 +144,7 @@ export default function ModalCreateSubTeam({
         setLoadingAddingMembers(true);
 
         if (isServiceTeam) {
-          let selectedUsers: IAttendantProps[] = [];
+          let selectedUsers: IAttendantsReport[] = [];
 
           selectedUsers = await handleGettingUsers();
           
@@ -167,7 +167,7 @@ export default function ModalCreateSubTeam({
           setLoadingAddingMembers(false);
           setValues(new Set(''));
         } else {
-          let selectedUsers: IUserProps[] = [];
+          let selectedUsers: IUsersReport[] = [];
 
           selectedUsers = await handleGettingUsers();
 
@@ -211,7 +211,7 @@ export default function ModalCreateSubTeam({
 
   const handleGettingUsers = async () => {
     if (isServiceTeam) {
-      let newAttendants: IAttendantProps[] = [];
+      let newAttendants: IAttendantsReport[] = [];
     
       arrayValues.forEach((value) => {
         let attendant = attendants.find((attendant) => `${attendant.id}` === `${value}`);
@@ -223,7 +223,7 @@ export default function ModalCreateSubTeam({
 
       return newAttendants;
     } else {
-      let newUsers: IUserProps[] = [];
+      let newUsers: IUsersReport[] = [];
     
       arrayValues.forEach((value) => {
         let user = users.find((user) => `${user.id}` === `${value}`);
@@ -427,7 +427,7 @@ export default function ModalCreateSubTeam({
                             className="flex-shrink-0"
                             size="sm"
                             showFallback={person.avatar == ""}
-                            src={`${process.env.baseUrl}/avatar/${person.slug}/${person.avatar}`}
+                            src={`${process.env.baseUrl}/avatar/${person.userSlug}/${person.avatar}`}
                           />
                           <div className="flex flex-col">
                             <span className="text-small">{person.userName}</span>

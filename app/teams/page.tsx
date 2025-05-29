@@ -99,6 +99,14 @@ export default function TeamsPage() {
 
       setTeams(teams);
 
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'Lista de equipes foi atualizada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
       setLoading(false);
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
@@ -122,6 +130,14 @@ export default function TeamsPage() {
 
       setPersonalTeams(personalTeams);
 
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'Sua lista de equipes foi atualizada',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true
+      });
+
       setLoadingPersonalTeams(false);
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
@@ -140,18 +156,18 @@ export default function TeamsPage() {
   const filteredPersonalTeams = useMemo(() => {
       let filteredData = [ ...personalTeams ];
 
-      filteredData = personalTeams.filter((team) => team.name.includes(filterValuePersonalTeams));
+      filteredData = personalTeams.filter((team) => team.name.toLowerCase().includes(filterValuePersonalTeams.toLowerCase()));
 
       return filteredData;
     }, [ personalTeams, filterValuePersonalTeams ]);
   
-    const filteredTeams = useMemo(() => {
-      let filteredData = [ ...teams ];
+  const filteredTeams = useMemo(() => {
+    let filteredData = [ ...teams ];
 
-      filteredData = teams.filter((team) => team.name.includes(filterValuePersonalTeams));
+    filteredData = teams.filter((team) => team.name.toLowerCase().includes(filterValueTeams.toLowerCase()));
 
-      return filteredData;
-    }, [ teams, filterValueTeams ]);
+    return filteredData;
+  }, [ teams, filterValueTeams ]);
 
   return (
     <DefaultLayout>
