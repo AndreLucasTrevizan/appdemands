@@ -1,6 +1,6 @@
 'use client';
 
-import { addToast, Button, Form, Input, Spinner } from "@heroui/react";
+import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, Form, Input, ModalFooter, Spinner } from "@heroui/react";
 import { useSetCookie } from 'cookies-next';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useState } from "react";
@@ -59,51 +59,72 @@ export default function FormSignIn() {
     return <Spinner size="md" />;
   } else {
     return (
-      <Form
-        className="w-full max-w-xs flex flex-col gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          handleSignIn();
-        }}
+      <Card
+        className="w-96"
       >
-        <Input
-          isRequired
-          errorMessage="Entre com um e-mail valido"
-          label="E-mail"
-          labelPlacement="outside"
-          name="email"
-          placeholder="Entre com seu e-mail"
-          type="email"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-        />
+        <CardHeader>
+          <div className="w-full flex flex-col items-center gap-2">
+            <h1 className="font-bold">LOGIN</h1>
+            <h1>Portal de Chamados da T.I</h1>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <Form
+            className="w-full flex flex-col gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
 
-        <Input
-          isRequired
-          errorMessage="Entre com uma senha valida"
-          label="Senha"
-          labelPlacement="outside"
-          name="password"
-          placeholder="Entre com sua senha"
-          type={isVisible ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          endContent={
-            <button
-              type="button"
-              onClick={() => toggleVisible()}
-            >
-              {isVisible ? <FaRegEyeSlash /> : <FaRegEye /> }
-            </button>
-          }
-        />
-        <div className="flex gap-2">
-          <Button color="primary" type="submit">
-            Entrar
-          </Button>
-        </div>
-      </Form>
+              handleSignIn();
+            }}
+          >
+            <Input
+              isRequired
+              errorMessage="Entre com um e-mail valido"
+              label="E-mail"
+              labelPlacement="outside"
+              name="email"
+              placeholder="Entre com seu e-mail"
+              type="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            />
+
+            <Input
+              isRequired
+              errorMessage="Entre com uma senha valida"
+              label="Senha"
+              labelPlacement="outside"
+              name="password"
+              placeholder="Entre com sua senha"
+              type={isVisible ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              endContent={
+                <button
+                  type="button"
+                  onClick={() => toggleVisible()}
+                >
+                  {isVisible ? <FaRegEyeSlash /> : <FaRegEye /> }
+                </button>
+              }
+            />
+            <div className="flex gap-2">
+              <Button color="primary" type="submit">
+                Entrar
+              </Button>
+            </div>
+          </Form>
+        </CardBody>
+        <Divider />
+        <CardFooter>
+          <div className="w-full flex flex-col items-center justify-center gap-4">
+            <span
+              className="text-[#006FEE] hover:cursor-pointer"
+            >Esqueci minha senha</span>
+          </div>
+        </CardFooter>
+      </Card>
     );
   }
 }

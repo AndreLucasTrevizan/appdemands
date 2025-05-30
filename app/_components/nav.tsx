@@ -66,11 +66,6 @@ export default function Nav() {
       icon: <FaUsers />
     },
     {
-      route: '/demands',
-      name: 'Demandas',
-      icon: <FaListCheck />
-    },
-    {
       route: '/settings',
       name: 'Configurações',
       icon: <FaGear />

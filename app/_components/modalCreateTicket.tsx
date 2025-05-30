@@ -1,14 +1,28 @@
 'use client';
 
-import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SelectSection, Spinner, Textarea, Tooltip, User, user } from "@heroui/react";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { IUserSignedProps } from "../_contexts/AuthContext";
-import { gettingSigned } from "./actions";
+import {
+  addToast,
+  Button,
+  Divider,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Select,
+  SelectItem,
+  Spinner,
+  Textarea,
+  Tooltip,
+  User
+} from "@heroui/react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { ITicketCategoryProps, ITicketPriorityProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
-import { FiMail, FiUser } from "react-icons/fi";
-import TicketSquare from "./ticketSquare";
-import { createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../ticket/actions";
+import { FiMail } from "react-icons/fi";
+import TicketSquare from "./ticketPreview";
+import { createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../tickets/actions";
 import Image from "next/image";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";

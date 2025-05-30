@@ -3,7 +3,7 @@
 import { ITicketReportProps } from "@/types";
 import { addToast, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { listTickets } from "../ticket/actions";
+import { listTickets } from "../tickets/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { SearchIcon } from "./searchIcon";
 

@@ -1,15 +1,26 @@
 'use client';
 
-import { addToast, BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, CardHeader, Divider, Listbox, ListboxItem, useDisclosure } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Divider,
+  Tab,
+  Tabs,
+  Tooltip,
+  useDisclosure
+} from "@heroui/react";
 import DefaultLayout from "./_components/defaultLayout";
 import Nav from "./_components/nav";
 import { PlusIcon } from "./_components/plusIcon";
 import ModalCreateTicket from "./_components/modalCreateTicket";
-import TicketsTable from "./_components/ticketsTable";
 import { useEffect, useState } from "react";
 import { IUserSignedProps } from "./_contexts/AuthContext";
 import ErrorHandler from "./_utils/errorHandler";
 import { gettingSigned } from "./_components/actions";
+import { LuLayoutGrid, LuLayoutList  } from "react-icons/lu";
+import { FcInfo } from "react-icons/fc";
+import TicketsTable from "./_components/ticketsTable";
+import MyTeamInfo from "./_components/myTeamInfo";
 
 export default function Home() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -61,9 +72,59 @@ export default function Home() {
             onPress={() => onOpenChange()}
           >Abrir Chamado</Button>
         </div>
-        <div className="flex flex-row gap-2">
-          
-        </div>
+        <Divider />
+        <Tabs
+          variant="underlined"
+        >
+          <Tab
+            title="Meus Chamados"
+          >
+            <div className="flex flex-col flax-wrap gap-4">
+              <Tabs>
+                <Tab
+                  key={'grid'}
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <LuLayoutGrid />
+                    </div>
+                  }
+                >
+
+                </Tab>
+                <Tab
+                  key={'table'}
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <LuLayoutList  />
+                    </div>
+                  }
+                >
+                  <TicketsTable />
+                </Tab>
+              </Tabs>
+            </div>
+          </Tab>
+          <Tab
+            title={
+              <div className="flex items-center space-x-2">
+                <span>Chamados da Equipe</span>
+                <Tooltip content="
+                  Esses são os chamados da sua equipe para o T.I
+                ">
+                  <FcInfo />
+                </Tooltip>
+              </div>
+            }
+          >
+
+          </Tab>
+          <Tab
+            key={'my_team'}
+            title='Minha Equipe'
+          >
+            <MyTeamInfo />
+          </Tab>
+        </Tabs>
       </div>
     </DefaultLayout>
   );

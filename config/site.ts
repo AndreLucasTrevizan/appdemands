@@ -1,6 +1,6 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "T.I Portal de Demandas",
-  description: "T.I Tirol - Portal de Demandas",
+  name: "T.I Portal de Chamados",
+  description: "T.I Tirol - Portal de Chamados",
 };

@@ -10,8 +10,9 @@ export const config = {
     '/users',
     '/teams',
     '/teams/:path*',
-    '/demands',
-    '/demands/:path*',
+    '/tickets',
+    '/tickets/:path*',
+    '/positions'
   ],
 };
 

@@ -135,7 +135,7 @@ export default function UsersTable() {
         isCompact
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de Usuários Padrão</h1>
+            <h1>Lista de Usuários</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={
