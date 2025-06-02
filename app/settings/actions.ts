@@ -29,7 +29,7 @@ export async function gettingUserProfile() {
   }
 }
 
-export async function changingAvatar(data: FormData): Promise<IAvatarResponse> {
+export async function changingAvatar(data: FormData) {
   try {
     const serverCookies = await cookies();
     

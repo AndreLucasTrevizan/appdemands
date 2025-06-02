@@ -1,11 +1,8 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from "react";
-import { IUserSignedProps } from "../_contexts/AuthContext";
-import { gettingSigned } from "./actions";
-import ErrorHandler from "../_utils/errorHandler";
+import { ReactNode } from "react";
+import { useAuthContext } from "../_contexts/AuthContext";
 import {
-  addToast,
   Avatar,
   Button,
   Divider,
@@ -15,8 +12,7 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
+  Spinner,
   useDisclosure,
   User,
 } from "@heroui/react";
@@ -25,7 +21,6 @@ import {
   FaUsers,
   FaGear,
   FaHouse,
-  FaListCheck,
   FaArrowLeft
 } from "react-icons/fa6";
 import { RiUserSettingsLine } from "react-icons/ri";
@@ -34,7 +29,6 @@ import { deleteCookie } from "cookies-next";
 import { usePathname } from "next/navigation";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { FiMenu } from "react-icons/fi";
-import { useTheme } from "next-themes";
 
 interface IMenuItem {
   route: string,
@@ -43,11 +37,9 @@ interface IMenuItem {
 }
 
 export default function Nav() {
-  const { theme } = useTheme();
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { userSigned } = useAuthContext();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const pathname = usePathname();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [userSigned, setUserSigned] = useState<IUserSignedProps | null>(null);
 
   const menuAdminItems: IMenuItem[] = [
     {
@@ -90,32 +82,6 @@ export default function Nav() {
     },
   ];
 
-  useEffect(() => {
-    async function loadSignedData() {
-      try {
-        setLoading(true);
-
-        const data = await gettingSigned();
-
-        setUserSigned(data);
-      } catch (error) {
-        const errorHandler = new ErrorHandler(error);
-              
-        addToast({
-          title: 'Aviso',
-          description: errorHandler.message,
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-          color: 'warning',
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadSignedData();
-  }, []);
-
   const handleLogout = async () => {
     await deleteCookie('demands_signed_data');
 
@@ -135,15 +101,19 @@ export default function Nav() {
             </Button>
           </NavbarBrand>
           <NavbarContent justify="end">
-            <User
-              avatarProps={{
-                name: userSigned?.userName,
-                showFallback: true,
-                src: `${process.env.baseUrl}/avatar/${userSigned?.slug}/${userSigned?.avatar}`
-              }}
-              name={`${userSigned?.userName}`}
-              description={`@${userSigned?.email}`}
-            />
+            {!userSigned ? (
+              <Spinner variant="dots" size="sm" />
+            ) : (
+              <User
+                avatarProps={{
+                  name: userSigned.userName,
+                  showFallback: true,
+                  src: `${process.env.baseUrl}/avatar/${userSigned.slug}/${userSigned.avatar}`
+                }}
+                name={`${userSigned.userName}`}
+                description={`@${userSigned.email}`}
+              />
+            )}
           </NavbarContent>
           <Drawer
             placement="left"

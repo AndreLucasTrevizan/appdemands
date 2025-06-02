@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const {
     settingUserAvatar
   } = useAuthContext();
+  const { updateSignedAvatar } = useAuthContext();
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingAvatar, setLoadingAvatar] = useState<boolean>(false);
   const [user, setUser] = useState<IUsersReport>();
@@ -93,7 +94,7 @@ export default function SettingsPage() {
 
         const data = await changingAvatar(formData);
 
-        settingUserAvatar(data);
+        updateSignedAvatar(data);
         setConfirmAvatar(!confirmAvatar);
         addToast({
           color: 'success',
