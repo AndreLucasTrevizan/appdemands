@@ -1,6 +1,6 @@
 'use client';
 
-import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, Form, Input, ModalFooter, Spinner } from "@heroui/react";
+import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, Form, Input, Link, ModalFooter, Spinner } from "@heroui/react";
 import { useSetCookie } from 'cookies-next';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useState } from "react";
@@ -9,6 +9,7 @@ import ErrorHandler from "../_utils/errorHandler";
 import { useAuthContext } from "../_contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "./actions";
+import { FiLock, FiMail } from "react-icons/fi";
 
 export default function FormSignIn() {
   const router = useRouter();
@@ -88,6 +89,7 @@ export default function FormSignIn() {
               type="email"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              startContent={<FiMail />}
             />
 
             <Input
@@ -100,6 +102,7 @@ export default function FormSignIn() {
               type={isVisible ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              startContent={<FiLock />}
               endContent={
                 <button
                   type="button"
@@ -119,9 +122,10 @@ export default function FormSignIn() {
         <Divider />
         <CardFooter>
           <div className="w-full flex flex-col items-center justify-center gap-4">
-            <span
+            <Link
+              href="/confirm-email"
               className="text-[#006FEE] hover:cursor-pointer"
-            >Esqueci minha senha</span>
+            >Esqueci minha senha</Link>
           </div>
         </CardFooter>
       </Card>

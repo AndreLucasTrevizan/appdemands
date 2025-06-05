@@ -18,7 +18,8 @@ export const config = {
 
 const notAuthRoutes = [
   '/sign_in',
-  '/sign_up'
+  '/sign_up',
+  '/confirm-email'
 ];
 
 export async function middleware(req: NextRequest) {
