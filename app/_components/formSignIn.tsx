@@ -7,7 +7,7 @@ import { useState } from "react";
 
 import ErrorHandler from "../_utils/errorHandler";
 import { useAuthContext } from "../_contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { handleLogin } from "./actions";
 import { FiLock, FiMail } from "react-icons/fi";
 
@@ -28,19 +28,23 @@ export default function FormSignIn() {
       
       const data = await handleLogin({ email, password });
 
-      addToast({
-        title: 'Bem-vindo',
-        description: `Bem-vindo, ${data.userName}`,
-        timeout: 3000,
-        shouldShowTimeoutProgress: true,
-        color: 'primary',
-      });
-
-      setCookie("demands_signed_data", JSON.stringify(data));
-
-      settingUserSigned(data);
-
-      window.location.reload();
+      if (data.isFirstLogin) {
+        router.push(`/confirm-login`);
+      } else {
+        addToast({
+          title: 'Bem-vindo',
+          description: `Bem-vindo, ${data.userName}`,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+          color: 'primary',
+        });
+  
+        setCookie("demands_signed_data", JSON.stringify(data));
+  
+        settingUserSigned(data);
+  
+        window.location.reload();
+      }
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
 

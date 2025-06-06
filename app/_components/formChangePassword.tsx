@@ -18,6 +18,7 @@ import { useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiLock, FiMail } from "react-icons/fi";
 import { useRouter, useSearchParams } from "next/navigation";
+import { changingPassword } from "../change-password/actions";
 
 export default function FormChangePassword() {
   const router = useRouter();
@@ -64,7 +65,21 @@ export default function FormChangePassword() {
           shouldShowTimeoutProgress: true,
         });
       } else {
-        setLoading(false);
+        await changingPassword({
+          email: params.get('email')!,
+          password,
+          confirmPassword,
+        });
+
+        addToast({
+          color: 'success',
+          title: 'Sucesso',
+          description: 'Senha alterada com sucesso',
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        router.push('/sign_in');
       }
     } catch (error) {
       const errorHandler = new ErrorHandler(error);
@@ -106,6 +121,7 @@ export default function FormChangePassword() {
                   ))}
                 </ul>
               )}
+              autoComplete="off"
               isInvalid={errors.length > 0}
               label="Nova Senha"
               labelPlacement="outside"
@@ -132,6 +148,7 @@ export default function FormChangePassword() {
               labelPlacement="outside"
               name="password"
               placeholder="Confirmação de senha"
+              autoComplete="off"
               type={isVisibleConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

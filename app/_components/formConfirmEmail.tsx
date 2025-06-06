@@ -13,18 +13,18 @@ export default function FormConfirmEmail() {
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function handleSendCode() {
+  const handleSendCode = async () => {
     try {
       setLoading(true);
 
-      await sendingCode(email);
+      const reponse = await sendingCode(email);
 
       router.push(`/confirm-code?email=${email}`);
     } catch (error) {
       setLoading(false);
 
       const errorHandler = new ErrorHandler(error);
-      
+
       addToast({
         color: 'warning',
         title: 'Aviso',
@@ -57,7 +57,7 @@ export default function FormConfirmEmail() {
               type="email"
               placeholder="Digite seu e-mail"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onValueChange={setEmail}
               label="E-mail"
               labelPlacement="outside"
               startContent={<FiMail />}
