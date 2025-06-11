@@ -12,18 +12,18 @@ export default function TeamComponent({
       <CardHeader className="flex gap-4 items-center">
         <FaTeamspeak size={45} />
         <div className="flex flex-col gap-2">
-          <p className="text-base">{team.name}</p>
+          <p className="text-base">{team.teamName}</p>
           <p>@{team.slug}</p>
         </div>
       </CardHeader>
       <Divider />
       <CardBody className="flex flex-col gap-4">
         <Chip
-          color={team.status == "disponivel" ? "success" : "danger"}
+          color={team.teamStatus == "disponivel" ? "success" : "danger"}
           title="Disponível"
           className="text-sm text-white"
         >
-          {team.status == "disponivel" ? "Disponivel" : "Indisponivel"}
+          {team.teamStatus == "disponivel" ? "Disponivel" : "Indisponivel"}
         </Chip>
       </CardBody>
       <Divider />

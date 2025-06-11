@@ -20,15 +20,15 @@ import TeamComponent from "../_components/team";
 import Nav from "../_components/nav";
 import ModalCreateTeam from "../_components/modalCreateTeam";
 import { FiRefreshCcw } from "react-icons/fi";
-import { IUserSignedProps } from "../_contexts/AuthContext";
+import { IUserSignedProps, useAuthContext } from "../_contexts/AuthContext";
 import { gettingSigned } from "../_components/actions";
 import { SearchIcon } from "../_components/searchIcon";
 
 export default function TeamsPage() {
+  const { userSigned } = useAuthContext();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [filterValuePersonalTeams, setFilterValuePersonalTeams] = useState<string>('');
   const [filterValueTeams, setFilterValueTeams] = useState<string>('');
-  const [signedData, setSignedData] = useState<IUserSignedProps>();
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPersonalTeams, setLoadingPersonalTeams] = useState<boolean>(false);
   const [personalTeams, setPersonalTeams] = useState<ITeams[]>([]);
@@ -40,12 +40,6 @@ export default function TeamsPage() {
         setLoading(true);
 
         const teams = await listTeams();
-
-        const signedInfo = await gettingSigned();
-
-        if (signedInfo) {
-          setSignedData(signedInfo);
-        }
 
         setTeams(teams);
 
@@ -156,7 +150,7 @@ export default function TeamsPage() {
   const filteredPersonalTeams = useMemo(() => {
       let filteredData = [ ...personalTeams ];
 
-      filteredData = personalTeams.filter((team) => team.name.toLowerCase().includes(filterValuePersonalTeams.toLowerCase()));
+      filteredData = personalTeams.filter((team) => team.teamName.toLowerCase().includes(filterValuePersonalTeams.toLowerCase()));
 
       return filteredData;
     }, [ personalTeams, filterValuePersonalTeams ]);
@@ -164,7 +158,7 @@ export default function TeamsPage() {
   const filteredTeams = useMemo(() => {
     let filteredData = [ ...teams ];
 
-    filteredData = teams.filter((team) => team.name.toLowerCase().includes(filterValueTeams.toLowerCase()));
+    filteredData = teams.filter((team) => team.teamName.toLowerCase().includes(filterValueTeams.toLowerCase()));
 
     return filteredData;
   }, [ teams, filterValueTeams ]);
@@ -244,7 +238,7 @@ export default function TeamsPage() {
               <Spinner size="md" />
             </div>
           ) : (
-            signedData?.position.slug == 'administrador' || signedData?.isAttendant ? (
+            userSigned?.position.slug == 'administrador' || userSigned?.isAttendant ? (
               <div className="flex items-start justify-start gap-4 flex-wrap">
                 {teams.length == 0 && <span>Nenhuma equipe disponível</span>}
                 {filteredTeams.map((team) => (

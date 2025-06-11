@@ -145,7 +145,7 @@ export default function TeamPage({
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href="/teams">Equipes</BreadcrumbItem>
-          <BreadcrumbItem>Equipe {team?.name}</BreadcrumbItem>
+          <BreadcrumbItem>Equipe {team?.teamName}</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
         <Card>

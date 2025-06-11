@@ -3,40 +3,29 @@
 import { api } from "../_api/api";
 import { gettingSigned } from "../_components/actions";
 import ErrorHandler from "../_utils/errorHandler";
-import { ISubTeam } from "../subteams/actions";
+import { ISubTeam } from "./[teamSlug]/subteams/actions";
 
 export interface ITeams {
   id: number;
-  name: string;
+  teamName: string;
   slug: string;
-  status: string;
+  teamStatus: string;
   createdAt: Date;
   updatedAt: Date;
   subTeams: ISubTeam[];
-}
-
-export interface ITeams {
-  id: number;
-  name: string;
-  slug: string;
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export const listSingleTeamInfo = async (slug: string) => {
   try {
     const signedData = await gettingSigned();
     
-    if (signedData) {
-      const response = await api.get(`/teams/${slug}`, {
-        headers: {
-          Authorization: `Bearer ${signedData.token}`
-        }
-      });
+    const response = await api.get(`/teams/${slug}`, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`
+      }
+    });
 
-      return response.data.team;
-    }
+    return response.data.team;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

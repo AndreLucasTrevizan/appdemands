@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { confirmingCode } from "../confirm-code/actions";
 import ErrorHandler from "../_utils/errorHandler";
+import { sendingConfirmationLoginCode } from "../confirm-login/actions";
 
 export default function FormConfirmLogin() {
   const router = useRouter();
@@ -16,9 +17,28 @@ export default function FormConfirmLogin() {
     try {
       setLoading(true);
 
-      const account = await confirmingCode(code.toUpperCase());
-      
-      router.push(`/change-password?email=${account.email}`);
+      let email = '';
+
+      if (params.get('email')) {
+        email = params.get('email')!;
+      }
+
+      console.log(email, code.toUpperCase());
+
+      await sendingConfirmationLoginCode({
+        email,
+        code: code.toUpperCase(),
+      });
+
+      addToast({
+        color: 'success',
+        title: 'Sucesso',
+        description: 'E-mail validado com sucesso',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+
+      router.push(`/sign_in`);
     } catch (error) {
       setLoading(false);
 
@@ -53,7 +73,7 @@ export default function FormConfirmLogin() {
           >
             <small className="text-center">Notamos que é o seu primeiro login em nosso sistema</small>
             <small
-              className="text-center"
+              className="text-justify"
             >Insira o código de confirmação que foi enviado no seu e-mail, essa informação é fundamental para nossa futura comunicação com você. Confirmando seu e-mail, nós saberemos que você será notificado a cada alteração que acontecer em seu chamado.</small>
             <InputOtp
               length={6}

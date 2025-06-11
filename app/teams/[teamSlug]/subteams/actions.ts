@@ -13,14 +13,26 @@ interface ICreateSubTeamFormProps {
 
 export interface ISubTeam {
   id: number;
-  name: string;
+  subTeamName: string;
   slug: string;
-  status: string;
+  subTeamStatus: string;
   subTeamCategory: ISubTeamCategory;
   createdAt: Date;
   updatedAt: Date;
   teamId: number;
   team: ITeams;
+}
+
+export interface ISubTeamMine {
+  id: number;
+  subTeamName: string;
+  slug: string;
+  subTeamStatus: string;
+  subTeamCategoryId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  teamId: number;
+  teamSlug: string;
 }
 
 export interface ISubTeamCategory {
@@ -142,6 +154,26 @@ export const listSingleSubTeamInfo = async (slug: string) => {
       });
 
       return response.data.subTeam;
+    }
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const listUserSubTeams = async () => {
+  try {
+    const signedData = await gettingSigned();
+    
+    if (signedData) {
+      const response = await api.get(`/mine/subteams`, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
+
+      return response.data.subTeams;
     }
   } catch (error) {
     const errorHandler = new ErrorHandler(error);

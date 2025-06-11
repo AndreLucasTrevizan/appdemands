@@ -95,8 +95,8 @@ export default function SubTeamDetailsPage({
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href="/teams">Equipes</BreadcrumbItem>
-          <BreadcrumbItem href={`/teams/${subTeam?.team.slug}`}>Equipe {subTeam?.team.name}</BreadcrumbItem>
-          <BreadcrumbItem>Sub-equipe {subTeam?.name}</BreadcrumbItem>
+          <BreadcrumbItem href={`/teams/${subTeam?.team.slug}`}>Equipe {subTeam?.team.teamName}</BreadcrumbItem>
+          <BreadcrumbItem>Sub-equipe {subTeam?.subTeamName}</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
         <Card className="p-2">

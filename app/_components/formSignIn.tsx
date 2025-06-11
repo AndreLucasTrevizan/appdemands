@@ -29,7 +29,7 @@ export default function FormSignIn() {
       const data = await handleLogin({ email, password });
 
       if (data.isFirstLogin) {
-        router.push(`/confirm-login`);
+        router.push(`/confirm-login?email=${email}`);
       } else {
         addToast({
           title: 'Bem-vindo',
@@ -105,6 +105,7 @@ export default function FormSignIn() {
               placeholder="Entre com sua senha"
               type={isVisible ? "text" : "password"}
               value={password}
+              autoComplete="off"
               onChange={(e) => setPassword(e.target.value)}
               startContent={<FiLock />}
               endContent={

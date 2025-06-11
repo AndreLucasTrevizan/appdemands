@@ -79,9 +79,20 @@ export default function ModalCreateTicket({
       try {
         setLoadingTicketPrioritiesData(true);
 
-        const prioritiesData = await getTicketPrioritiesList();
+        const prioritiesData: ITicketPriorityProps[] = await getTicketPrioritiesList();
+        const userData = await getUserDetailsForTicket();
 
-        setTicketPriorities(prioritiesData);
+        if (userData?.isAttendant == 1) {
+          setTicketPriorities(prioritiesData);
+        } else {
+          let prioritiesDataInc: ITicketPriorityProps[] = [];
+
+          prioritiesDataInc = prioritiesData.filter((priority) => {
+            priority.priorityName != "Emergência";
+          });
+
+          setTicketPriorities(prioritiesDataInc);
+        }
 
         setLoadingTicketPrioritiesData(false);
       } catch (error) {
@@ -102,7 +113,7 @@ export default function ModalCreateTicket({
       try {
         setLoadingTicketCategoriesData(true);
 
-        const categoriesData = await getTicketCategoriesList();
+        const categoriesData: ITicketCategoryProps[] = await getTicketCategoriesList();
 
         setTicketCategories(categoriesData);
 
@@ -131,7 +142,7 @@ export default function ModalCreateTicket({
     let priority = ticketPriorities.find((priority) => `${priority.id}` == e.target.value);
     setPrioritySelected(priority);
   }
-  
+
   const selectCategory = (e: ChangeEvent<HTMLSelectElement>) => {
     let category = ticketCategories.find((category) => `${category.id}` == e.target.value);
     setCategorySelected(category);
@@ -229,7 +240,7 @@ export default function ModalCreateTicket({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <ModalContent>
+      <ModalContent className="overflow-scroll scrollbar-hide">
         <ModalHeader>
           <h1>Abrindo Chamado</h1>
         </ModalHeader>
@@ -265,7 +276,7 @@ export default function ModalCreateTicket({
                   ) : (
                     <Select className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
                       {ticketPriorities.map((priority) => (
-                        <SelectItem key={priority.id}>{`${priority.name} - ${priority.hours}h`}</SelectItem>
+                        <SelectItem key={priority.id}>{`${priority.priorityName} - ${priority.hours}h`}</SelectItem>
                       ))}
                     </Select>
                   )}
@@ -274,14 +285,14 @@ export default function ModalCreateTicket({
                   ) : (
                     <Select className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
                       {ticketCategories.map((category) => (
-                        <SelectItem key={category.id}>{category.name}</SelectItem>
+                        <SelectItem key={category.id}>{category.categoryName}</SelectItem>
                       ))}
                     </Select>
                   )}
                 </div>
                 <Divider />
                 <div className="flex gap-4 flex-wrap">
-                  <div className="flex-1">
+                  <div className="flex flex-col items-start flex-1">
                     <User
                       name="Pessoa de contato"
                       description={userDetails?.userName}
@@ -291,6 +302,13 @@ export default function ModalCreateTicket({
                         src: `${process.env.baseUrl}/avatar/${userDetails?.userSlug}/${userDetails?.avatar}`
                       }}
                     />
+                    {userDetails?.isOnTeam != undefined ? (
+                      userDetails.isOnTeam == 1 ? (null) : (
+                        <small className="text-danger">Você precisa estar numa equipe para abrir chamados.</small>
+                      )
+                    ) : (
+                      null
+                    )}
                   </div>
                   <Input
                     readOnly
@@ -355,7 +373,11 @@ export default function ModalCreateTicket({
           }}>
             Cancelar
           </Button>
-          <Button color="primary" onPress={() => handleCreateTicket()}>
+          <Button
+            isDisabled={userDetails?.isOnTeam != undefined ? userDetails.isOnTeam == 1 ? false : true : false}
+            color="primary"
+            onPress={() => handleCreateTicket()}
+          >
             Criar
           </Button>
         </ModalFooter>

@@ -39,7 +39,7 @@ export interface ITicketProps {
 
 export interface ITicketPriorityProps {
   id: number,
-  name: string,
+  priorityName: string,
   slug: string,
   hours: number,
   createdAt: Date,
@@ -48,7 +48,7 @@ export interface ITicketPriorityProps {
 
 export interface ITicketStatusProps {
   id: number,
-  name: string,
+  statusName: string,
   slug: string,
   createdAt: Date,
   updatedAt: Date
@@ -56,7 +56,7 @@ export interface ITicketStatusProps {
 
 export interface ITicketCategoryProps {
   id: number,
-  name: string,
+  categoryName: string,
   slug: string,
   createdAt: Date,
   updatedAt: Date
@@ -69,9 +69,9 @@ export interface IUsersReport {
   userSlug: string,
   email: string,
   status: string,
-  emailVerified: boolean,
-  isOnTeam: boolean,
-  isAttendant: boolean,
+  emailVerified: number ,
+  isOnTeam: number,
+  isAttendant: number,
   positionName: string,
   positionSlug: string,
   teamName: string | undefined,

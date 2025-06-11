@@ -14,3 +14,4 @@ export const sendingCode = async (email: string) => {
     throw errorHandler.message;
   }
 }
+  
