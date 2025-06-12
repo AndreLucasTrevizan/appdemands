@@ -20,12 +20,13 @@ import {
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { ITicketCategoryProps, ITicketPriorityProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
-import { FiMail } from "react-icons/fi";
+import { FiMail, FiPhone } from "react-icons/fi";
 import TicketSquare from "./ticketPreview";
 import { createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../tickets/actions";
 import Image from "next/image";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
+import { FaWhatsapp } from "react-icons/fa6";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -201,7 +202,7 @@ export default function ModalCreateTicket({
         categoryId: cateogorySelected?.id,
         priorityId: prioritySelected?.id,
         teamSlug: userDetails?.teamSlug,
-        subTeamSlug: userDetails?.subTeamSlug
+        subTeamSlug: userDetails?.teamSlug
       });
 
       addToast({
@@ -316,6 +317,24 @@ export default function ModalCreateTicket({
                     value={userDetails?.email}
                     label='E-mail de contato'
                     startContent={<FiMail />}
+                    className="flex-1"
+                  />
+                </div>
+                <div className="flex gap-4 flex-wrap">
+                  <Input
+                    readOnly
+                    type="text"
+                    value={userDetails?.phoneNumber}
+                    label='Telefone'
+                    startContent={<FiPhone />}
+                    className="flex-1"
+                  />
+                  <Input
+                    readOnly
+                    type="text"
+                    label='Whatsapp'
+                    startContent={<FaWhatsapp />}
+                    value={userDetails?.whatsNumber}
                     className="flex-1"
                   />
                 </div>

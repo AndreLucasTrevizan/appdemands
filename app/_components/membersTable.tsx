@@ -218,7 +218,15 @@ export default function MembersTable({
                 />
               </TableCell>
               <TableCell>{item.teamName}</TableCell>
-              <TableCell>{item.subTeamName}</TableCell>
+              <TableCell className="overflow-clip">
+                <ul
+                  className="list-none"
+                >
+                  {item.subTeams.map((subTeam) => (
+                    <li key={subTeam.id}>{subTeam.subTeamName}</li>
+                  ))}
+                </ul>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>

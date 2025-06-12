@@ -1,3 +1,4 @@
+import { ISubTeam } from "@/app/teams/[teamSlug]/subteams/actions";
 import { SVGProps } from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -69,6 +70,8 @@ export interface IUsersReport {
   userSlug: string,
   email: string,
   status: string,
+  phoneNumber: string | undefined,
+  whatsNumber: string | undefined,
   emailVerified: number ,
   isOnTeam: number,
   isAttendant: number,
@@ -76,8 +79,6 @@ export interface IUsersReport {
   positionSlug: string,
   teamName: string | undefined,
   teamSlug: string | undefined,
-  subTeamName: string | undefined,
-  subTeamSlug: string | undefined,
   createdAt: Date,
   updatedAt: Date
 }
@@ -96,8 +97,6 @@ export interface IAttendantsReport {
   positionSlug: string,
   teamName: string | undefined,
   teamSlug: string | undefined,
-  subTeamName: string | undefined,
-  subTeamSlug: string | undefined,
   createdAt: Date,
   updatedAt: Date
 }
@@ -110,8 +109,7 @@ export interface ITeamMember {
   userSlug: string,
   teamName: string | null,
   teamSlug: string | null,
-  subTeamName: string | null,
-  subTeamSlug: string | null,
+  subTeams: ISubTeam[]
 }
 
 export interface IUserProps {
