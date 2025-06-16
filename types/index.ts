@@ -5,6 +5,15 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface IQueuesProps {
+  id: number,
+  queueName: string,
+  queueStatus: string,
+  slug: string,
+  createdAt: Date,
+  updatedAt: Date,
+}
+
 export interface ITicketReportProps {
   id: number,
   ticketTitle: string,

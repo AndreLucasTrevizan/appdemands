@@ -29,6 +29,7 @@ import { deleteCookie } from "cookies-next";
 import { usePathname } from "next/navigation";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { FiMenu } from "react-icons/fi";
+import { HiQueueList } from "react-icons/hi2";
 
 interface IMenuItem {
   route: string,
@@ -66,6 +67,11 @@ export default function Nav() {
       route: '/positions',
       name: 'Funções de Usuário',
       icon: <RiUserSettingsLine />
+    },
+    {
+      route: '/queues',
+      name: 'Filas de Atendimento',
+      icon: <HiQueueList />
     }
   ];
 

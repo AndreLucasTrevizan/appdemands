@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Input,
+  InputProps,
   Modal,
   ModalBody,
   ModalContent,
@@ -330,11 +331,12 @@ export default function ModalCreateTicket({
                     className="flex-1"
                   />
                   <Input
+                    value={userDetails?.whatsNumber}
+                    disabled={false}
                     readOnly
-                    type="text"
+                    type="tel"
                     label='Whatsapp'
                     startContent={<FaWhatsapp />}
-                    value={userDetails?.whatsNumber}
                     className="flex-1"
                   />
                 </div>

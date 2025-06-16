@@ -12,14 +12,18 @@ export const config = {
     '/teams/:path*',
     '/tickets',
     '/tickets/:path*',
-    '/positions'
+    '/positions',
+    '/queues'
   ],
 };
 
 const notAuthRoutes = [
   '/sign_in',
   '/sign_up',
-  '/confirm-email'
+  '/confirm-email',
+  '/change-password',
+  '/confirm-code',
+  '/confirm-login'
 ];
 
 export async function middleware(req: NextRequest) {
