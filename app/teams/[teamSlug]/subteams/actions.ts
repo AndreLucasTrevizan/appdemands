@@ -6,7 +6,6 @@ import { api } from "@/app/_api/api";
 import ErrorHandler from "@/app/_utils/errorHandler";
 
 interface ICreateSubTeamFormProps {
-  isService: string,
   teamSlug: string,
   name: string,
 }

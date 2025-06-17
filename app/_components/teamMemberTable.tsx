@@ -2,7 +2,7 @@
 
 import { ITeamMember } from "@/types";
 import { useEffect, useMemo, useState } from "react";
-import { listMembers } from "../teams/actions";
+import { listTeamMembers } from "../teams/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import {
   addToast,
@@ -26,16 +26,10 @@ import { PlusIcon } from "./plusIcon";
 import ModalAddMembers from "./modalAddMembers";
 import { usePathname } from "next/navigation";
 
-export default function MembersTable({
-  isTeam,
-  isService,
-  endpoint,
-  params
+export default function TeamMembersTable({
+  slug,
 }: {
-  isTeam: string,
-  isService: string,
-  endpoint: string,
-  params: { teamSlug: string, subTeamSlug: string  }
+  slug: string,
 }) {
   const pathname = usePathname();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -52,7 +46,7 @@ export default function MembersTable({
       try {
         setLoadingUpdateMemberList(true);
 
-        const data = await listMembers({isTeam, isService, endpoint});
+        const data = await listTeamMembers(slug);
 
         setMembers(data);
 
@@ -78,7 +72,7 @@ export default function MembersTable({
     try {
       setLoadingUpdateMemberList(true);
 
-      const data = await listMembers({isTeam, isService, endpoint});
+      const data = await listTeamMembers(slug);
 
       setMembers(data);
 
@@ -175,13 +169,13 @@ export default function MembersTable({
 
   return (
     <div className="p-4">
-      <ModalAddMembers
+      {/* <ModalAddMembers
         params={params}
         onOpen={onOpen}
         onClose={onClose}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-      />
+      /> */}
       <Table
         topContent={topContent}
         bottomContent={bottomContent}
@@ -191,7 +185,6 @@ export default function MembersTable({
         <TableHeader>
           <TableColumn>NOME</TableColumn>
           <TableColumn>EQUIPE</TableColumn>
-          <TableColumn>SUB-EQUIPE</TableColumn>
         </TableHeader>
         <TableBody
           items={items}
@@ -218,15 +211,6 @@ export default function MembersTable({
                 />
               </TableCell>
               <TableCell>{item.teamName}</TableCell>
-              <TableCell className="overflow-clip">
-                <ul
-                  className="list-none"
-                >
-                  {item.subTeams.map((subTeam) => (
-                    <li key={subTeam.id}>{subTeam.subTeamName}</li>
-                  ))}
-                </ul>
-              </TableCell>
             </TableRow>
           )}
         </TableBody>

@@ -29,11 +29,11 @@ export default function SubTeamComponent({
       <Divider />
       <CardBody className="flex flex-col gap-4">
         <Chip
-          color={subTeam.subTeamStatus == "disponivel" ? "success" : "danger"}
-          title="Disponível"
+          color={subTeam.subTeamStatus == "ativo" ? "success" : "danger"}
+          title={subTeam.subTeamStatus == "ativo" ? "Ativo" : "Inativo"}
           className="text-sm text-white"
         >
-          {subTeam.subTeamStatus == "disponivel" ? "Disponivel" : "Indisponivel"}
+          {subTeam.subTeamStatus == "ativo" ? "Ativo" : "Inativo"}
         </Chip>
       </CardBody>
       <Divider />

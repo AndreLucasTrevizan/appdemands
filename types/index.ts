@@ -110,6 +110,14 @@ export interface IAttendantsReport {
   updatedAt: Date
 }
 
+export interface IQueueMember {
+  id: number,
+  userName: string,
+  slug: string,
+  email: string,
+  avatar: string,
+}
+
 export interface ITeamMember {
   id: number,
   avatar: string,

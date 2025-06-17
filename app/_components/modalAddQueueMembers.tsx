@@ -16,15 +16,13 @@ import {
 } from "@heroui/react";
 import { SearchIcon } from "./searchIcon";
 import { useEffect, useMemo, useState } from "react";
-import { IAttendantProps, IUserProps } from "@/types";
+import { IAttendantProps } from "@/types";
 import { FaCheck } from "react-icons/fa6";
 import ErrorHandler from "../_utils/errorHandler";
-import { listUsersAvailable } from "../teams/actions";
-import {
-  addingMembersOnClientSubTeam,
-} from "../teams/[teamSlug]/subteams/actions";
+import { listAvailableAttendants } from "../attendants/actions";
+import { addAttendantsOnQueue } from "../queues/actions";
 
-export default function ModalAddSubTeamMembers({
+export default function ModalAddQueueMembers({
   slug,
   isOpen,
   onOpen,
@@ -39,23 +37,22 @@ export default function ModalAddSubTeamMembers({
 }) {
   const [filterValue, setFilterValue] = useState<string>("");
   const [values, setValues] = useState(new Set(''));
-  const [users, setUsers] = useState<IUserProps[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState<Boolean>(false);
+  const [attendants, setAttendants] = useState<IAttendantProps[]>([]);
+  const [loadingAttendants, setLoadingAttendants] = useState<Boolean>(false);
   const [loadingAddMembers, setLoadingAddMembers] = useState<Boolean>(false);
 
   const arrayValues = Array.from(values);
 
   useEffect(() => {
-
-    async function loadUsersAvailable() {
+    async function loadAttendantsAvailable() {
       try {
-        setLoadingUsers(true);
+        setLoadingAttendants(true);
 
-        const data = await listUsersAvailable();
+        const data = await listAvailableAttendants();
 
-        setUsers(data);
+        setAttendants(data);
 
-        setLoadingUsers(false);
+        setLoadingAttendants(false);
       } catch (error) {
         const errorHandler = new ErrorHandler(error);
         
@@ -66,25 +63,24 @@ export default function ModalAddSubTeamMembers({
           shouldShowTimeoutProgress: true
         });
 
-        setLoadingUsers(false);
+        setLoadingAttendants(false);
       }
     }
-
-    loadUsersAvailable();
+    loadAttendantsAvailable();
   }, []);
 
   const handleGettingUsers = async () => {
-    let newUsers: IUserProps[] = [];
+    let newAttendants: IAttendantProps[] = [];
 
     arrayValues.forEach((value) => {
-      let user = users.find((user) => `${user.id}` === `${value}`);
+      let attendant = attendants.find((attendant) => `${attendant.id}` === `${value}`);
 
-      if (user) {
-        newUsers.push(user);
+      if (attendant) {
+        newAttendants.push(attendant);
       }
     });
 
-    return newUsers;
+    return newAttendants;
   }
 
   const handleAddMembers = async () => {
@@ -97,7 +93,7 @@ export default function ModalAddSubTeamMembers({
         addToast({
           color: 'warning',
           title: 'Aviso',
-          description: 'Nenhum membro foi selecionado',
+          description: 'Nenhum atendente foi selecionado',
           timeout: 3000,
           shouldShowTimeoutProgress: true
         });
@@ -109,15 +105,15 @@ export default function ModalAddSubTeamMembers({
 
       const dataMembers = {
         slug,
-        userList: JSON.stringify(selectedUsers),
+        attendantsList: JSON.stringify(selectedUsers),
       };
-      
-      await addingMembersOnClientSubTeam(dataMembers);
+
+      await addAttendantsOnQueue(dataMembers);
 
       addToast({
         color: 'success',
         title: 'Sucesso',
-        description: 'Membros da sub-equipe adicionados',
+        description: 'Membros da fila de atendimento adicionados',
         timeout: 3000,
         shouldShowTimeoutProgress: true
       });
@@ -139,16 +135,16 @@ export default function ModalAddSubTeamMembers({
   }
 
   const filteredItems = useMemo(() => {
-    let members = [...users];
+    let members = [...attendants];
 
-    members = users.filter((user) => user.userName.toLowerCase().includes(filterValue.toLowerCase()));
+    members = attendants.filter((attendant) => attendant.userName.toLowerCase().includes(filterValue.toLowerCase()));
 
     return members;
-  }, [ users, filterValue ]);
+  }, [ attendants, filterValue ]);
 
   const selectedUsers = useMemo(() => {
     if (!arrayValues.length) {
-      return <small>Nenhum usuário selecionado</small>;
+      return <small>Nenhum atendente selecionado</small>;
     } else {
       return (
         <div className="flex gap-2 flex-wrap">
@@ -159,7 +155,7 @@ export default function ModalAddSubTeamMembers({
               endContent={
                 <FaCheck />
               }
-            >{users.find((user) => `${user.id}` === `${value}`)?.userName}</Chip>
+            >{attendants.find((attendant) => `${attendant.id}` === `${value}`)?.userName}</Chip>
           ))}
         </div>
       );
@@ -175,7 +171,7 @@ export default function ModalAddSubTeamMembers({
       backdrop="blur"
     >
       <ModalContent>
-        <ModalHeader>Adicionar Membros na Sub-Equipe</ModalHeader>
+        <ModalHeader>Adicionar Membros na Fila de Atendimento</ModalHeader>
         <Divider />
         <ModalBody className="p-4 overflow-scroll scrollbar-hide">
           {loadingAddMembers ? (
@@ -185,16 +181,16 @@ export default function ModalAddSubTeamMembers({
           ) : (
             <div className="flex flex-row justify-between gap-4">
               <div className="flex flex-col gap-2 flex-1">
-                <span>Lista de Usuários</span>
+                <span>Lista de Atendentes</span>
                 <Input
                   type="search"
                   startContent={<SearchIcon />}
-                  placeholder="Buscar usuário..."
+                  placeholder="Buscar atendente..."
                   value={filterValue}
                   onChange={(e) => setFilterValue(e.target.value)}
                 />
                 <Divider />
-                {loadingUsers ? (
+                {loadingAttendants ? (
                     <Spinner size="md" />
                   ) : (
                     <Listbox
@@ -203,22 +199,22 @@ export default function ModalAddSubTeamMembers({
                       selectionMode="multiple"
                       onSelectionChange={(keys) => setValues(keys as Set<string>)}
                     >
-                      {(user) => (
+                      {(person) => (
                         <ListboxItem
-                          key={user.id}
-                          textValue={user.userName}
+                          key={person.id}
+                          textValue={person.userName}
                         >
                           <div className="flex gap-2 items-center">
                             <Avatar
-                              alt={user.userName}
+                              alt={person.userName}
                               className="flex-shrink-0"
                               size="sm"
-                              showFallback={user.avatar == ""}
-                              src={`${process.env.baseUrl}/avatar/${user.slug}/${user.avatar}`}
+                              showFallback={person.avatar == ""}
+                              src={`${process.env.baseUrl}/avatar/${person.slug}/${person.avatar}`}
                             />
                             <div className="flex flex-col">
-                              <span className="text-small">{user.userName}</span>
-                              <span className="text-tiny text-default-400">{user.email}</span>
+                              <span className="text-small">{person.userName}</span>
+                              <span className="text-tiny text-default-400">{person.email}</span>
                             </div>
                           </div>
                         </ListboxItem>
@@ -230,7 +226,7 @@ export default function ModalAddSubTeamMembers({
                 <Divider orientation="vertical" />
               </div>
               <div className="flex flex-col gap-4 flex-1 sticky top-0 self-start">
-                <span>Usuário a serem adicionados</span>
+                <span>Atendentes a serem adicionados</span>
                 {selectedUsers}
               </div>
             </div>

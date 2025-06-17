@@ -19,11 +19,11 @@ export default function TeamComponent({
       <Divider />
       <CardBody className="flex flex-col gap-4">
         <Chip
-          color={team.teamStatus == "disponivel" ? "success" : "danger"}
-          title="Disponível"
+          color={team.teamStatus == "ativo" ? "success" : "danger"}
+          title={team.teamStatus == "ativo" ? "Ativo" : "Inativo"}
           className="text-sm text-white"
         >
-          {team.teamStatus == "disponivel" ? "Disponivel" : "Indisponivel"}
+          {team.teamStatus == "ativo" ? "Ativo" : "Inativo"}
         </Chip>
       </CardBody>
       <Divider />
