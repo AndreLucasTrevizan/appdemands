@@ -19,15 +19,16 @@ import {
   User
 } from "@heroui/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { ITicketCategoryProps, ITicketPriorityProps, IUsersReport } from "@/types";
+import { ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
 import TicketSquare from "./ticketPreview";
-import { createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../tickets/actions";
+import { attachingTicketFiles, createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../tickets/actions";
 import Image from "next/image";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
+import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -49,6 +50,7 @@ export default function ModalCreateTicket({
   const [ticketPriorities, setTicketPriorities] = useState<ITicketPriorityProps[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [loadingCreateTicket, setLoadingCreateTicket] = useState<boolean>(false);
+  const [loadingSendingFiles, setLoadingSendingFiles] = useState<boolean>(false);
   const [loadingTicketCategoriesData, setLoadingTicketCategoriesData] = useState<boolean>(false);
   const [loadingTicketPrioritiesData, setLoadingTicketPrioritiesData] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<IUsersReport>();
@@ -197,7 +199,7 @@ export default function ModalCreateTicket({
     try {
       setLoadingCreateTicket(true);
 
-      await createTicket({
+      const ticketData: ITicketProps = await createTicket({
         title,
         description,
         categoryId: cateogorySelected?.id,
@@ -214,14 +216,37 @@ export default function ModalCreateTicket({
         shouldShowTimeoutProgress: true
       });
 
-      setTitle("");
-      setDescription("");
-      setCategorySelected(undefined);
-      setPrioritySelected(undefined);
-      setFiles([]);
+      if (files.length > 0) {
+        setLoadingSendingFiles(true);
+        
+        await attachingTicketFiles(ticketData.id, files);
 
-      setLoadingCreateTicket(false);
+        await handleRegisterTicketWorklog(description, ticketData.id, files);
+
+        addToast({
+          color: 'success',
+          title: 'Sucesso',
+          description: 'Arquivos anexados',
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+
+        setFiles([]);
+        setLoadingSendingFiles(false);
+        onClose();
+      } else {
+        await handleRegisterTicketWorklog(description, ticketData.id);
+
+        onClose();
+        setTitle("");
+        setDescription(""); 
+        setCategorySelected(undefined);
+        setPrioritySelected(undefined);
+
+        setLoadingCreateTicket(false);
+      }
     } catch (error) {
+      setLoadingSendingFiles(false);
       setLoadingCreateTicket(false);
       const errorHandler = new ErrorHandler(error);
       
@@ -249,9 +274,15 @@ export default function ModalCreateTicket({
         <Divider />
         <ModalBody>
           {loadingCreateTicket ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <Spinner size="md" label="Abrindo seu chamado..." />
-            </div>
+            loadingSendingFiles ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <Spinner size="md" label="Enviando os anexos..." />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full">
+                <Spinner size="md" label="Abrindo seu chamado..." />
+              </div>
+            )
           ) : (
             <div className="flex flex-row gap-4">
               <div className="flex flex-col gap-4 flex-1 flex-wrap">

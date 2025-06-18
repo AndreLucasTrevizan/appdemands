@@ -143,3 +143,34 @@ export const getTicketPrioritiesList = async () => {
     throw errorHandler.message;
   }
 }
+
+export const attachingTicketFiles = async (ticketId: number, files: File[]) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const formData = new FormData();
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+
+    const response = await api.post('/files', formData, {
+      params: {
+        ticketId
+      },
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
