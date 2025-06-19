@@ -19,12 +19,12 @@ export const handleRegisterTicketWorklog = async (
 
     const formData = new FormData();
 
-    formData.append('description', description);
-    formData.append('ticketId', String(ticketId));
-
-    const response = await api.post('/ticket_worklog', formData, {
+    const response = await api.post('/ticket_worklog', {
+      description,
+      ticketId
+    }, {
       headers: {
-        Authorization: `Bearer ${signedData.token}`
+        Authorization: `Bearer ${signedData.token}`,
       }
     });
 
@@ -35,13 +35,51 @@ export const handleRegisterTicketWorklog = async (
 
       await api.post('/files', formData, {
         params: {
+          ticketId,
           ticketWorklogId: response.data.ticketWorklog.id,
         },
         headers: {
           Authorization: `Bearer ${signedData.token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
     }
+
+    return response.data.ticket_worklog;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const attachingTicketWorklogFiles = async (
+  ticketId: number,
+  ticketWorklogId: number,
+  files: File[]
+) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const formData = new FormData();
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+
+    const response = await api.post('/files', formData, {
+      params: {
+        ticketId,
+        ticketWorklogId
+      },
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
 
     return response.data;
   } catch (error) {

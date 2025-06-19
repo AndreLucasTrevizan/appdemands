@@ -28,7 +28,7 @@ import Image from "next/image";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
-import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
+import { attachingTicketWorklogFiles, handleRegisterTicketWorklog } from "../ticket_worklog/actions";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -221,7 +221,9 @@ export default function ModalCreateTicket({
         
         await attachingTicketFiles(ticketData.id, files);
 
-        await handleRegisterTicketWorklog(description, ticketData.id, files);
+        const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files);
+
+        await attachingTicketWorklogFiles(ticketData.id, worklog.id, files);
 
         addToast({
           color: 'success',
