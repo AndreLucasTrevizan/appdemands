@@ -218,7 +218,7 @@ export default function ModalCreateTicket({
 
       if (files.length > 0) {
         setLoadingSendingFiles(true);
-        
+
         await attachingTicketFiles(ticketData.id, files);
 
         const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files);
@@ -234,8 +234,14 @@ export default function ModalCreateTicket({
         });
 
         setFiles([]);
-        setLoadingSendingFiles(false);
         onClose();
+        setTitle("");
+        setDescription(""); 
+        setCategorySelected(undefined);
+        setPrioritySelected(undefined);
+
+        setLoadingCreateTicket(false);
+        setLoadingSendingFiles(false);
       } else {
         await handleRegisterTicketWorklog(description, ticketData.id);
 

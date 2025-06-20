@@ -45,7 +45,7 @@ export const handleRegisterTicketWorklog = async (
       });
     }
 
-    return response.data.ticket_worklog;
+    return response.data.ticketWorklog;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 
