@@ -221,7 +221,15 @@ export default function ModalCreateTicket({
 
         await attachingTicketFiles(ticketData.id, files);
 
+        console.log({
+          description,
+          ticketData,
+          files
+        });
+
         const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files);
+
+        console.log(worklog);
 
         await attachingTicketWorklogFiles(ticketData.id, worklog.id, files);
 
