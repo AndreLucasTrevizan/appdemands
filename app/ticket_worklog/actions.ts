@@ -54,7 +54,6 @@ export const handleRegisterTicketWorklog = async (
 }
 
 export const attachingTicketWorklogFiles = async (
-  ticketId: number,
   ticketWorklogId: number,
   files: File[]
 ) => {
@@ -73,7 +72,6 @@ export const attachingTicketWorklogFiles = async (
 
     const response = await api.post('/files', formData, {
       params: {
-        ticketId,
         ticketWorklogId
       },
       headers: {

@@ -199,14 +199,14 @@ export default function ModalCreateTicket({
     try {
       setLoadingCreateTicket(true);
 
-      const ticketData: ITicketProps = await createTicket({
+      /* const ticketData: ITicketProps = await createTicket({
         title,
         description,
         categoryId: cateogorySelected?.id,
         priorityId: prioritySelected?.id,
         teamSlug: userDetails?.teamSlug,
         subTeamSlug: userDetails?.teamSlug
-      });
+      }); */
 
       addToast({
         color: 'success',
@@ -219,19 +219,13 @@ export default function ModalCreateTicket({
       if (files.length > 0) {
         setLoadingSendingFiles(true);
 
-        await attachingTicketFiles(ticketData.id, files);
+        /* await attachingTicketFiles(ticketData.id, files); */
 
-        console.log({
-          description,
-          ticketData,
-          files
-        });
+        /* const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files); */
 
-        const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files);
+        console.log(files);
 
-        console.log(worklog);
-
-        await attachingTicketWorklogFiles(ticketData.id, worklog.id, files);
+        /* await attachingTicketWorklogFiles(worklog.id, files); */
 
         addToast({
           color: 'success',
@@ -251,7 +245,7 @@ export default function ModalCreateTicket({
         setLoadingCreateTicket(false);
         setLoadingSendingFiles(false);
       } else {
-        await handleRegisterTicketWorklog(description, ticketData.id);
+        /* await handleRegisterTicketWorklog(description, ticketData.id); */
 
         onClose();
         setTitle("");
