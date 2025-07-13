@@ -5,7 +5,6 @@ import {
   Button,
   Divider,
   Input,
-  InputProps,
   Modal,
   ModalBody,
   ModalContent,
@@ -23,12 +22,18 @@ import { ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport 
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
 import TicketSquare from "./ticketPreview";
-import { attachingTicketFiles, createTicket, getTicketCategoriesList, getTicketPrioritiesList, getUserDetailsForTicket } from "../tickets/actions";
+import {
+  attachingTicketFiles,
+  createTicket,
+  getTicketCategoriesList,
+  getTicketPrioritiesList,
+  getUserDetailsForTicket
+} from "../tickets/actions";
 import Image from "next/image";
 import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
-import { attachingTicketWorklogFiles, handleRegisterTicketWorklog } from "../ticket_worklog/actions";
+import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -199,14 +204,14 @@ export default function ModalCreateTicket({
     try {
       setLoadingCreateTicket(true);
 
-      /* const ticketData: ITicketProps = await createTicket({
+      const ticketData: ITicketProps = await createTicket({
         title,
         description,
         categoryId: cateogorySelected?.id,
         priorityId: prioritySelected?.id,
         teamSlug: userDetails?.teamSlug,
         subTeamSlug: userDetails?.teamSlug
-      }); */
+      });
 
       addToast({
         color: 'success',
@@ -219,13 +224,9 @@ export default function ModalCreateTicket({
       if (files.length > 0) {
         setLoadingSendingFiles(true);
 
-        /* await attachingTicketFiles(ticketData.id, files); */
+        await attachingTicketFiles(ticketData.id, files);
 
-        /* const worklog = await handleRegisterTicketWorklog(description, ticketData.id, files); */
-
-        console.log(files);
-
-        /* await attachingTicketWorklogFiles(worklog.id, files); */
+        await handleRegisterTicketWorklog(description, ticketData.id, files);
 
         addToast({
           color: 'success',
@@ -245,7 +246,7 @@ export default function ModalCreateTicket({
         setLoadingCreateTicket(false);
         setLoadingSendingFiles(false);
       } else {
-        /* await handleRegisterTicketWorklog(description, ticketData.id); */
+        await handleRegisterTicketWorklog(description, ticketData.id);
 
         onClose();
         setTitle("");
