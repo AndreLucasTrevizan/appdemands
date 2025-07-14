@@ -20,7 +20,7 @@ export interface ITicketReportProps {
   ticketDescription: string,
   ticketCategory: string,
   ticketPriority: string,
-  ticketPriorityTime: number,
+  ticketSLA: number,
   ticketStatus: string,
   createdAt: string,
   updatedAt: string,
@@ -88,6 +88,8 @@ export interface IUsersReport {
   positionSlug: string,
   teamName: string | undefined,
   teamSlug: string | undefined,
+  subTeamName: string | undefined,
+  subTeamSlug: string | undefined,
   createdAt: Date,
   updatedAt: Date
 }

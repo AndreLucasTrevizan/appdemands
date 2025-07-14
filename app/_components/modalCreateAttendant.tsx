@@ -33,7 +33,7 @@ export default function ModalCreateAttendant({
   onOpen: () => void,
   onClose: () => void,
   onOpenChange: () => void,
-  attendants: IUsersReport[],
+  attendants: IAttendantsReport[],
   setAttendants: Dispatch<SetStateAction<IAttendantsReport[]>>,
 }) {
   const [userName, setUserName] = useState<string>('');

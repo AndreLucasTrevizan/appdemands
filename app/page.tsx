@@ -82,7 +82,28 @@ export default function Home() {
               </div>
             }
           >
+            <Tabs>
+              <Tab
+                key={'grid'}
+                title={
+                  <div className="flex items-center space-x-2">
+                    <LuLayoutGrid />
+                  </div>
+                }
+              >
 
+              </Tab>
+              <Tab
+                key={'table'}
+                title={
+                  <div className="flex items-center space-x-2">
+                    <LuLayoutList  />
+                  </div>
+                }
+              >
+                <TicketsTable />
+              </Tab>
+            </Tabs>
           </Tab>
           <Tab
             key={'my_team'}

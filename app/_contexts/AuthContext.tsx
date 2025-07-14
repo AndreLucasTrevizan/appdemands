@@ -19,6 +19,7 @@ export interface IUserSignedProps {
   slug: string;
   avatar: string;
   isOnTeam: boolean;
+  teamSlug: string;
   isAttendant: boolean;
   position: IPositionProps,
   createdAt: Date;
@@ -28,7 +29,7 @@ export interface IUserSignedProps {
 
 interface IAuthContextProps {
   signed: boolean,
-  userSigned: IUserSignedProps | null,
+  userSigned: IUserSignedProps | undefined,
   updateSignedAvatar: (value: string) => void,
   settingUserSigned: (data: IUserSignedProps) => void;
   settingUserAvatar: (response: IAvatarResponse) => void;
@@ -42,11 +43,13 @@ export const useAuthContext = () => {
 
 export default function AuthProvider({ children }: {children: ReactNode}) {
   const [signed, setSigned] = useState<boolean>(false);
-  const [userSigned, setUserSigned] = useState<IUserSignedProps | null>(null);
+  const [userSigned, setUserSigned] = useState<IUserSignedProps | undefined>(undefined);
 
   useEffect(() => {
     async function loadData() {
       const signedData = await gettingSigned();
+
+      console.log(signedData);
 
       setUserSigned(signedData);
       setSigned(true);
@@ -62,7 +65,7 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
   const settingUserAvatar = (response: IAvatarResponse) => {
     if (userSigned) {
       const data = userSigned;
-      data.avatar = response.avatar;
+      (data as IUserSignedProps).avatar = response.avatar;
       setUserSigned(data);
     }
   }
@@ -70,7 +73,7 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
   function updateSignedAvatar(value: string) {
     let signed = userSigned;
 
-    signed!.avatar = value;
+    (signed as IUserSignedProps).avatar = value;
 
     let hasCookie = getCookie('demands_signed_data');
 

@@ -12,8 +12,6 @@ export const confirmingCode = async (code: string) => {
       throw "Você não está autenticado";
     }
 
-    console.log(code);
-
     const response = await api.post('/confirm-code', { code });
 
     return response.data.account;

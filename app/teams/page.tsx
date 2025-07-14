@@ -238,7 +238,7 @@ export default function TeamsPage() {
               <Spinner size="md" />
             </div>
           ) : (
-            userSigned?.position.slug == 'administrador' || userSigned?.isAttendant ? (
+            (userSigned as IUserSignedProps)?.position.positionName == 'administrador' || (userSigned as IUserSignedProps)?.isAttendant ? (
               <div className="flex items-start justify-start gap-4 flex-wrap">
                 {teams.length == 0 && <span>Nenhuma equipe disponível</span>}
                 {filteredTeams.map((team) => (

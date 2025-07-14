@@ -74,7 +74,7 @@ export default function ModalCreateTicket({
         setLoadingData(false);
 
         const errorHandler = new ErrorHandler(error);
-        
+
         addToast({
           color: 'warning',
           title: 'Aviso',
@@ -84,7 +84,7 @@ export default function ModalCreateTicket({
         });
       }
     }
-    async function loadTicketPrioritiesData() {
+    /* async function loadTicketPrioritiesData() {
       try {
         setLoadingTicketPrioritiesData(true);
 
@@ -140,11 +140,11 @@ export default function ModalCreateTicket({
           shouldShowTimeoutProgress: true,
         });
       }
-    }
+    } */
 
     loadData();
-    loadTicketCategoriesData();
-    loadTicketPrioritiesData();
+    /* loadTicketCategoriesData();
+    loadTicketPrioritiesData(); */
   }, []);
 
   const selectPriority = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -319,18 +319,18 @@ export default function ModalCreateTicket({
                     <Spinner size="md" />
                   ) : (
                     <Select className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
-                      {ticketPriorities.map((priority) => (
+                      {/* {ticketPriorities.map((priority) => (
                         <SelectItem key={priority.id}>{`${priority.priorityName} - ${priority.hours}h`}</SelectItem>
-                      ))}
+                      ))} */}
                     </Select>
                   )}
                   {loadingTicketCategoriesData ? (
                     <Spinner size="md" />
                   ) : (
                     <Select className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
-                      {ticketCategories.map((category) => (
+                     {/*  {ticketCategories.map((category) => (
                         <SelectItem key={category.id}>{category.categoryName}</SelectItem>
-                      ))}
+                      ))} */}
                     </Select>
                   )}
                 </div>

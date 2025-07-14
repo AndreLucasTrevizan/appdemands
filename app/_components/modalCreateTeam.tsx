@@ -34,7 +34,7 @@ export default function ModalCreateTeam({
 
       teamsArray = [...teams, response];
 
-      teamsArray.sort((a, b) => a.name.localeCompare(b.name));
+      teamsArray.sort((a, b) => a.teamName.localeCompare(b.teamName));
 
       setTeams(teamsArray);
 

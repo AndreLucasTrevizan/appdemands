@@ -14,7 +14,19 @@ interface ICreateTicketFormData {
   subTeamSlug: string | undefined | null;
 }
 
-export const listTickets = async () => {
+export const listTickets = async ({
+  byUser,
+  byTeam,
+  teamSlug,
+  bySubTeam,
+  subTeamSlug
+}: {
+  byUser?: string,
+  byTeam?: string,
+  teamSlug?: string,
+  bySubTeam?: string,
+  subTeamSlug?: string
+}) => {
   try {
     const signedData = await gettingSigned();
 
@@ -23,6 +35,13 @@ export const listTickets = async () => {
     }
 
     const response = await api.get('/tickets', {
+      params: {
+        byUser,
+        byTeam,
+        teamSlug,
+        bySubTeam,
+        subTeamSlug
+      },
       headers: {
         Authorization: `Bearer ${signedData.token}`,
       }

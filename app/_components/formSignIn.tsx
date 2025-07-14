@@ -29,7 +29,9 @@ export default function FormSignIn() {
       const data = await handleLogin({ email, password });
 
       if (data.isFirstLogin) {
-        router.push(`/confirm-login?email=${email}`);
+        setCookie('email', email);
+
+        router.push(`/confirm-login`);
       } else {
         addToast({
           title: 'Bem-vindo',

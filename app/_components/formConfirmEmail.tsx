@@ -1,15 +1,26 @@
 'use client';
 
-import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, Input, Spinner } from "@heroui/react";
-import Link from "next/link";
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+  Input,
+  Spinner
+} from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiMail } from "react-icons/fi";
 import ErrorHandler from "../_utils/errorHandler";
 import { sendingCode } from "../confirm-email/actions";
+import { useSetCookie } from "cookies-next";
 
 export default function FormConfirmEmail() {
   const router = useRouter();
+  const setCookie = useSetCookie();
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -19,7 +30,9 @@ export default function FormConfirmEmail() {
 
       const reponse = await sendingCode(email);
 
-      router.push(`/confirm-code?email=${email}`);
+      setCookie('email', email);
+
+      router.push(`/confirm-code`);
     } catch (error) {
       setLoading(false);
 
@@ -34,7 +47,7 @@ export default function FormConfirmEmail() {
       });
     }
   }
-  
+
   return (
     <Card className="w-96">
       <CardHeader>

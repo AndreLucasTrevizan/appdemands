@@ -17,12 +17,13 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiLock, FiMail } from "react-icons/fi";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { changingPassword } from "../change-password/actions";
+import { deleteCookie, useGetCookie } from "cookies-next";
 
 export default function FormChangePassword() {
   const router = useRouter();
-  const params = useSearchParams();
+  const getCookie = useGetCookie();
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export default function FormChangePassword() {
     if (password.length < 8) {
       setErrors(prevArray => [...prevArray, "A senha precisa ter pelo menos 8 caracteres"]);
     }
-    
+  
     if ((password.match(/[A-Z]/g) || []).length < 1) {
       setErrors(prevArray => [...prevArray, "A senha precisa ter pelo menos uma letra maiúscula"]);
     }
@@ -66,7 +67,7 @@ export default function FormChangePassword() {
         });
       } else {
         await changingPassword({
-          email: params.get('email')!,
+          email: getCookie('email')!,
           password,
           confirmPassword,
         });
@@ -78,6 +79,8 @@ export default function FormChangePassword() {
           timeout: 3000,
           shouldShowTimeoutProgress: true,
         });
+
+        deleteCookie('email');
 
         router.push('/sign_in');
       }

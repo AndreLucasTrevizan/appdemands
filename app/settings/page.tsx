@@ -12,6 +12,8 @@ import {
   Input,
   Spacer,
   Spinner,
+  Tab,
+  Tabs,
   Tooltip,
 } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
@@ -26,6 +28,7 @@ import { FiMail, FiStar, FiUser } from "react-icons/fi";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { LiaToolsSolid } from "react-icons/lia";
 import { FaTeamspeak } from "react-icons/fa6";
+import { Key } from "@react-types/shared/src/key";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -34,12 +37,14 @@ export default function SettingsPage() {
   } = useAuthContext();
   const { updateSignedAvatar } = useAuthContext();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
   const [loadingAvatar, setLoadingAvatar] = useState<boolean>(false);
   const [user, setUser] = useState<IUsersReport>();
   const [file, setFile] = useState<File | null>(null);
   const [fileUrlPreview, setFileUrlPreview] = useState<string>('');
   const [confirmAvatar, setConfirmAvatar] = useState(false);
-  
+  const [tab, setTab] = useState<Key>("profile");
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -129,111 +134,125 @@ export default function SettingsPage() {
         <Divider />
         <Card>
           <CardBody>
-          {loading ? (
-            <Spinner className="py-4" variant="dots" size="md" />
-          ) : (
-            user ? (
-              <div
-                className="px-4"
-              >
-                <div className="flex items-center gap-4">
-                  {loadingAvatar ? (
-                    <Spinner size="md" variant="dots" />
-                  ) : (
-                    <div className="flex gap-4 w-full">
-                      <div className="flex flex-col items-center justify-center gap-4">
-                        <Avatar
-                          name={user.userName}
-                          showFallback
-                          className="w-20 h-20 text-large"
-                          src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`}
-                        />
-                        <div className="flex flex-col items-center">
-                          <div className="flex flex-col">
-                            <label className="flex gap-2 items-center hover:cursor-pointer" htmlFor="inputFile">
-                              <FaCamera />
-                              <small>Trocar foto de perfil</small>
-                            </label>
-                            <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
-                          </div>
-                          {file && (
-                            <>
-                              <Spacer y={4} />
-                              <div className="flex gap-4">
-                                <small className="text-red-500 hover:cursor-pointer" onClick={() => cancelAvatarChange()}>Cancelar</small>
-                                <small className="flex gap-2 items-center text-primary hover:cursor-pointer" onClick={() => handleChangeAvatar()}>
-                                  <FaSave />
-                                  Confirmar avatar
-                                </small>
+          <Tabs
+            placement="start"
+            selectedKey={tab}
+            onSelectionChange={setTab}
+          >
+            <Tab key={"profile"} title='Minha Conta'>
+              {loading ? (
+                <Spinner className="py-4" variant="dots" size="md" />
+              ) : (
+                user ? (
+                  <div
+                    className="px-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      {loadingAvatar ? (
+                        <Spinner size="md" variant="dots" />
+                      ) : (
+                        <div className="flex gap-4 w-full">
+                          <div className="flex flex-col items-center justify-center gap-4">
+                            <Avatar
+                              name={user.userName}
+                              showFallback
+                              className="w-20 h-20 text-large"
+                              src={file ? `${fileUrlPreview}` : `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`}
+                            />
+                            <div className="flex flex-col items-center">
+                              <div className="flex flex-col">
+                                <label className="flex gap-2 items-center hover:cursor-pointer" htmlFor="inputFile">
+                                  <FaCamera />
+                                  <small>Trocar foto de perfil</small>
+                                </label>
+                                <Input ref={inputFile} id="inputFile" type='file' className="hidden" onChange={(e) => changeFile(e)} />
                               </div>
-                            </>
-                          )}
+                              {file && (
+                                <>
+                                  <Spacer y={4} />
+                                  <div className="flex gap-4">
+                                    <small className="text-red-500 hover:cursor-pointer" onClick={() => cancelAvatarChange()}>Cancelar</small>
+                                    <small className="flex gap-2 items-center text-primary hover:cursor-pointer" onClick={() => handleChangeAvatar()}>
+                                      <FaSave />
+                                      Confirmar avatar
+                                    </small>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <Divider orientation="vertical" />
+                          </div>
+                          <div className="flex flex-wrap flex-row gap-4 flex-1">
+                            <Input
+                              readOnly
+                              startContent={<FiUser />}
+                              value={user.userName}
+                              label="Nome"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<RiUserSettingsLine />}
+                              value={user.positionName}
+                              label="Função no Sistema"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<FiMail />}
+                              value={user.email}
+                              label="E-mail"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<FaTeamspeak />}
+                              value={user.teamName ?? "Não atribuido"}
+                              label="Equipe"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<FaTeamspeak />}
+                              value={user.subTeamName ?? "Não atribuido"}
+                              label="Sub-Equipe"
+                              className="max-w-[430px]"
+                            />
+                            <Tooltip
+                              className="flex gap-2 items-center"
+                              content="Criado em"
+                            >
+                              <Button variant="light" startContent={<FiStar />}>
+                                {new Date(user.createdAt).toLocaleDateString()}
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              className="flex gap-2 items-center"
+                              content="Atualizado em"
+                            >
+                              <Button variant="light" startContent={<LiaToolsSolid />}>
+                                {new Date(user.updatedAt).toLocaleDateString()}
+                              </Button>
+                            </Tooltip>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <Divider orientation="vertical" />
-                      </div>
-                      <div className="flex flex-wrap flex-row gap-4 flex-1">
-                        <Input
-                          readOnly
-                          startContent={<FiUser />}
-                          value={user.userName}
-                          label="Nome"
-                          className="max-w-[430px]"
-                        />
-                        <Input
-                          readOnly
-                          startContent={<RiUserSettingsLine />}
-                          value={user.positionName}
-                          label="Função no Sistema"
-                          className="max-w-[430px]"
-                        />
-                        <Input
-                          readOnly
-                          startContent={<FiMail />}
-                          value={user.email}
-                          label="E-mail"
-                          className="max-w-[430px]"
-                        />
-                        <Input
-                          readOnly
-                          startContent={<FaTeamspeak />}
-                          value={user.teamName ?? "Não atribuido"}
-                          label="Equipe"
-                          className="max-w-[430px]"
-                        />
-                        <Input
-                          readOnly
-                          startContent={<FaTeamspeak />}
-                          value={user.subTeamName ?? "Não atribuido"}
-                          label="Sub-Equipe"
-                          className="max-w-[430px]"
-                        />
-                        <Tooltip
-                          className="flex gap-2 items-center"
-                          content="Criado em"
-                        >
-                          <Button variant="light" startContent={<FiStar />}>
-                            {new Date(user.createdAt).toLocaleDateString()}
-                          </Button>
-                        </Tooltip>
-                        <Tooltip
-                          className="flex gap-2 items-center"
-                          content="Atualizado em"
-                        >
-                          <Button variant="light" startContent={<LiaToolsSolid />}>
-                            {new Date(user.updatedAt).toLocaleDateString()}
-                          </Button>
-                        </Tooltip>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <p>Nada encontrado</p>
-            )
-          )}
+                  </div>
+                ) : (
+                  <p>Nada encontrado</p>
+                )
+              )}
+            </Tab>
+            <Tab title="SLA's">
+
+            </Tab>
+            <Tab title="Categorias dos Chamados"></Tab>
+            <Tab title="Status dos Chamados"></Tab>
+          </Tabs>
+          
           </CardBody>
         </Card>
       </div>

@@ -44,7 +44,7 @@ export default function TicketSquare({
                 }
                 className="text-xs"
               >
-                {priority.name}
+                {priority.priorityName}
               </Chip>) : (
                 <span>-</span>
               )}

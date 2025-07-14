@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from "react";
-import { useAuthContext } from "../_contexts/AuthContext";
+import { IUserSignedProps, useAuthContext } from "../_contexts/AuthContext";
 import {
   Avatar,
   Button,
@@ -112,12 +112,12 @@ export default function Nav() {
             ) : (
               <User
                 avatarProps={{
-                  name: userSigned.userName,
+                  name: (userSigned as IUserSignedProps)?.userName,
                   showFallback: true,
-                  src: `${process.env.baseUrl}/avatar/${userSigned.slug}/${userSigned.avatar}`
+                  src: `${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.slug}/${(userSigned as IUserSignedProps)?.avatar}`
                 }}
-                name={`${userSigned.userName}`}
-                description={`@${userSigned.email}`}
+                name={`${(userSigned as IUserSignedProps)?.userName}`}
+                description={`@${(userSigned as IUserSignedProps)?.email}`}
               />
             )}
           </NavbarContent>
@@ -130,16 +130,16 @@ export default function Nav() {
               <DrawerBody>
                 <div className="flex flex-col items-center gap-4 p-4">
                   <Avatar
-                    name={userSigned?.userName}
+                    name={(userSigned as IUserSignedProps)?.userName}
                     isBordered
-                    src={`${process.env.baseUrl}/avatar/${userSigned?.slug}/${userSigned?.avatar}`}
+                    src={`${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.slug}/${(userSigned as IUserSignedProps)?.avatar}`}
                     showFallback
                   />
-                  <span>{userSigned?.userName}</span>
+                  <span>{(userSigned as IUserSignedProps)?.userName}</span>
                   <ThemeSwitch />
                 </div>
                 <Divider />
-                {userSigned?.isAttendant || userSigned?.position.slug == "administrador" ? (
+                {(userSigned as IUserSignedProps)?.isAttendant || (userSigned as IUserSignedProps)?.position.slug == "administrador" ? (
                   menuAdminItems.map((item) => (
                     <Link key={item.name} href={item.route}>
                       <Button

@@ -1,32 +1,35 @@
 'use client';
 
-import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, InputOtp, Spinner } from "@heroui/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+  InputOtp,
+  Spinner
+} from "@heroui/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { confirmingCode } from "../confirm-code/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { sendingConfirmationLoginCode } from "../confirm-login/actions";
+import { useGetCookie } from "cookies-next";
 
 export default function FormConfirmLogin() {
   const router = useRouter();
-  const params = useSearchParams();
+  const getCookie = useGetCookie();
   const [code, setCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   async function handleConfirmCode() {
     try {
       setLoading(true);
 
-      let email = '';
-
-      if (params.get('email')) {
-        email = params.get('email')!;
-      }
-
-      console.log(email, code.toUpperCase());
-
       await sendingConfirmationLoginCode({
-        email,
+        email: getCookie('email'),
         code: code.toUpperCase(),
       });
 
@@ -38,7 +41,7 @@ export default function FormConfirmLogin() {
         shouldShowTimeoutProgress: true,
       });
 
-      router.push(`/sign_in`);
+      router.push(`/change-password`);
     } catch (error) {
       setLoading(false);
 

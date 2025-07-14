@@ -56,7 +56,7 @@ export async function gettingSigned() {
     if (serverCookies.get("demands_signed_data")?.value != undefined) {
       return JSON.parse(String(serverCookies.get('demands_signed_data')!.value)) as IUserSignedProps;      
     } else {
-      return {};
+      return undefined;
     }
   } catch (error) {
     const errorHandler = new ErrorHandler(error);

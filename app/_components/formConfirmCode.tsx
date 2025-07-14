@@ -1,14 +1,15 @@
 'use client';
 
 import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Divider, InputOtp, Spinner } from "@heroui/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { confirmingCode } from "../confirm-code/actions";
 import ErrorHandler from "../_utils/errorHandler";
+import { useGetCookie } from "cookies-next";
 
 export default function FormConfirmCode() {
   const router = useRouter();
-  const params = useSearchParams();
+  const getCookie = useGetCookie();
   const [code, setCode] = useState<string>('');
   const [timeLeft, setTimeLeft] = useState(60);
   const [loading, setLoading] = useState<boolean>(false);
@@ -17,9 +18,9 @@ export default function FormConfirmCode() {
     try {
       setLoading(true);
 
-      const account = await confirmingCode(code.toUpperCase());
+     await confirmingCode(code.toUpperCase());
       
-      router.push(`/change-password?email=${account.email}`);
+      router.push(`/change-password`);
     } catch (error) {
       setLoading(false);
 
@@ -66,7 +67,7 @@ export default function FormConfirmCode() {
           >
             <small
               className="text-center"
-            >Insira o código de confirmação que foi enviado no e-mail informado anteriormente {params.get('email')}</small>
+            >Insira o código de confirmação que foi enviado no e-mail informado {getCookie('email')}</small>
             <InputOtp
               length={6}
               value={code.toUpperCase()}

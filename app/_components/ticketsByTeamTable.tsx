@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import { listTickets } from "../tickets/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { SearchIcon } from "./searchIcon";
+import { useAuthContext } from "../_contexts/AuthContext";
+import { gettingSigned } from "./actions";
 
-export default function TicketsTable() {
+export default function TicketsByTeamTable() {
   const [loadingTickets, setLoadingTickets] = useState<boolean>(false);
   const [tickets, setTickets] = useState<ITicketReportProps[]>([]);
 
@@ -16,8 +18,11 @@ export default function TicketsTable() {
       try {
         setLoadingTickets(true);
 
+        const userSigned = await gettingSigned();
+
         const ticketsData = await listTickets({
-          byUser: "true"
+          byTeam: "true",
+          teamSlug: userSigned.teamSlug
         });
 
         setTickets(ticketsData);
