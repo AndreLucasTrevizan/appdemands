@@ -31,6 +31,7 @@ import { FaTeamspeak } from "react-icons/fa6";
 import { Key } from "@react-types/shared/src/key";
 import TicketCategoriesTable from "../_components/ticketCategoriesTable";
 import TicketPrioritiesTable from "../_components/ticketPrioritiesTable";
+import TicketSLASTable from "../_components/ticketSLASTable";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -247,8 +248,8 @@ export default function SettingsPage() {
                 )
               )}
             </Tab>
-            <Tab key="slas" title="SLA's">
-
+            <Tab key="slas" title="SLA's" className="w-full">
+              <TicketSLASTable />
             </Tab>
             <Tab key="categories" title="Categorias dos Chamados" className="w-full">
               <TicketCategoriesTable />

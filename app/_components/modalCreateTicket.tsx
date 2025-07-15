@@ -49,7 +49,7 @@ export default function ModalCreateTicket({
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
-  const [prioritySelected, setPrioritySelected] = useState<ITicketPriorityProps>();
+  const [prioritySelected, setPrioritySelected] = useState<ITic ketPriorityProps>();
   const [cateogorySelected, setCategorySelected] = useState<ITicketCategoryProps>();
   const [ticketCategories, setTicketCategories] = useState<ITicketCategoryProps[]>([]);
   const [ticketPriorities, setTicketPriorities] = useState<ITicketPriorityProps[]>([]);

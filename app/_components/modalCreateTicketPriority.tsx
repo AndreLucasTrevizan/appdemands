@@ -62,7 +62,7 @@ export default function ModalCreateTicketPriority({
     try {
       setLoading(true);
       
-      const response = await createTicketPriority(priorityName, ticketCategoryId);
+      const response = await createTicketPriority(priorityName, String(categorySelected.id));
 
       let prioritiesArray: ITicketPriorityProps[] = [];
 
@@ -100,6 +100,7 @@ export default function ModalCreateTicketPriority({
 
   const selectCategory = (e: ChangeEvent<HTMLSelectElement>) => {
     let category = categories.find((category) => `${category.id}` == e.target.value);
+    console.log(category);
     setCategorySelected(category);
   }
 
@@ -132,10 +133,8 @@ export default function ModalCreateTicketPriority({
             {loadingCategories ? (
               <Spinner size="md" />
             ) : (
-              <Select className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
-                 {categories.map((category) => (
-                  <SelectItem key={category.id}>{category.categoryName}</SelectItem>
-                ))}
+              <Select items={categories} className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
+                {(category) => <SelectItem key={category.id}>{category.categoryName}</SelectItem>}
               </Select>
             )}
           </ModalBody>

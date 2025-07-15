@@ -66,7 +66,7 @@ export default function TicketPrioritiesTable() {
   const filteredItems = useMemo(() => {
     let filteredUsers = [...priorities];
 
-    filteredUsers = priorities.filter((category) => category.categoryName.toLowerCase().includes(filterValue.toLowerCase()));
+    filteredUsers = priorities.filter((category) => category.priorityName.toLowerCase().includes(filterValue.toLowerCase()));
     
     return filteredUsers;
   }, [ priorities, filterValue ]);
@@ -78,7 +78,7 @@ export default function TicketPrioritiesTable() {
     return filteredItems.slice(start, end);
   }, [ page, rows, filteredItems ]);
 
-  async function loadUserData() {
+  async function loadPrioritiesData() {
     try {
       setLoadingPriorities(true);
 
@@ -89,7 +89,7 @@ export default function TicketPrioritiesTable() {
       addToast({
         color: 'success',
         title: 'Sucesso',
-        description: 'Lista de categorias atualizada',
+        description: 'Lista de prioridades atualizada',
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });
@@ -145,7 +145,7 @@ export default function TicketPrioritiesTable() {
                   <option value="100">100</option>
                 </select>
                 <Tooltip content="Atualizar lista de prioridades">
-                  <Button isIconOnly variant="light" onPress={() => loadUserData()}><FiRefreshCcw /></Button>
+                  <Button isIconOnly variant="light" onPress={() => loadPrioritiesData()}><FiRefreshCcw /></Button>
                 </Tooltip>
                 <Button
                   color="primary"
@@ -173,6 +173,7 @@ export default function TicketPrioritiesTable() {
         <TableHeader>
           <TableColumn key={'userName'}>ID</TableColumn>
           <TableColumn key={'email'}>NOME</TableColumn>
+          <TableColumn key={'category'}>CATEGORIA</TableColumn>
           <TableColumn key={'status'}>SLUG</TableColumn>
         </TableHeader>
         <TableBody
@@ -188,14 +189,17 @@ export default function TicketPrioritiesTable() {
         >
           {(ticketPriority) => (
             <TableRow>
-              <TableCell className="flex gap-2 items-center">
+              <TableCell>
                 <span>{ticketPriority.id}</span>
               </TableCell>
-              <TableCell className="flex gap-2 items-center">
+              <TableCell>
                 <span>{ticketPriority.priorityName}</span>
               </TableCell>
-              <TableCell className="flex gap-2 items-center">
-                <span>{ticketPriority.slug}</span>
+              <TableCell>
+                <span>{ticketPriority.categoryName}</span>
+              </TableCell>
+              <TableCell>
+                <span>{ticketPriority.prioritySlug}</span>
               </TableCell>
             </TableRow>
           )}

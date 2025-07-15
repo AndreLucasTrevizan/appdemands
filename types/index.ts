@@ -47,11 +47,26 @@ export interface ITicketProps {
   updatedAt: Date
 }
 
+export interface ITicketSLASProps {
+  id: number;
+  slaTime: number;
+  slaInSeconds: number;
+  priorityName: string;
+  ticketCategoryId: number;
+  hoursToFirstResponse: number;
+  hoursToFirstResponseInSeconds: number;
+  ticketPriorityId: number;
+  ticketPriority: ITicketPriorityProps;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ITicketPriorityProps {
   id: number,
   priorityName: string,
-  slug: string,
+  prioritySlug: string,
   ticketCategoryId: number;
+  categoryName: string;
   createdAt: Date,
   updatedAt: Date
 }
@@ -67,6 +82,7 @@ export interface ITicketStatusProps {
 export interface ITicketCategoryProps {
   id: number,
   categoryName: string,
+  categoryDesc: string,
   slug: string,
   createdAt: Date,
   updatedAt: Date

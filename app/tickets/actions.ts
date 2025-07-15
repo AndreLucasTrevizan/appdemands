@@ -99,6 +99,7 @@ export const getUserDetailsForTicket = async () => {
     throw errorHandler.message;
   }
 }
+
 export const getTicketCategoriesList = async () => {
   try {
     const signedData = await gettingSigned();
@@ -120,6 +121,7 @@ export const getTicketCategoriesList = async () => {
     throw errorHandler.message;
   }
 }
+
 export const getTicketStatusList = async () => {
   try {
     const signedData = await gettingSigned();
@@ -141,6 +143,7 @@ export const getTicketStatusList = async () => {
     throw errorHandler.message;
   }
 }
+
 export const getTicketPrioritiesList = async () => {
   try {
     const signedData = await gettingSigned();
@@ -211,7 +214,7 @@ export const createTicketCategory = async (categoryName: string, categoryDesc: s
       }
     });
 
-    return response.data.ticket_categories;
+    return response.data.ticket_category;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 
@@ -237,6 +240,61 @@ export const createTicketPriority = async (priorityName: string, ticketCategoryI
     });
 
     return response.data.ticketPriority;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const createTicketSLA = async (slaTime: string, hoursToFirstResponse: string, ticketPriorityId: number) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.post(`/tickets/slas`, {
+      slaTime,
+      hoursToFirstResponse,
+      ticketPriorityId
+    }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticketSla;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const getTicketSLASList = async ({
+  ticketCategoryId
+}: {
+  ticketCategoryId: string
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.get(`/tickets/slas`, {
+      params: {
+        ticketCategoryId
+      },
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticketSlas;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 
