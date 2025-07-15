@@ -113,7 +113,7 @@ export const getTicketCategoriesList = async () => {
       }
     });
 
-    return response.data.ticketCategories;
+    return response.data.ticket_categories;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 
@@ -187,6 +187,56 @@ export const attachingTicketFiles = async (ticketId: number, files: File[]) => {
     });
 
     return response.data;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const createTicketCategory = async (categoryName: string, categoryDesc: string) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.post(`/tickets/categories`, {
+      categoryName,
+      categoryDesc
+    }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticket_categories;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const createTicketPriority = async (priorityName: string, ticketCategoryId: string) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.post(`/tickets/priorities`, {
+      priorityName,
+      ticketCategoryId
+    }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticketPriority;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

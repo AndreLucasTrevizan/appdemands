@@ -1,10 +1,9 @@
 'use client';
 
-import { IUsersReport } from "@/types";
+import { ITicketCategoryProps } from "@/types";
 import {
   addToast,
   Button,
-  Chip,
   Input,
   Pagination,
   Spinner,
@@ -15,40 +14,39 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  useDisclosure,
-  User
+  useDisclosure
 } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
-import { listUsers } from "../users/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
-import ModalCreateUser from "./modalCreateUser";
+import { getTicketCategoriesList } from "../tickets/actions";
+import ModalCreateTicketCategory from "./modalCreateTicketCategory";
 
-export default function UsersTable() {
+export default function TicketCategoriesTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
   const [filterValue, setFilterValue] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [rows, setRows] = useState<number>(5);
-  const [users, setUsers] = useState<IUsersReport[]>([]);
+  const [categories, setCategories] = useState<ITicketCategoryProps[]>([]);
 
-  const pages = Math.ceil(users.length / rows);
+  const pages = Math.ceil(categories.length / rows);
 
-  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
 
   useEffect(() => {
-    async function loadUsersData() {
+    async function loadCategoriesData() {
       try {
-        setLoadingUsers(true);
+        setLoadingCategories(true);
 
-        const usersData = await listUsers();
+        const categoriesData = await getTicketCategoriesList();
 
-        setUsers(usersData);
+        setCategories(categoriesData);
 
-        setLoadingUsers(false);
+        setLoadingCategories(false);
       } catch (error) {
-        setLoadingUsers(false);
+        setLoadingCategories(false);
         
         const errorHandler = new ErrorHandler(error);
       
@@ -62,16 +60,16 @@ export default function UsersTable() {
       }
     }
 
-    loadUsersData();
+    loadCategoriesData();
   }, []);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredUsers = [...categories];
 
-    filteredUsers = users.filter((user) => user.userName.toLowerCase().includes(filterValue.toLowerCase()));
+    filteredUsers = categories.filter((category) => category.categoryName.toLowerCase().includes(filterValue.toLowerCase()));
     
     return filteredUsers;
-  }, [ users, filterValue ]);
+  }, [ categories, filterValue ]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rows;
@@ -82,23 +80,23 @@ export default function UsersTable() {
 
   async function loadUserData() {
     try {
-      setLoadingUsers(true);
+      setLoadingCategories(true);
 
-      const usersData = await listUsers();
+      const categoriesData = await getTicketCategoriesList();
 
-      setUsers(usersData);
+      setCategories(categoriesData);
 
       addToast({
         color: 'success',
         title: 'Sucesso',
-        description: 'Lista de usuários atualizadas',
+        description: 'Lista de categorias atualizada',
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingUsers(false);
+      setLoadingCategories(false);
     } catch (error) {
-      setLoadingUsers(false);
+      setLoadingCategories(false);
         
       const errorHandler = new ErrorHandler(error);
       
@@ -114,27 +112,27 @@ export default function UsersTable() {
 
   return (
     <div>
-      <ModalCreateUser
+      <ModalCreateTicketCategory
         isOpen={isOpen}
         onClose={onClose}
         onOpen={onOpen}
         onOpenChange={onOpenChange}
-        users={users}
-        setUsers={setUsers}
-        key={'createUsers'}
+        categories={categories}
+        setCategories={setCategories}
+        key={'createTicketCategory'}
       />
       <Table
         isStriped
         isCompact
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de Usuários</h1>
+            <h1>Lista de Categorias de Chamados</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={
                   <SearchIcon />
                 }
-                placeholder="Buscar usuário..."
+                placeholder="Buscar categoria..."
                 type="search"
                 className="max-w-[40%]"
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -173,54 +171,32 @@ export default function UsersTable() {
         }
       >
         <TableHeader>
-          <TableColumn key={'userName'}>Nome</TableColumn>
-          <TableColumn key={'email'}>E-mail</TableColumn>
-          <TableColumn key={'status'}>Status</TableColumn>
-          <TableColumn key={'emailVerified'}>E-mail Verificado</TableColumn>
-          <TableColumn key={'positionName'}>Função</TableColumn>
-          <TableColumn key={'teamName'}>Equipe</TableColumn>
+          <TableColumn key={'userName'}>ID</TableColumn>
+          <TableColumn key={'email'}>NOME</TableColumn>
+          <TableColumn key={'status'}>SLUG</TableColumn>
         </TableHeader>
         <TableBody
-          items={loadingUsers ? [] : items}
+          items={loadingCategories ? [] : items}
           emptyContent={
             <div className="flex flex-col gap-4 items-center justify-center">
               <SearchIcon />
-              <span>Nenhum usuário encontrado</span>
+              <span>Nenhuma categoria de chamados encontrada</span>
             </div>
           }
-          isLoading={loadingUsers}
+          isLoading={loadingCategories}
           loadingContent={<Spinner size="md" />}
         >
-          {(user) => (
+          {(ticketCategory) => (
             <TableRow>
               <TableCell className="flex gap-2 items-center">
-                <User
-                  avatarProps={{
-                    showFallback: true,
-                    name: user.userName,
-                    src: `${process.env.baseUrl}/avatar/${user.userSlug}/${user.avatar}`
-                  }}
-                  name={user.userName}
-                  description={user.userSlug}
-                />
+                <span>{ticketCategory.id}</span>
               </TableCell>
-              <TableCell>
-                <span>{user.email}</span>
+              <TableCell className="flex gap-2 items-center">
+                <span>{ticketCategory.categoryName}</span>
               </TableCell>
-              <TableCell>
-                <Chip
-                  className="text-white"
-                  color={user.status == 'ativo' ? 'success' : 'danger'}
-                >{user.status == 'ativo' ? 'Ativo' : 'Desativado'}</Chip>
+              <TableCell className="flex gap-2 items-center">
+                <span>{ticketCategory.slug}</span>
               </TableCell>
-              <TableCell>
-                <Chip
-                  className="text-white"
-                  color={user.emailVerified ? 'success' : 'danger'}
-                >{user.emailVerified ? 'Sim' : 'Não'}</Chip>
-              </TableCell>
-              <TableCell>{user.positionName}</TableCell>
-              <TableCell>{user.teamName ? user.teamName : (<Chip color="warning">Sem equipe</Chip>)}</TableCell>
             </TableRow>
           )}
         </TableBody>

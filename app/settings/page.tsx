@@ -29,6 +29,8 @@ import { RiUserSettingsLine } from "react-icons/ri";
 import { LiaToolsSolid } from "react-icons/lia";
 import { FaTeamspeak } from "react-icons/fa6";
 import { Key } from "@react-types/shared/src/key";
+import TicketCategoriesTable from "../_components/ticketCategoriesTable";
+import TicketPrioritiesTable from "../_components/ticketPrioritiesTable";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -132,14 +134,13 @@ export default function SettingsPage() {
           <BreadcrumbItem>Configurações</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
-        <Card>
-          <CardBody>
+        <div className="w-full">
           <Tabs
             placement="start"
             selectedKey={tab}
             onSelectionChange={setTab}
           >
-            <Tab key={"profile"} title='Minha Conta'>
+            <Tab key={"profile"} title='Minha Conta' className="w-full">
               {loading ? (
                 <Spinner className="py-4" variant="dots" size="md" />
               ) : (
@@ -246,15 +247,18 @@ export default function SettingsPage() {
                 )
               )}
             </Tab>
-            <Tab title="SLA's">
+            <Tab key="slas" title="SLA's">
 
             </Tab>
-            <Tab title="Categorias dos Chamados"></Tab>
-            <Tab title="Status dos Chamados"></Tab>
+            <Tab key="categories" title="Categorias dos Chamados" className="w-full">
+              <TicketCategoriesTable />
+            </Tab>
+            <Tab key="prioridades" title="Prioridade dos Chamados" className="w-full">
+              <TicketPrioritiesTable />
+            </Tab>
+            <Tab key="status" title="Status dos Chamados" className="w-full"></Tab>
           </Tabs>
-          
-          </CardBody>
-        </Card>
+        </div>
       </div>
     </DefaultLayout>
   );

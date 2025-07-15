@@ -51,7 +51,7 @@ export interface ITicketPriorityProps {
   id: number,
   priorityName: string,
   slug: string,
-  hours: number,
+  ticketCategoryId: number;
   createdAt: Date,
   updatedAt: Date
 }
