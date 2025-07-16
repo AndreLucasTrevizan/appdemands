@@ -17,7 +17,7 @@ import {
   Tooltip,
   User
 } from "@heroui/react";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
@@ -49,7 +49,7 @@ export default function ModalCreateTicket({
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
-  const [prioritySelected, setPrioritySelected] = useState<ITic ketPriorityProps>();
+  const [prioritySelected, setPrioritySelected] = useState<ITicketPriorityProps>();
   const [cateogorySelected, setCategorySelected] = useState<ITicketCategoryProps>();
   const [ticketCategories, setTicketCategories] = useState<ITicketCategoryProps[]>([]);
   const [ticketPriorities, setTicketPriorities] = useState<ITicketPriorityProps[]>([]);
@@ -84,7 +84,7 @@ export default function ModalCreateTicket({
         });
       }
     }
-    /* async function loadTicketPrioritiesData() {
+    async function loadTicketPrioritiesData() {
       try {
         setLoadingTicketPrioritiesData(true);
 
@@ -140,11 +140,11 @@ export default function ModalCreateTicket({
           shouldShowTimeoutProgress: true,
         });
       }
-    } */
+    }
 
     loadData();
-    /* loadTicketCategoriesData();
-    loadTicketPrioritiesData(); */
+    loadTicketCategoriesData();
+    loadTicketPrioritiesData();
   }, []);
 
   const selectPriority = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -271,6 +271,20 @@ export default function ModalCreateTicket({
     }
   }
 
+  const filteredPriorities = useMemo(() => {
+    let filteredItems = [...ticketPriorities];
+
+    console.log(filteredItems);
+
+    let hasCategorySearch = Boolean(cateogorySelected);
+
+    if (hasCategorySearch) {
+      filteredItems = ticketPriorities.filter((priority) => priority.ticketCategoryId == cateogorySelected.id);
+    } 
+
+    return filteredItems;
+  }, [ cateogorySelected ]);
+
   return (
     <Modal
       size="full"
@@ -318,19 +332,17 @@ export default function ModalCreateTicket({
                   {loadingTicketPrioritiesData ? (
                     <Spinner size="md" />
                   ) : (
-                    <Select className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
-                      {/* {ticketPriorities.map((priority) => (
-                        <SelectItem key={priority.id}>{`${priority.priorityName} - ${priority.hours}h`}</SelectItem>
-                      ))} */}
+                    <Select items={filteredPriorities} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
+                      {(priority) => <SelectItem key={priority.id}>{`${priority.priorityName}`}</SelectItem>}
                     </Select>
                   )}
                   {loadingTicketCategoriesData ? (
                     <Spinner size="md" />
                   ) : (
                     <Select className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
-                     {/*  {ticketCategories.map((category) => (
+                      {ticketCategories.map((category) => (
                         <SelectItem key={category.id}>{category.categoryName}</SelectItem>
-                      ))} */}
+                      ))}
                     </Select>
                   )}
                 </div>
