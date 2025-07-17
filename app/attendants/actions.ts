@@ -38,7 +38,7 @@ export const listAttendants = async () => {
       redirect('/sign_in');
     }
 
-    const response = await api.get('/attendants', {
+    const response = await api.get('/attendants', { 
       headers: {
         Authorization: `Bearer ${signedData.token}`,
       }

@@ -84,45 +84,12 @@ export default function ModalCreateTicket({
         });
       }
     }
-    async function loadTicketPrioritiesData() {
-      try {
-        setLoadingTicketPrioritiesData(true);
 
-        const prioritiesData: ITicketPriorityProps[] = await getTicketPrioritiesList();
-        const userData = await getUserDetailsForTicket();
-
-        if (userData?.isAttendant == 1) {
-          setTicketPriorities(prioritiesData);
-        } else {
-          let prioritiesDataInc: ITicketPriorityProps[] = [];
-
-          prioritiesDataInc = prioritiesData.filter((priority) => {
-            priority.priorityName != "Emergência";
-          });
-
-          setTicketPriorities(prioritiesDataInc);
-        }
-
-        setLoadingTicketPrioritiesData(false);
-      } catch (error) {
-        setLoadingTicketPrioritiesData(false);
-
-        const errorHandler = new ErrorHandler(error);
-        
-        addToast({
-          color: 'warning',
-          title: 'Aviso',
-          description: errorHandler.message,
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
-      }
-    }
-    async function loadTicketCategoriesData() {
+    async function loadTicketCategories() {
       try {
         setLoadingTicketCategoriesData(true);
-
-        const categoriesData: ITicketCategoryProps[] = await getTicketCategoriesList();
+        
+        const categoriesData = await getTicketCategoriesList();
 
         setTicketCategories(categoriesData);
 
@@ -131,20 +98,44 @@ export default function ModalCreateTicket({
         setLoadingTicketCategoriesData(false);
 
         const errorHandler = new ErrorHandler(error);
-        
+
         addToast({
-          color: 'warning',
           title: 'Aviso',
           description: errorHandler.message,
-          timeout: 3000,
+          color: 'warning',
+          timeout: 300,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+    }
+    
+    async function loadTicketPriorities() {
+      try {
+        setLoadingTicketPrioritiesData(true);
+        
+        const prioritiesData = await getTicketPrioritiesList();
+
+        setTicketPriorities(prioritiesData);
+
+        setLoadingTicketPrioritiesData(false);
+      } catch (error) {
+        setLoadingTicketPrioritiesData(false);
+
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.message,
+          color: 'warning',
+          timeout: 300,
           shouldShowTimeoutProgress: true,
         });
       }
     }
 
     loadData();
-    loadTicketCategoriesData();
-    loadTicketPrioritiesData();
+    loadTicketCategories();
+    loadTicketPriorities();
   }, []);
 
   const selectPriority = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -271,18 +262,26 @@ export default function ModalCreateTicket({
     }
   }
 
-  const filteredPriorities = useMemo(() => {
+  let filteredPriorities = useMemo(() => {
     let filteredItems = [...ticketPriorities];
 
-    console.log(filteredItems);
+    let hasCategoryFilter = Boolean(cateogorySelected);
 
-    let hasCategorySearch = Boolean(cateogorySelected);
+    if (hasCategoryFilter) {
+      filteredItems = ticketPriorities.filter((ticketPriority) => ticketPriority.ticketCategoryId == cateogorySelected.id);
 
-    if (hasCategorySearch) {
-      filteredItems = ticketPriorities.filter((priority) => priority.ticketCategoryId == cateogorySelected.id);
-    } 
-
-    return filteredItems;
+      return (
+        <Select items={filteredItems} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
+          {(ticketPriority) => <SelectItem key={ticketPriority.id}>{`${ticketPriority.priorityName}`}</SelectItem>}
+        </Select>
+      );
+    } else {
+      return (
+        <Select items={filteredItems} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
+          {(ticketPriority) => <SelectItem key={ticketPriority.id}>{`${ticketPriority.priorityName}`}</SelectItem>}
+        </Select>
+      );
+    }
   }, [ cateogorySelected ]);
 
   return (
@@ -329,21 +328,17 @@ export default function ModalCreateTicket({
                   isRequired
                 />
                 <div className="flex w-full flex-wrap gap-4">
-                  {loadingTicketPrioritiesData ? (
-                    <Spinner size="md" />
-                  ) : (
-                    <Select items={filteredPriorities} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
-                      {(priority) => <SelectItem key={priority.id}>{`${priority.priorityName}`}</SelectItem>}
-                    </Select>
-                  )}
                   {loadingTicketCategoriesData ? (
                     <Spinner size="md" />
                   ) : (
-                    <Select className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
-                      {ticketCategories.map((category) => (
-                        <SelectItem key={category.id}>{category.categoryName}</SelectItem>
-                      ))}
+                    <Select items={ticketCategories} className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
+                      {(ticketCategory) => <SelectItem key={ticketCategory.id}>{ticketCategory.categoryName}</SelectItem>}
                     </Select>
+                  )}
+                  {loadingTicketPrioritiesData ? (
+                    <Spinner size="md" />
+                  ) : (
+                    filteredPriorities
                   )}
                 </div>
                 <Divider />

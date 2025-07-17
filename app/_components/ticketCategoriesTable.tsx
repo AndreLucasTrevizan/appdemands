@@ -6,6 +6,8 @@ import {
   Button,
   Input,
   Pagination,
+  Selection,
+  SortDescriptor,
   Spinner,
   Table,
   TableBody,
@@ -23,6 +25,27 @@ import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
 import { getTicketCategoriesList } from "../tickets/actions";
 import ModalCreateTicketCategory from "./modalCreateTicketCategory";
+import { FaChevronDown, FaHandDots } from "react-icons/fa6";
+import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
+import { utils, writeFile } from "xlsx";
+
+interface ITicketCategoryTableColumns {
+  name: string,
+  uid: string,
+  sortable: boolean,
+}
+
+const tableColumns: ITicketCategoryTableColumns[] = [
+  {name: 'ID', uid: 'ID', sortable: true},
+  {name: 'CATEGORIA', uid: 'SLA', sortable: true},
+  {name: 'SLUG', uid: 'SLA EM SEGUNDOS', sortable: true},
+  {name: 'DESCRIÇÃO', uid: 'PRIORIDADE', sortable: true},
+  {name: 'CRIADO EM', uid: 'CRIADO EM', sortable: true},
+  {name: 'ATUALIZADO EM', uid: 'ATUALIZADO EM', sortable: true},
+  {name: 'ACTIONS', uid: 'ACTIONS', sortable: false},
+];
+
+const INITIAL_VISIBLE_COLUMNS = ["ID", "CATEGORIA", "SLUG", "DESCRIÇÃO", "ACTIONS"];
 
 export default function TicketCategoriesTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
@@ -30,10 +53,23 @@ export default function TicketCategoriesTable() {
   const [page, setPage] = useState<number>(1);
   const [rows, setRows] = useState<number>(5);
   const [categories, setCategories] = useState<ITicketCategoryProps[]>([]);
+  const [statusFilter, setStatusFilter] = useState<Selection>("all");
+  const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: 'CATEGORIA',
+    direction: 'ascending',
+  });
 
   const pages = Math.ceil(categories.length / rows);
 
+  const headerColumns = useMemo(() => {
+    return tableColumns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+  }, [visibleColumns]);
+
   const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+
+  const hasSearchFilter = Boolean(filterValue);
 
   useEffect(() => {
     async function loadCategoriesData() {
@@ -64,12 +100,16 @@ export default function TicketCategoriesTable() {
   }, []);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...categories];
+    let filteredCategories = [...categories];
 
-    filteredUsers = categories.filter((category) => category.categoryName.toLowerCase().includes(filterValue.toLowerCase()));
-    
-    return filteredUsers;
-  }, [ categories, filterValue ]);
+    if (hasSearchFilter) {
+      filteredCategories = filteredCategories.filter((slas) =>
+        slas.categoryName.toLowerCase().includes(filterValue.toLowerCase()),
+      );
+    }
+
+    return filteredCategories;
+  }, [categories, filterValue ]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rows;
@@ -77,6 +117,65 @@ export default function TicketCategoriesTable() {
 
     return filteredItems.slice(start, end);
   }, [ page, rows, filteredItems ]);
+
+  const sortedItems = useMemo(() => {
+    let attendantsToSort = [...items];
+
+    attendantsToSort = attendantsToSort.sort((a: ITicketCategoryProps, b: ITicketCategoryProps) => {
+      switch(sortDescriptor.column) {
+        case "ID":
+          const idA = a["id" as keyof ITicketCategoryProps] as number;
+          const idB = b["id" as keyof ITicketCategoryProps] as number;
+          const cmpId = idA < idB ? -1 : idA > idB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpId : cmpId; 
+        case "SLA":
+          const slaA = a["categoryName" as keyof ITicketCategoryProps] as number;
+          const slaB = b["categoryName" as keyof ITicketCategoryProps] as number;
+          const cmpSla = slaA < slaB ? -1 : slaA > slaB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpSla : cmpSla; 
+        case "SLA EM SEGUNDOS":
+          const slaInSecondsA = a["slug" as keyof ITicketCategoryProps] as number;
+          const slaInSecondsB = b["slug" as keyof ITicketCategoryProps] as number;
+          const cmpSlaInSeconds = slaInSecondsA < slaInSecondsB ? -1 : slaInSecondsA > slaInSecondsB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpSlaInSeconds : cmpSlaInSeconds;
+        case "PRIORIDADE":
+          const priorityA = a["categoryDesc" as keyof ITicketCategoryProps] as number;
+          const priorityB = b["categoryDesc" as keyof ITicketCategoryProps] as number;
+          const cmpPriority = priorityA < priorityB ? -1 : priorityA > priorityB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpPriority : cmpPriority;
+        case "HORAS PARA PRIMEIRA RESPOSTA":
+          const hfrA = a["" as keyof ITicketCategoryProps] as number;
+          const hfrB = b["hoursToFirstResponse" as keyof ITicketCategoryProps] as number;
+          const cmpHfr = hfrA < hfrB ? -1 : hfrA > hfrB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpHfr : cmpHfr;
+        case "HORAS PARA PRIMEIRA RESPOSTA EM SEGUNDOS":
+          const hfrisAtA = a["hoursToFirstResponseInSeconds" as keyof ITicketCategoryProps] as number;
+          const hfrisAtB = b["hoursToFirstResponseInSeconds" as keyof ITicketCategoryProps] as number;
+          const cmpHfrisAt = hfrisAtA < hfrisAtB ? -1 : hfrisAtA > hfrisAtB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpHfrisAt : cmpHfrisAt;
+        case "CRIADO EM":
+          const createdAtA = a["createdAt" as keyof ITicketCategoryProps] as number;
+          const createdAtB = b["createdAt" as keyof ITicketCategoryProps] as number;
+          const cmpCreatedAt = createdAtA < createdAtB ? -1 : createdAtA > createdAtB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpCreatedAt : cmpCreatedAt;
+        case "ATUALIZADO EM":
+          const updatedAtA = a["updatedAt" as keyof ITicketCategoryProps] as number;
+          const updatedAtB = b["updatedAt" as keyof ITicketCategoryProps] as number;
+          const cmpUpdatedAt = updatedAtA < updatedAtB ? -1 : updatedAtA > updatedAtB ? 1 : 0;
+
+          return sortDescriptor.direction === "descending" ? -cmpUpdatedAt : cmpUpdatedAt;
+      }
+    });
+
+    return attendantsToSort;
+  }, [sortDescriptor, items]);
 
   async function loadUserData() {
     try {

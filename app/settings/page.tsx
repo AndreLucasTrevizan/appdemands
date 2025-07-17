@@ -258,6 +258,7 @@ export default function SettingsPage() {
               <TicketPrioritiesTable />
             </Tab>
             <Tab key="status" title="Status dos Chamados" className="w-full"></Tab>
+            <Tab key="catalog" title="Catalogo de Serviços" className="w-full"></Tab>
           </Tabs>
         </div>
       </div>
