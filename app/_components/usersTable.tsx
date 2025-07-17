@@ -529,7 +529,9 @@ export default function UsersTable() {
             </div>
           </div>
         }
+        topContentPlacement="outside"
         bottomContent={bottomContent}
+        bottomContentPlacement="outside"
       >
         <TableHeader columns={headerColumns}>
           {(column) => (

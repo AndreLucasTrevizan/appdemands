@@ -4,6 +4,10 @@ import { ITicketCategoryProps } from "@/types";
 import {
   addToast,
   Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Input,
   Pagination,
   Selection,
@@ -18,7 +22,7 @@ import {
   Tooltip,
   useDisclosure
 } from "@heroui/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
 import ErrorHandler from "../_utils/errorHandler";
@@ -37,9 +41,9 @@ interface ITicketCategoryTableColumns {
 
 const tableColumns: ITicketCategoryTableColumns[] = [
   {name: 'ID', uid: 'ID', sortable: true},
-  {name: 'CATEGORIA', uid: 'SLA', sortable: true},
-  {name: 'SLUG', uid: 'SLA EM SEGUNDOS', sortable: true},
-  {name: 'DESCRIÇÃO', uid: 'PRIORIDADE', sortable: true},
+  {name: 'CATEGORIA', uid: 'CATEGORIA', sortable: true},
+  {name: 'SLUG', uid: 'SLUG', sortable: true},
+  {name: 'DESCRIÇÃO', uid: 'DESCRIÇÃO', sortable: true},
   {name: 'CRIADO EM', uid: 'CRIADO EM', sortable: true},
   {name: 'ATUALIZADO EM', uid: 'ATUALIZADO EM', sortable: true},
   {name: 'ACTIONS', uid: 'ACTIONS', sortable: false},
@@ -129,36 +133,24 @@ export default function TicketCategoriesTable() {
           const cmpId = idA < idB ? -1 : idA > idB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpId : cmpId; 
-        case "SLA":
+        case "CATEGORIA":
           const slaA = a["categoryName" as keyof ITicketCategoryProps] as number;
           const slaB = b["categoryName" as keyof ITicketCategoryProps] as number;
           const cmpSla = slaA < slaB ? -1 : slaA > slaB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpSla : cmpSla; 
-        case "SLA EM SEGUNDOS":
+        case "SLUG":
           const slaInSecondsA = a["slug" as keyof ITicketCategoryProps] as number;
           const slaInSecondsB = b["slug" as keyof ITicketCategoryProps] as number;
           const cmpSlaInSeconds = slaInSecondsA < slaInSecondsB ? -1 : slaInSecondsA > slaInSecondsB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpSlaInSeconds : cmpSlaInSeconds;
-        case "PRIORIDADE":
+        case "DESCRIÇÃO":
           const priorityA = a["categoryDesc" as keyof ITicketCategoryProps] as number;
           const priorityB = b["categoryDesc" as keyof ITicketCategoryProps] as number;
           const cmpPriority = priorityA < priorityB ? -1 : priorityA > priorityB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpPriority : cmpPriority;
-        case "HORAS PARA PRIMEIRA RESPOSTA":
-          const hfrA = a["" as keyof ITicketCategoryProps] as number;
-          const hfrB = b["hoursToFirstResponse" as keyof ITicketCategoryProps] as number;
-          const cmpHfr = hfrA < hfrB ? -1 : hfrA > hfrB ? 1 : 0;
-
-          return sortDescriptor.direction === "descending" ? -cmpHfr : cmpHfr;
-        case "HORAS PARA PRIMEIRA RESPOSTA EM SEGUNDOS":
-          const hfrisAtA = a["hoursToFirstResponseInSeconds" as keyof ITicketCategoryProps] as number;
-          const hfrisAtB = b["hoursToFirstResponseInSeconds" as keyof ITicketCategoryProps] as number;
-          const cmpHfrisAt = hfrisAtA < hfrisAtB ? -1 : hfrisAtA > hfrisAtB ? 1 : 0;
-
-          return sortDescriptor.direction === "descending" ? -cmpHfrisAt : cmpHfrisAt;
         case "CRIADO EM":
           const createdAtA = a["createdAt" as keyof ITicketCategoryProps] as number;
           const createdAtB = b["createdAt" as keyof ITicketCategoryProps] as number;
@@ -177,7 +169,7 @@ export default function TicketCategoriesTable() {
     return attendantsToSort;
   }, [sortDescriptor, items]);
 
-  async function loadUserData() {
+  async function loadTicketCategoriesData() {
     try {
       setLoadingCategories(true);
 
@@ -208,6 +200,137 @@ export default function TicketCategoriesTable() {
       });
     }
   }
+  const onRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRows(Number(e.target.value));
+    setPage(1);
+  }, []);
+
+  const onSearchChange = useCallback((value?: string) => {
+    if (value) {
+      setFilterValue(value);
+      setPage(1);
+    } else {
+      setFilterValue("");
+    }
+  }, []);
+
+  const renderCell = useCallback((category: ITicketCategoryProps, columnKey: string) => {
+    const cellValue = category[columnKey];
+
+    switch (columnKey) {
+      case "ID":
+        return (
+          <span>{category.id}</span>
+        );
+      case "CATEGORIA":
+        return (
+          <span>{category.categoryName}</span>
+        );
+      case "SLUG":
+        return (
+          <span>{category.slug}</span>
+        );
+      case "DESCRIÇÃO":
+        return (
+          <span>{category.categoryDesc}</span>
+        );
+      case "CRIADO EM":
+        return (
+          <span>{new Date(category.createdAt).toLocaleDateString('pt-br')}</span>
+        );
+      case "ATUALIZADO EM":
+        return (
+          <span>{new Date(category.updatedAt).toLocaleDateString('pt-br')}</span>
+        );
+      case "ACTIONS":
+        return (
+          <div className="relative flex justify-end items-center gap-2">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly size="sm" variant="light">
+                  <FaHandDots className="text-default-300" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem key="view">Visualizar</DropdownItem>
+                <DropdownItem key="edit">Editar</DropdownItem>
+                <DropdownItem key="delete">Deletar</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, [
+    filterValue,
+    statusFilter,
+    visibleColumns,
+    onSearchChange,
+    onRowsPerPageChange,
+    categories.length,
+    hasSearchFilter,
+  ]);
+
+  const onNextPage = useCallback(() => {
+    if (page < pages) {
+      setPage(page + 1);
+    }
+  }, [page, pages]);
+
+  const onPreviousPage = useCallback(() => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  }, [page]);
+
+  const bottomContent = useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex justify-between items-center">
+        <span className="w-[30%] text-small text-default-400">
+          {selectedKeys === "all"
+            ? "Todos as categorias selecionadas"
+            : `${selectedKeys.size} de ${filteredItems.length} selecionados`}
+        </span>
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pages}
+          onChange={setPage}
+        />
+        <div className="hidden sm:flex w-[30%] justify-end gap-2">
+          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
+            Anterior
+          </Button>
+          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
+            Próxima
+          </Button>
+        </div>
+      </div>
+    );
+  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
+  const exportExcel = () => {
+    const worksheet = utils.json_to_sheet(sortedItems);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "Categorias de Chamados");
+    let newColumns: string[] = [];
+  
+    tableColumns.forEach((column) => {
+      let columnLowerCase = column.name.toLowerCase();
+      let firstCharCapitalized = columnLowerCase.charAt(0).toUpperCase();
+      newColumns.push(firstCharCapitalized + columnLowerCase.slice(1));
+    });
+  
+    utils.sheet_add_aoa(worksheet, [newColumns], { origin: "A1" });
+
+    const max_width = sortedItems.reduce((w, r) => Math.max(w, r.categoryName.length), 10);
+    worksheet["!cols"] = [ { wch: max_width } ];
+    writeFile(workbook, "Categorias de Chamados.xlsx", { compression: true });
+  }
 
   return (
     <div>
@@ -223,19 +346,45 @@ export default function TicketCategoriesTable() {
       <Table
         isStriped
         isCompact
+        selectionMode="single"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        sortDescriptor={sortDescriptor}
+        onSortChange={setSortDescriptor}
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de Categorias de Chamados</h1>
+            <h1>Lista de SLAs</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={
                   <SearchIcon />
                 }
-                placeholder="Buscar categoria..."
+                placeholder="Buscar sla..."
                 type="search"
                 className="max-w-[40%]"
                 onChange={(e) => setFilterValue(e.target.value)}
               />
+              <Dropdown>
+                <DropdownTrigger className="hidden sm:flex">
+                  <Button endContent={<FaChevronDown className="text-small" />} variant="flat">
+                    Colunas Visíveis
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  disallowEmptySelection
+                  aria-label="Table Columns"
+                  closeOnSelect={false}
+                  selectedKeys={visibleColumns}
+                  selectionMode="multiple"
+                  onSelectionChange={setVisibleColumns}
+                >
+                  {tableColumns.map((column) => (
+                    <DropdownItem key={column.uid} className="capitalize">
+                      {column.name}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
               <div className="flex gap-2 items-center">
                 <span>Linhas por página</span>
                 <select onChange={(e) => setRows(Number(e.target.value))}>
@@ -243,8 +392,16 @@ export default function TicketCategoriesTable() {
                   <option value="10">10</option>
                   <option value="100">100</option>
                 </select>
-                <Tooltip content="Atualizar lista de usuários">
-                  <Button isIconOnly variant="light" onPress={() => loadUserData()}><FiRefreshCcw /></Button>
+                <Tooltip content="Atualizar lista de SLAs">
+                  <Button isIconOnly variant="light" onPress={() => loadTicketCategoriesData()}><FiRefreshCcw /></Button>
+                </Tooltip>
+                <Tooltip content="Exportar para Excel">
+                  <Button
+                    isIconOnly
+                    variant="light"
+                    startContent={<PiMicrosoftExcelLogoDuotone size={25} className="text-green-700" />}
+                    onPress={() => exportExcel()}
+                  />
                 </Tooltip>
                 <Button
                   color="primary"
@@ -255,49 +412,37 @@ export default function TicketCategoriesTable() {
             </div>
           </div>
         }
-        bottomContent={
-          <div className="flex w-full justify-center">
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="primary"
-              page={page}
-              total={pages}
-              onChange={(page) => setPage(page)}
-            />
-          </div>
-        }
+        topContentPlacement="outside"
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
       >
-        <TableHeader>
-          <TableColumn key={'id'}>ID</TableColumn>
-          <TableColumn key={'name'}>NOME</TableColumn>
-          <TableColumn key={'desc'}>DESCRIÇÃO</TableColumn>
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
         </TableHeader>
         <TableBody
-          items={loadingCategories ? [] : items}
+          items={loadingCategories ? [] : sortedItems}
           emptyContent={
             <div className="flex flex-col gap-4 items-center justify-center">
               <SearchIcon />
-              <span>Nenhuma categoria de chamados encontrada</span>
+              <span>Nenhum SLA encontrado</span>
             </div>
           }
           isLoading={loadingCategories}
           loadingContent={<Spinner size="md" />}
         >
-          {(ticketCategory) => (
-            <TableRow>
-              <TableCell>
-                <span>{ticketCategory.id}</span>
-              </TableCell>
-              <TableCell>
-                <span>{ticketCategory.categoryName}</span>
-              </TableCell>
-              <TableCell>
-                <span>{ticketCategory.categoryDesc}</span>
-              </TableCell>
-            </TableRow>
-          )}
+          {(item) => (
+          <TableRow key={item.id}>
+            {(columnKey) => <TableCell>{renderCell(item, String(columnKey))}</TableCell>}
+          </TableRow>
+        )}
         </TableBody>
       </Table>
     </div>
