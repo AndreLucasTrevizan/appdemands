@@ -32,6 +32,8 @@ import { Key } from "@react-types/shared/src/key";
 import TicketCategoriesTable from "../_components/ticketCategoriesTable";
 import TicketPrioritiesTable from "../_components/ticketPrioritiesTable";
 import TicketSLASTable from "../_components/ticketSLASTable";
+import TicketStatusTable from "../_components/ticketStatus";
+import ServiceCatalog from "../_components/serviceCatalog";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -257,8 +259,12 @@ export default function SettingsPage() {
             <Tab key="prioridades" title="Prioridade dos Chamados" className="w-full">
               <TicketPrioritiesTable />
             </Tab>
-            <Tab key="status" title="Status dos Chamados" className="w-full"></Tab>
-            <Tab key="catalog" title="Catalogo de Serviços" className="w-full"></Tab>
+            <Tab key="status" title="Status dos Chamados" className="w-full">
+              <TicketStatusTable />
+            </Tab>
+            <Tab key="catalog" title="Catalogo de Serviços" className="w-full">
+              <ServiceCatalog />
+            </Tab>
           </Tabs>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { ITicketPriorityProps, ITicketPriorityProps } from "@/types";
+import { ITicketStatusProps, ITicketStatusProps, ITicketStatusProps } from "@/types";
 import {
   addToast,
   Button,
@@ -27,7 +27,7 @@ import { SearchIcon } from "./searchIcon";
 import { PlusIcon } from "./plusIcon";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiRefreshCcw } from "react-icons/fi";
-import { getTicketPrioritiesList } from "../tickets/actions";
+import { getTicketPrioritiesList, getTicketStatusList } from "../tickets/actions";
 import ModalCreateTicketPriority from "./modalCreateTicketPriority";
 import { FaChevronDown, FaHandDots } from "react-icons/fa6";
 import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
@@ -41,53 +41,51 @@ interface ITicketPrioritiesTableColumns {
 
 const tableColumns: ITicketPrioritiesTableColumns[] = [
   {name: 'ID', uid: 'ID', sortable: true},
-  {name: 'PRIORIDADE', uid: 'PRIORIDADE', sortable: true},
+  {name: 'STATUS', uid: 'STATUS', sortable: true},
   {name: 'SLUG', uid: 'SLUG', sortable: true},
-  {name: 'ID DA CATEGORIA', uid: 'ID DA CATEGORIA', sortable: true},
-  {name: 'CATEGORIA', uid: 'CATEGORIA', sortable: true},
   {name: 'CRIADO EM', uid: 'CRIADO EM', sortable: true},
   {name: 'ATUALIZADO EM', uid: 'ATUALIZADO EM', sortable: true},
   {name: 'ACTIONS', uid: 'ACTIONS', sortable: false},
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["ID", "PRIORIDADE", "CATEGORIA", "DESCRIÇÃO", "ACTIONS"];
+const INITIAL_VISIBLE_COLUMNS = ["ID", "STATUS", "SLUG", "CRIADO EM", "ATUALIZADO EM", "ACTIONS"];
 
-export default function TicketPrioritiesTable() {
+export default function TicketStatusTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
   const [filterValue, setFilterValue] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [rows, setRows] = useState<number>(5);
-  const [priorities, setPriorities] = useState<ITicketPriorityProps[]>([]);
+  const [ticketStatus, setTicketStatus] = useState<ITicketStatusProps[]>([]);
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: 'PRIORIDADE',
+    column: 'STATUS',
     direction: 'ascending',
   });
 
-  const pages = Math.ceil(priorities.length / rows);
+  const pages = Math.ceil(ticketStatus.length / rows);
 
   const headerColumns = useMemo(() => {
     return tableColumns.filter((column) => Array.from(visibleColumns).includes(column.uid));
   }, [visibleColumns]);
 
-  const [loadingPriorities, setLoadingPriorities] = useState<boolean>(false);
+  const [loadingPriorities, setLoadingTicketStatus] = useState<boolean>(false);
 
   const hasSearchFilter = Boolean(filterValue);
 
   useEffect(() => {
-    async function loadCategoriesData() {
+    async function loadTicketStatusData() {
       try {
-        setLoadingPriorities(true);
+        setLoadingTicketStatus(true);
 
-        const categoriesData = await getTicketPrioritiesList();
+        const ticketStatusData = await getTicketStatusList();
 
-        setPriorities(categoriesData);
+        setTicketStatus(ticketStatusData);
 
-        setLoadingPriorities(false);
+        setLoadingTicketStatus(false);
       } catch (error) {
-        setLoadingPriorities(false);
+        setLoadingTicketStatus(false);
         
         const errorHandler = new ErrorHandler(error);
       
@@ -101,20 +99,20 @@ export default function TicketPrioritiesTable() {
       }
     }
 
-    loadCategoriesData();
+    loadTicketStatusData();
   }, []);
 
   const filteredItems = useMemo(() => {
-    let filteredPriorities = [...priorities];
+    let filteredTicketStatus = [...ticketStatus];
 
     if (hasSearchFilter) {
-      filteredPriorities = filteredPriorities.filter((priorities) =>
-        priorities.priorityName.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredTicketStatus = filteredTicketStatus.filter((status) =>
+        status.statusName.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
 
-    return filteredPriorities;
-  }, [priorities, filterValue ]);
+    return filteredTicketStatus;
+  }, [ticketStatus, filterValue ]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rows;
@@ -126,47 +124,35 @@ export default function TicketPrioritiesTable() {
   const sortedItems = useMemo(() => {
     let attendantsToSort = [...items];
 
-    attendantsToSort = attendantsToSort.sort((a: ITicketPriorityProps, b: ITicketPriorityProps) => {
+    attendantsToSort = attendantsToSort.sort((a: ITicketStatusProps, b: ITicketStatusProps) => {
       switch(sortDescriptor.column) {
         case "ID":
-          const idA = a["id" as keyof ITicketPriorityProps] as number;
-          const idB = b["id" as keyof ITicketPriorityProps] as number;
+          const idA = a["id" as keyof ITicketStatusProps] as number;
+          const idB = b["id" as keyof ITicketStatusProps] as number;
           const cmpId = idA < idB ? -1 : idA > idB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpId : cmpId; 
-        case "PRIORIDADE":
-          const priorityA = a["priorityName" as keyof ITicketPriorityProps] as number;
-          const priorityB = b["priorityName" as keyof ITicketPriorityProps] as number;
-          const cmpPriority = priorityA < priorityB ? -1 : priorityA > priorityB ? 1 : 0;
+        case "STATUS":
+          const statusA = a["statusName" as keyof ITicketStatusProps] as number;
+          const statusB = b["statusName" as keyof ITicketStatusProps] as number;
+          const cmpStatus = statusA < statusB ? -1 : statusA > statusB ? 1 : 0;
 
-          return sortDescriptor.direction === "descending" ? -cmpPriority : cmpPriority; 
+          return sortDescriptor.direction === "descending" ? -cmpStatus : cmpStatus; 
         case "SLUG":
-          const slugA = a["slug" as keyof ITicketPriorityProps] as number;
-          const slugB = b["slug" as keyof ITicketPriorityProps] as number;
+          const slugA = a["slug" as keyof ITicketStatusProps] as number;
+          const slugB = b["slug" as keyof ITicketStatusProps] as number;
           const cmpSlug = slugA < slugB ? -1 : slugA > slugB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpSlug : cmpSlug;
-        case "ID DA CATEGORIA":
-          const categoryIdA = a["ticketCategoryId" as keyof ITicketPriorityProps] as number;
-          const categoryIdB = b["ticketCategoryId" as keyof ITicketPriorityProps] as number;
-          const cmpCategoryId = categoryIdA < categoryIdB ? -1 : categoryIdA > categoryIdB ? 1 : 0;
-
-          return sortDescriptor.direction === "descending" ? -cmpCategoryId : cmpCategoryId;
-        case "CATEGORIA":
-          const categoryA = a["categoryName" as keyof ITicketPriorityProps] as number;
-          const categoryB = b["categoryName" as keyof ITicketPriorityProps] as number;
-          const cmpCategory = categoryA < categoryB ? -1 : categoryA > categoryB ? 1 : 0;
-
-          return sortDescriptor.direction === "descending" ? -cmpCategory : cmpCategory;
         case "CRIADO EM":
-          const createdAtA = a["createdAt" as keyof ITicketPriorityProps] as number;
-          const createdAtB = b["createdAt" as keyof ITicketPriorityProps] as number;
+          const createdAtA = a["createdAt" as keyof ITicketStatusProps] as number;
+          const createdAtB = b["createdAt" as keyof ITicketStatusProps] as number;
           const cmpCreatedAt = createdAtA < createdAtB ? -1 : createdAtA > createdAtB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpCreatedAt : cmpCreatedAt;
         case "ATUALIZADO EM":
-          const updatedAtA = a["updatedAt" as keyof ITicketPriorityProps] as number;
-          const updatedAtB = b["updatedAt" as keyof ITicketPriorityProps] as number;
+          const updatedAtA = a["updatedAt" as keyof ITicketStatusProps] as number;
+          const updatedAtB = b["updatedAt" as keyof ITicketStatusProps] as number;
           const cmpUpdatedAt = updatedAtA < updatedAtB ? -1 : updatedAtA > updatedAtB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpUpdatedAt : cmpUpdatedAt;
@@ -178,23 +164,23 @@ export default function TicketPrioritiesTable() {
 
   async function loadPrioritiesData() {
     try {
-      setLoadingPriorities(true);
+      setLoadingTicketStatus(true);
 
-      const categoriesData = await getTicketPrioritiesList();
+      const ticketStatusData = await getTicketStatusList();
 
-      setPriorities(categoriesData);
+      setTicketStatus(ticketStatusData);
 
       addToast({
         color: 'success',
         title: 'Sucesso',
-        description: 'Lista de prioridades atualizada',
+        description: 'Lista de status atualizada',
         timeout: 3000,
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingPriorities(false);
+      setLoadingTicketStatus(false);
     } catch (error) {
-      setLoadingPriorities(false);
+      setLoadingTicketStatus(false);
         
       const errorHandler = new ErrorHandler(error);
       
@@ -222,37 +208,29 @@ export default function TicketPrioritiesTable() {
     }
   }, []);
 
-  const renderCell = useCallback((priority: ITicketPriorityProps, columnKey: string) => {
-    const cellValue = priority[columnKey];
+  const renderCell = useCallback((status: ITicketStatusProps, columnKey: string) => {
+    const cellValue = status[columnKey];
 
     switch (columnKey) {
       case "ID":
         return (
-          <span>{priority.id}</span>
+          <span>{status.id}</span>
         );
-      case "PRIORIDADE":
+      case "STATUS":
         return (
-          <span>{priority.priorityName}</span>
+          <span>{status.statusName}</span>
         );
       case "SLUG":
         return (
-          <span>{priority.prioritySlug}</span>
-        );
-      case "ID DA CATEGORIA":
-        return (
-          <span>{priority.ticketCategoryId}</span>
-        );
-      case "CATEGORIA":
-        return (
-          <span>{priority.categoryName}</span>
+          <span>{status.slug}</span>
         );
       case "CRIADO EM":
         return (
-          <span>{new Date(priority.createdAt).toLocaleDateString('pt-br')}</span>
+          <span>{new Date(status.createdAt).toLocaleDateString('pt-br')}</span>
         );
       case "ATUALIZADO EM":
         return (
-          <span>{new Date(priority.updatedAt).toLocaleDateString('pt-br')}</span>
+          <span>{new Date(status.updatedAt).toLocaleDateString('pt-br')}</span>
         );
       case "ACTIONS":
         return (
@@ -280,7 +258,7 @@ export default function TicketPrioritiesTable() {
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
-    priorities.length,
+    ticketStatus.length,
     hasSearchFilter,
   ]);
 
@@ -301,7 +279,7 @@ export default function TicketPrioritiesTable() {
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
-            ? "Todos as categorias selecionadas"
+            ? "Todos os status foram selecionados"
             : `${selectedKeys.size} de ${filteredItems.length} selecionados`}
         </span>
         <Pagination
@@ -328,7 +306,7 @@ export default function TicketPrioritiesTable() {
   const exportExcel = () => {
     const worksheet = utils.json_to_sheet(sortedItems);
     const workbook = utils.book_new();
-    utils.book_append_sheet(workbook, worksheet, "Categorias de Chamados");
+    utils.book_append_sheet(workbook, worksheet, "Status de Chamados");
     let newColumns: string[] = [];
   
     tableColumns.forEach((column) => {
@@ -339,22 +317,22 @@ export default function TicketPrioritiesTable() {
   
     utils.sheet_add_aoa(worksheet, [newColumns], { origin: "A1" });
 
-    const max_width = sortedItems.reduce((w, r) => Math.max(w, r.categoryName.length), 10);
+    const max_width = sortedItems.reduce((w, r) => Math.max(w, r.statusName.length), 10);
     worksheet["!cols"] = [ { wch: max_width } ];
-    writeFile(workbook, "Categorias de Chamados.xlsx", { compression: true });
+    writeFile(workbook, "Status de Chamados.xlsx", { compression: true });
   }
 
   return (
     <div>
-      <ModalCreateTicketPriority
+      {/* <ModalCreateTicketStatus
         isOpen={isOpen}
         onClose={onClose}
         onOpen={onOpen}
         onOpenChange={onOpenChange}
-        priorities={priorities}
-        setPriorities={setPriorities}
-        key={'createTicketPriotities'}
-      />
+        ticketStatus={ticketStatus}
+        setTicketStatus={setTicketStatus}
+        key={'createTicketStatus'}
+      /> */}
       <Table
         isStriped
         isCompact
@@ -365,13 +343,13 @@ export default function TicketPrioritiesTable() {
         onSortChange={setSortDescriptor}
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de Prioridades</h1>
+            <h1>Lista de Status</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={
                   <SearchIcon />
                 }
-                placeholder="Buscar prioridade..."
+                placeholder="Buscar status..."
                 type="search"
                 className="max-w-[40%]"
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -444,7 +422,7 @@ export default function TicketPrioritiesTable() {
           emptyContent={
             <div className="flex flex-col gap-4 items-center justify-center">
               <SearchIcon />
-              <span>Nenhuma prioridade encontrada</span>
+              <span>Nenhum status encontrado</span>
             </div>
           }
           isLoading={loadingPriorities}
