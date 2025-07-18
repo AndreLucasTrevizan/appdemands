@@ -5,6 +5,67 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface ICreateService {
+  service: string
+  informName?: boolean
+  informPhoneNumber?: boolean
+  informWhatsNumber?: boolean
+  informUser?: boolean
+  informNf?: boolean
+  informCondition?: boolean
+  informError?: boolean
+  informEmail?: boolean
+  informSector?: boolean
+  informPlant?: boolean
+  informRHCode?: boolean
+  informDescription?: boolean
+  ticketCategoryId: number
+  ticketPriorityId: number
+}
+
+export interface IServiceCatalogProps {
+  desc: string,
+  key: string
+}
+
+export interface IServiceCatalogFields {
+  informName: boolean
+  informPhoneNumber: boolean
+  informWhatsNumber: boolean
+  informUser: boolean
+  informNf: boolean
+  informCondition: boolean
+  informError: boolean
+  informEmail: boolean
+  informSector: boolean
+  informPlant: boolean
+  informRHCode: boolean
+  informDescription: boolean
+}
+
+export interface IServiceCatalog {
+  id: number
+  service: string
+  slug: string
+  isActive: boolean
+  informName: boolean
+  informPhoneNumber: boolean
+  informWhatsNumber: boolean
+  informUser: boolean
+  informNf: boolean
+  informCondition: boolean
+  informError: boolean
+  informEmail: boolean
+  informSector: boolean
+  informPlant: boolean
+  informRHCode: boolean
+  informDescription: boolean
+  ticketCategoryId: number
+  ticketPriorityId: number
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface IQueuesProps {
   id: number,
   queueName: string,

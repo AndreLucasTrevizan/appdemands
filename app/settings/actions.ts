@@ -1,11 +1,33 @@
 'use server';
 
-import { IAvatarResponse, IUserProfileProps } from "@/types";
+import { ICreateService } from "@/types";
 import { api } from "../_api/api";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { IUserSignedProps } from "../_contexts/AuthContext";
 import ErrorHandler from "../_utils/errorHandler";
 import { gettingSigned } from "../_components/actions";
+
+export async function createCatalogsService(data: ICreateService) {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      throw "Você não está autenticado";
+    }
+
+    const response = await api.post('/service_catalog', data, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`
+      }
+    });
+
+    return response.data.service;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
 
 export async function gettingUserProfile() {
   try {

@@ -263,7 +263,22 @@ export default function SettingsPage() {
               <TicketStatusTable />
             </Tab>
             <Tab key="catalog" title="Catalogo de Serviços" className="w-full">
-              <ServiceCatalog />
+              <Tabs
+                variant="underlined"
+              >
+                <Tab
+                  key={'new_service'}
+                  title="Criar Novo Serviço"
+                >
+                  <ServiceCatalog />
+                </Tab>
+                <Tab
+                  key={'list_service_catalog'}
+                  title="Ver Catalogo"
+                >
+
+                </Tab>
+              </Tabs>
             </Tab>
           </Tabs>
         </div>
