@@ -18,7 +18,7 @@ import {
   User
 } from "@heroui/react";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { IServiceCatalog, ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport } from "@/types";
+import { ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
 import TicketSquare from "./ticketPreview";
@@ -34,7 +34,6 @@ import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
 import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
-import { getServiceCatalog, listServiceCatalogFields } from "../settings/actions";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -60,8 +59,6 @@ export default function ModalCreateTicket({
   const [loadingTicketCategoriesData, setLoadingTicketCategoriesData] = useState<boolean>(false);
   const [loadingTicketPrioritiesData, setLoadingTicketPrioritiesData] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<IUsersReport>();
-  const [loadingCatalog, setLoadingCatalog] = useState(false);
-  const [catalog, setCatalog] = useState<IServiceCatalog[]>([]);
 
   useEffect(() => {
     async function loadData() {
@@ -136,34 +133,9 @@ export default function ModalCreateTicket({
       }
     }
 
-    async function loadServiceCatalog() {
-      try {
-        setLoadingCatalog(true);
-
-        const catalogData = await getServiceCatalog("active");
-
-        setCatalog(catalogData);
-
-        setLoadingCatalog(false);
-      } catch (error) {
-        const errorHandler = new ErrorHandler(error);
-
-        addToast({
-          color: 'warning',
-          title: 'Aviso',
-          description: errorHandler.message,
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
-
-        setLoadingCatalog(false);
-      }
-    }
-
     loadData();
     loadTicketCategories();
     loadTicketPriorities();
-    loadServiceCatalog();
   }, []);
 
   const selectPriority = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -338,19 +310,6 @@ export default function ModalCreateTicket({
           ) : (
             <div className="flex flex-row gap-4">
               <div className="flex flex-col gap-4 flex-1 flex-wrap">
-                {loadingCatalog ? (
-                  <div className="p-4">
-                    <Spinner size="sm" />
-                  </div>
-                ) : (
-                  <Select
-                    items={catalog}
-                    label="Selecione o que deseja fazer"
-                    labelPlacement="outside"
-                  >
-                    {(item) => <SelectItem key={item.id}>{item.service}</SelectItem>}
-                  </Select>
-                )}
                 <Input
                   type="text"
                   placeholder="Digite o título do chamado..."

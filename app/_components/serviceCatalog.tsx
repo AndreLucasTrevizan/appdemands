@@ -1,28 +1,13 @@
 'use client';
 
-import { ICreateService, IServiceCatalogProps, ITicketCategoryProps, ITicketPriorityProps } from "@/types";
+import { ICreateService, IServiceCatalogField, IServiceCatalogProps, ITicketCategoryProps, ITicketPriorityProps } from "@/types";
 import { Input } from "@heroui/input";
 import { addToast, Button, Card, CardBody, Chip, Divider, Form, Listbox, ListboxItem, ScrollShadow, Select, Selection, SelectItem, SharedSelection, Spinner } from "@heroui/react";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { getTicketCategoriesList, getTicketPrioritiesList } from "../tickets/actions";
 import { PlusIcon } from "./plusIcon";
-import { createCatalogsService } from "../settings/actions";
-
-const serviceCatalogKeys: IServiceCatalogProps[] = [
-  {desc: "Nome", key: "informName"},
-  {desc: "Número de Telefone", key: "informPhoneNumber"},
-  {desc: "Número de Whatsapp", key: "informWhatsNumber"},
-  {desc: "Usuário", key: "informUser"},
-  {desc: "Nota Fiscal (NF)", key: "informNf"},
-  {desc: "Condição", key: "informCondition"},
-  {desc: "Erro", key: "informError"},
-  {desc: "E-mail", key: "informEmail"},
-  {desc: "Setor", key: "informSector"},
-  {desc: "Unidade/Filial", key: "informPlant"},
-  {desc: "Código de RH", key: "informRHCode"},
-  {desc: "Descrição", key: "informDescription"},
-];
+import { createCatalogsService, listServiceCatalogFields } from "../settings/actions";
 
 export default function ServiceCatalog() {
   const [loadingTicketCategories, setLoadingTicketCategories] = useState(false);
@@ -36,6 +21,8 @@ export default function ServiceCatalog() {
   const [ticketPrioritySelectedData, setTicketPrioritySelectedData] = useState<ITicketPriorityProps>();
   const [selectedServiceCatalogKeys, setSelectedServiceCatalogKeys] = useState<Selection>(new Set());
   const [service, setService] = useState("");
+  const [loadingListField, setLoadingListField] = useState(false);
+  const [fields, setFields] = useState<IServiceCatalogField[]>([]);
 
   const arrayValues = Array.from(selectedServiceCatalogKeys);
 
@@ -84,8 +71,34 @@ export default function ServiceCatalog() {
       }
     }
 
+    async function loadFieldsData() {
+      try {
+        setLoadingListField(true);
+
+        const fieldsData = await listServiceCatalogFields();
+
+        setFields(fieldsData);
+
+        setLoadingListField(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        setLoadingListField(false);
+      }
+    }
+
+    
     loadTicketCategoriesData();
     loadTicketPrioritiesData();
+    loadFieldsData();
   }, []);
 
   const gettingSelectedPriority = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -157,7 +170,7 @@ export default function ServiceCatalog() {
         orientation="horizontal"
       >
         {arrayValues.map((value) => (
-          <Chip key={value}>{serviceCatalogKeys.find((serviceKey) => `${serviceKey.key}` === `${value}`).desc}</Chip>
+          <Chip color="primary" key={value}>{fields.find((serviceKey) => `${serviceKey.id}` === `${value}`).label}</Chip>
         ))}
       </ScrollShadow>
     );
@@ -166,14 +179,22 @@ export default function ServiceCatalog() {
   const handleCreateServiceCatalog = async () => {
     try {
       setLoadingCreateService(true);
-
-      let serviceData = new Object();
+      
+      let serviceData = new Object(); 
+      let listOfFields = [];
 
       arrayValues.forEach((value) => {
-        serviceData[value] = true;
+        let label = fields.find((serviceKey) => `${serviceKey.id}` == `${value}`).label;
+
+        let data = {
+          label,
+        }
+        
+        listOfFields.push(data);
       });
 
       serviceData["service"] = service;
+      serviceData["fields"] = JSON.stringify(listOfFields);
       serviceData["ticketCategoryId"] = ticketCategorySelectedData?.id;
       serviceData["ticketPriorityId"] = ticketPrioritySelectedData?.id;
 
@@ -220,6 +241,7 @@ export default function ServiceCatalog() {
 
                 handleCreateServiceCatalog();
               }}
+              className="flex flex-col gap-4"
             >
               <Input
                 label="Serviço"
@@ -232,7 +254,7 @@ export default function ServiceCatalog() {
               <Select
                 label="Categoria"
                 labelPlacement="outside"
-                placeholder="Esolha a categoria para esse serviço"
+                placeholder="Escolha a categoria para esse serviço"
                 items={ticketCategories}
                 isLoading={loadingTicketCategories}
                 onSelectionChange={setTicketCategorySelected}
@@ -251,14 +273,20 @@ export default function ServiceCatalog() {
                 >Criar</Button>
               </div>
             </Form>
-            <Listbox
-              items={serviceCatalogKeys}
-              selectionMode="multiple"
-              selectedKeys={selectedServiceCatalogKeys}
-              onSelectionChange={setSelectedServiceCatalogKeys}
-            >
-              {(serviceCatalog) => <ListboxItem key={serviceCatalog.key}>{serviceCatalog.desc}</ListboxItem>}
-            </Listbox>
+            {loadingListField ? (
+              <div className="p-4">
+                <Spinner size="md" />
+              </div>
+            ) : (
+              <Listbox
+                items={fields}
+                selectionMode="multiple"
+                selectedKeys={selectedServiceCatalogKeys}
+                onSelectionChange={setSelectedServiceCatalogKeys}
+              >
+                {(serviceCatalog) => <ListboxItem key={serviceCatalog.id}>{serviceCatalog.label}</ListboxItem>}
+              </Listbox>
+            )}
           </div>
           <Divider orientation="vertical" />
           <div className="flex-1">

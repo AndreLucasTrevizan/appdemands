@@ -301,3 +301,29 @@ export const getTicketSLASList = async ({
     throw errorHandler.message;
   }
 }
+
+export const createTicketStatus = async ({
+  name
+}: {
+  name: string
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.post(`/tickets/status`, {name}, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticketStatus;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}

@@ -32,8 +32,10 @@ import { Key } from "@react-types/shared/src/key";
 import TicketCategoriesTable from "../_components/ticketCategoriesTable";
 import TicketPrioritiesTable from "../_components/ticketPrioritiesTable";
 import TicketSLASTable from "../_components/ticketSLASTable";
-import TicketStatusTable from "../_components/ticketStatus";
+import TicketStatusTable from "../_components/ticketStatusTable";
 import ServiceCatalog from "../_components/serviceCatalog";
+import ServiceCatalogObligatoryFields from "../_components/serviceCatalogFields";
+import ServiceCatalogList from "../_components/serviceCatalogList";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -276,7 +278,13 @@ export default function SettingsPage() {
                   key={'list_service_catalog'}
                   title="Ver Catalogo"
                 >
-
+                  <ServiceCatalogList />
+                </Tab>
+                <Tab
+                  key={'service_catalog_obligatory_fields'}
+                  title="Campos Obrigatórios"
+                >
+                  <ServiceCatalogObligatoryFields />
                 </Tab>
               </Tabs>
             </Tab>

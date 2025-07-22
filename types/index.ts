@@ -5,20 +5,21 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface IServiceCatalogFieldData {
+  label: string;
+}
+
+export interface IServiceCatalogField {
+  id: number;
+  label: string;
+  slug: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ICreateService {
   service: string
-  informName?: boolean
-  informPhoneNumber?: boolean
-  informWhatsNumber?: boolean
-  informUser?: boolean
-  informNf?: boolean
-  informCondition?: boolean
-  informError?: boolean
-  informEmail?: boolean
-  informSector?: boolean
-  informPlant?: boolean
-  informRHCode?: boolean
-  informDescription?: boolean
+  fields: string
   ticketCategoryId: number
   ticketPriorityId: number
 }
@@ -28,40 +29,21 @@ export interface IServiceCatalogProps {
   key: string
 }
 
-export interface IServiceCatalogFields {
-  informName: boolean
-  informPhoneNumber: boolean
-  informWhatsNumber: boolean
-  informUser: boolean
-  informNf: boolean
-  informCondition: boolean
-  informError: boolean
-  informEmail: boolean
-  informSector: boolean
-  informPlant: boolean
-  informRHCode: boolean
-  informDescription: boolean
-}
-
 export interface IServiceCatalog {
   id: number
   service: string
+  fields: string
   slug: string
   isActive: boolean
-  informName: boolean
-  informPhoneNumber: boolean
-  informWhatsNumber: boolean
-  informUser: boolean
-  informNf: boolean
-  informCondition: boolean
-  informError: boolean
-  informEmail: boolean
-  informSector: boolean
-  informPlant: boolean
-  informRHCode: boolean
-  informDescription: boolean
   ticketCategoryId: number
+  categoryName: string
+  categoryDesc: string
+  categorySlug: string
   ticketPriorityId: number
+  priorityName: string
+  prioritySlug: string
+  slaTime: number
+  hoursToFirstResponse: number
   createdAt: Date
   updatedAt: Date
 }

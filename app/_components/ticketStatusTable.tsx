@@ -1,6 +1,5 @@
 'use client';
 
-import { ITicketStatusProps, ITicketStatusProps, ITicketStatusProps } from "@/types";
 import {
   addToast,
   Button,
@@ -32,6 +31,8 @@ import ModalCreateTicketPriority from "./modalCreateTicketPriority";
 import { FaChevronDown, FaHandDots } from "react-icons/fa6";
 import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
 import { utils, writeFile } from "xlsx";
+import { ITicketStatusProps } from "@/types";
+import ModalCreateTicketStatus from "./modalCreateTicketStatus";
 
 interface ITicketPrioritiesTableColumns {
   name: string,
@@ -324,15 +325,15 @@ export default function TicketStatusTable() {
 
   return (
     <div>
-      {/* <ModalCreateTicketStatus
+      <ModalCreateTicketStatus
         isOpen={isOpen}
         onClose={onClose}
         onOpen={onOpen}
         onOpenChange={onOpenChange}
-        ticketStatus={ticketStatus}
-        setTicketStatus={setTicketStatus}
+        status={ticketStatus}
+        setStatus={setTicketStatus}
         key={'createTicketStatus'}
-      /> */}
+      />
       <Table
         isStriped
         isCompact
