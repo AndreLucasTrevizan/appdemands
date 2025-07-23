@@ -397,8 +397,6 @@ export default function ModalCreateTicket({
                   </Select>
                 )}
                 <Divider />
-                {inputs}
-                <Divider />
                 <div className="flex gap-4 flex-wrap">
                   <div className="flex flex-col items-start flex-1">
                     <User
@@ -475,13 +473,13 @@ export default function ModalCreateTicket({
                   <Spinner size="md" />
                 ) : (
                   <div className="flex flex-col flex-wrap gap-4">
-                    <span>Prévia do seu chamado para a T.I</span>
-                    <TicketSquare
+                    {inputs}
+                    {/* <TicketSquare
                       user={userDetails}
                       title={title}
                       priority={prioritySelected}
                       files={files}
-                    />
+                    /> */}
                   </div>
                 )}
               </div>
