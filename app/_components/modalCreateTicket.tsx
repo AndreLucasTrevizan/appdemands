@@ -11,7 +11,9 @@ import {
   ModalFooter,
   ModalHeader,
   Select,
+  Selection,
   SelectItem,
+  SharedSelection,
   Spinner,
   Textarea,
   Tooltip,
@@ -34,7 +36,8 @@ import DeleteIcon from "./deleteIcon";
 import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
 import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
-import { getServiceCatalog, listServiceCatalogFields } from "../settings/actions";
+import { getServiceCatalog } from "../settings/actions";
+import CreateTicketInputsGeneration from "./createTicketInputsGeneration";
 
 export default function ModalCreateTicket({
   isOpen,
@@ -62,6 +65,16 @@ export default function ModalCreateTicket({
   const [userDetails, setUserDetails] = useState<IUsersReport>();
   const [loadingCatalog, setLoadingCatalog] = useState(false);
   const [catalog, setCatalog] = useState<IServiceCatalog[]>([]);
+  const [catalogSelected, setCatalogSelected] = useState<SharedSelection>(new Set());
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [whatsNumber, setWhatsNumber] = useState("");
+  const [plant, setPlant] = useState("");
+  const [sector, setSector] = useState("");
+  const [doc, setDoc] = useState("");
+  const [nf, setNf] = useState("");
+  const [transaction, setTransaction] = useState("");
+  const [userSAP, setUserSAP] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -312,6 +325,36 @@ export default function ModalCreateTicket({
     }
   }, [ cateogorySelected ]);
 
+  const inputs = useMemo(() => {
+    let item = catalog.find((data) => data.id == Number(catalogSelected.currentKey));
+
+    console.log(item);
+
+    return (
+      <CreateTicketInputsGeneration
+        catalog={item}
+        name={name}
+        setName={setName}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        whatsNumber={whatsNumber}
+        setWhatsNumber={setWhatsNumber}
+        plant={plant}
+        setPlant={setPlant}
+        sector={sector}
+        setSector={setSector}
+        doc={doc}
+        setDoc={setDoc}
+        nf={nf}
+        setNf={setNf}
+        transaction={transaction}
+        setTransaction={setTransaction}
+        userSAP={userSAP}
+        setUserSAP={setUserSAP}
+      />
+    )
+  }, [ catalogSelected ]);
+
   return (
     <Modal
       size="full"
@@ -347,41 +390,14 @@ export default function ModalCreateTicket({
                     items={catalog}
                     label="Selecione o que deseja fazer"
                     labelPlacement="outside"
+                    selectedKeys={catalogSelected}
+                    onSelectionChange={setCatalogSelected}
                   >
                     {(item) => <SelectItem key={item.id}>{item.service}</SelectItem>}
                   </Select>
                 )}
-                <Input
-                  type="text"
-                  placeholder="Digite o título do chamado..."
-                  label="Título"
-                  labelPlacement="outside"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  isRequired
-                />
-                <Textarea
-                  placeholder="Descreva sobre a situação..."
-                  label="Descrição"
-                  labelPlacement="outside"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  isRequired
-                />
-                <div className="flex w-full flex-wrap gap-4">
-                  {loadingTicketCategoriesData ? (
-                    <Spinner size="md" />
-                  ) : (
-                    <Select items={ticketCategories} className="flex-1" label="Categoria" isRequired onChange={(e) => selectCategory(e)}>
-                      {(ticketCategory) => <SelectItem key={ticketCategory.id}>{ticketCategory.categoryName}</SelectItem>}
-                    </Select>
-                  )}
-                  {loadingTicketPrioritiesData ? (
-                    <Spinner size="md" />
-                  ) : (
-                    filteredPriorities
-                  )}
-                </div>
+                <Divider />
+                {inputs}
                 <Divider />
                 <div className="flex gap-4 flex-wrap">
                   <div className="flex flex-col items-start flex-1">

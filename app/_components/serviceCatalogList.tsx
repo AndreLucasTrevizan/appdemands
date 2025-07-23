@@ -128,8 +128,8 @@ export default function ServiceCatalogList() {
                     key={item.id}
                     title={
                       <div className="flex flex-col flex-wrap gap-4">
-                        <span>{item.service}</span>
-                        <Switch isSelected={item.isActive} onChange={() => changeServiceStatus(item)}>
+                        <span className="text-md">{item.service}</span>
+                        <Switch size="sm" isSelected={item.isActive} onChange={() => changeServiceStatus(item)}>
                           {item.isActive ? (<span>Ativado</span>) : (<span>Desativado</span>)}
                         </Switch>
                       </div>

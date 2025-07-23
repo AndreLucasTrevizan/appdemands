@@ -17,7 +17,7 @@ import {
   Tooltip,
 } from "@heroui/react";
 import DefaultLayout from "../_components/defaultLayout";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { changingAvatar, gettingUserProfile } from "./actions";
 import { IUsersReport } from "@/types";
