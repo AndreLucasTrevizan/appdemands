@@ -1,7 +1,7 @@
 'use client';
 
 import { ICreateService, IServiceCatalogField, IServiceCatalogProps, ITicketCategoryProps, ITicketPriorityProps } from "@/types";
-import { Input } from "@heroui/input";
+import { Input, Textarea } from "@heroui/input";
 import { addToast, Button, Card, CardBody, Chip, Divider, Form, Listbox, ListboxItem, ScrollShadow, Select, Selection, SelectItem, SharedSelection, Spinner } from "@heroui/react";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
@@ -23,6 +23,7 @@ export default function ServiceCatalog() {
   const [service, setService] = useState("");
   const [loadingListField, setLoadingListField] = useState(false);
   const [fields, setFields] = useState<IServiceCatalogField[]>([]);
+  const [description, setDescription] = useState("");
 
   const arrayValues = Array.from(selectedServiceCatalogKeys);
 
@@ -166,7 +167,7 @@ export default function ServiceCatalog() {
     return (
       <ScrollShadow
         hideScrollBar
-        className="w-full flex py-0.5 px-2 gap-1 flex-wrap"
+        className="w-full flex flex-col py-0.5 px-2 gap-1 flex-wrap"
         orientation="horizontal"
       >
         {arrayValues.map((value) => (
@@ -195,6 +196,7 @@ export default function ServiceCatalog() {
 
       serviceData["service"] = service;
       serviceData["fields"] = JSON.stringify(listOfFields);
+      serviceData["serviceDescription"] = `${description}\n\n`;
       serviceData["ticketCategoryId"] = ticketCategorySelectedData?.id;
       serviceData["ticketPriorityId"] = ticketPrioritySelectedData?.id;
 
@@ -251,6 +253,13 @@ export default function ServiceCatalog() {
                 value={service}
                 onValueChange={setService}
               />
+              <Textarea
+                value={description}
+                onValueChange={setDescription}
+                label="Descrição"
+                labelPlacement="outside"
+                placeholder="Criar um usuário para..."
+              />
               <Select
                 label="Categoria"
                 labelPlacement="outside"
@@ -304,7 +313,7 @@ export default function ServiceCatalog() {
                 )}
                 {priorityMemo}
                 <Divider />
-                <span className="text-medium">O usuário vai precisar preencher os seguintes dados na abertura do chamado:</span>
+                <span className="text-medium">{description}</span>
                 {selectedkeyComponent}
               </CardBody>
             </Card>

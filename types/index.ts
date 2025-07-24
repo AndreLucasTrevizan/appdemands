@@ -19,6 +19,7 @@ export interface IServiceCatalogField {
 
 export interface ICreateService {
   service: string
+  serviceDescription: string
   fields: string
   ticketCategoryId: number
   ticketPriorityId: number
@@ -33,6 +34,7 @@ export interface IServiceCatalog {
   id: number
   service: string
   fields: string
+  serviceDescription: string,
   slug: string
   isActive: boolean
   ticketCategoryId: number
@@ -112,6 +114,14 @@ export interface ITicketPriorityProps {
   categoryName: string;
   createdAt: Date,
   updatedAt: Date
+}
+
+export interface ITicketProcessProps {
+  id: number;
+  processName: string;
+  slug: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ITicketStatusProps {

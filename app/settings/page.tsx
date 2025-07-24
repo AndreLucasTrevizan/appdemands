@@ -36,6 +36,7 @@ import TicketStatusTable from "../_components/ticketStatusTable";
 import ServiceCatalog from "../_components/serviceCatalog";
 import ServiceCatalogObligatoryFields from "../_components/serviceCatalogFields";
 import ServiceCatalogList from "../_components/serviceCatalogList";
+import TicketProcessTable from "../_components/ticketProcessTable";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -263,6 +264,9 @@ export default function SettingsPage() {
             </Tab>
             <Tab key="status" title="Status dos Chamados" className="w-full">
               <TicketStatusTable />
+            </Tab>
+            <Tab key={"process"} title="Processos dos Chamados" className="w-full">
+              <TicketProcessTable />
             </Tab>
             <Tab key="catalog" title="Catalogo de Serviços" className="w-full">
               <Tabs

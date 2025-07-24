@@ -23,7 +23,6 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { IServiceCatalog, ITicketCategoryProps, ITicketPriorityProps, ITicketProps, IUsersReport } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
-import TicketSquare from "./ticketPreview";
 import {
   attachingTicketFiles,
   createTicket,
@@ -60,21 +59,10 @@ export default function ModalCreateTicket({
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [loadingCreateTicket, setLoadingCreateTicket] = useState<boolean>(false);
   const [loadingSendingFiles, setLoadingSendingFiles] = useState<boolean>(false);
-  const [loadingTicketCategoriesData, setLoadingTicketCategoriesData] = useState<boolean>(false);
-  const [loadingTicketPrioritiesData, setLoadingTicketPrioritiesData] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<IUsersReport>();
   const [loadingCatalog, setLoadingCatalog] = useState(false);
   const [catalog, setCatalog] = useState<IServiceCatalog[]>([]);
   const [catalogSelected, setCatalogSelected] = useState<SharedSelection>(new Set());
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [whatsNumber, setWhatsNumber] = useState("");
-  const [plant, setPlant] = useState("");
-  const [sector, setSector] = useState("");
-  const [doc, setDoc] = useState("");
-  const [nf, setNf] = useState("");
-  const [transaction, setTransaction] = useState("");
-  const [userSAP, setUserSAP] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -96,54 +84,6 @@ export default function ModalCreateTicket({
           title: 'Aviso',
           description: errorHandler.message,
           timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
-      }
-    }
-
-    async function loadTicketCategories() {
-      try {
-        setLoadingTicketCategoriesData(true);
-        
-        const categoriesData = await getTicketCategoriesList();
-
-        setTicketCategories(categoriesData);
-
-        setLoadingTicketCategoriesData(false);
-      } catch (error) {
-        setLoadingTicketCategoriesData(false);
-
-        const errorHandler = new ErrorHandler(error);
-
-        addToast({
-          title: 'Aviso',
-          description: errorHandler.message,
-          color: 'warning',
-          timeout: 300,
-          shouldShowTimeoutProgress: true,
-        });
-      }
-    }
-    
-    async function loadTicketPriorities() {
-      try {
-        setLoadingTicketPrioritiesData(true);
-        
-        const prioritiesData = await getTicketPrioritiesList();
-
-        setTicketPriorities(prioritiesData);
-
-        setLoadingTicketPrioritiesData(false);
-      } catch (error) {
-        setLoadingTicketPrioritiesData(false);
-
-        const errorHandler = new ErrorHandler(error);
-
-        addToast({
-          title: 'Aviso',
-          description: errorHandler.message,
-          color: 'warning',
-          timeout: 300,
           shouldShowTimeoutProgress: true,
         });
       }
@@ -174,20 +114,8 @@ export default function ModalCreateTicket({
     }
 
     loadData();
-    loadTicketCategories();
-    loadTicketPriorities();
     loadServiceCatalog();
   }, []);
-
-  const selectPriority = (e: ChangeEvent<HTMLSelectElement>) => {
-    let priority = ticketPriorities.find((priority) => `${priority.id}` == e.target.value);
-    setPrioritySelected(priority);
-  }
-
-  const selectCategory = (e: ChangeEvent<HTMLSelectElement>) => {
-    let category = ticketCategories.find((category) => `${category.id}` == e.target.value);
-    setCategorySelected(category);
-  }
 
   const gettingAttachments = (e: ChangeEvent<HTMLInputElement>) => {
     let fileList: File[] = [];
@@ -303,54 +231,14 @@ export default function ModalCreateTicket({
     }
   }
 
-  let filteredPriorities = useMemo(() => {
-    let filteredItems = [...ticketPriorities];
-
-    let hasCategoryFilter = Boolean(cateogorySelected);
-
-    if (hasCategoryFilter) {
-      filteredItems = ticketPriorities.filter((ticketPriority) => ticketPriority.ticketCategoryId == cateogorySelected.id);
-
-      return (
-        <Select items={filteredItems} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
-          {(ticketPriority) => <SelectItem key={ticketPriority.id}>{`${ticketPriority.priorityName}`}</SelectItem>}
-        </Select>
-      );
-    } else {
-      return (
-        <Select items={filteredItems} className="flex-1" label="Prioridade" onChange={(e) => selectPriority(e)} isRequired>
-          {(ticketPriority) => <SelectItem key={ticketPriority.id}>{`${ticketPriority.priorityName}`}</SelectItem>}
-        </Select>
-      );
-    }
-  }, [ cateogorySelected ]);
-
   const inputs = useMemo(() => {
     let item = catalog.find((data) => data.id == Number(catalogSelected.currentKey));
-
-    console.log(item);
 
     return (
       <CreateTicketInputsGeneration
         catalog={item}
-        name={name}
-        setName={setName}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        whatsNumber={whatsNumber}
-        setWhatsNumber={setWhatsNumber}
-        plant={plant}
-        setPlant={setPlant}
-        sector={sector}
-        setSector={setSector}
-        doc={doc}
-        setDoc={setDoc}
-        nf={nf}
-        setNf={setNf}
-        transaction={transaction}
-        setTransaction={setTransaction}
-        userSAP={userSAP}
-        setUserSAP={setUserSAP}
+        user={userDetails}
+        onClose={onClose}
       />
     )
   }, [ catalogSelected ]);
@@ -388,7 +276,7 @@ export default function ModalCreateTicket({
                 ) : (
                   <Select
                     items={catalog}
-                    label="Selecione o que deseja fazer"
+                    label="Abrir catalogo"
                     labelPlacement="outside"
                     selectedKeys={catalogSelected}
                     onSelectionChange={setCatalogSelected}
@@ -438,7 +326,6 @@ export default function ModalCreateTicket({
                     value={userDetails?.whatsNumber}
                     disabled={false}
                     readOnly
-                    type="tel"
                     label='Whatsapp'
                     startContent={<FaWhatsapp />}
                     className="flex-1"
@@ -474,38 +361,12 @@ export default function ModalCreateTicket({
                 ) : (
                   <div className="flex flex-col flex-wrap gap-4">
                     {inputs}
-                    {/* <TicketSquare
-                      user={userDetails}
-                      title={title}
-                      priority={prioritySelected}
-                      files={files}
-                    /> */}
                   </div>
                 )}
               </div>
             </div>
           )}
         </ModalBody>
-        <ModalFooter>
-          <Button color="danger" variant="flat" onPress={() => {
-            setTitle('');
-            setDescription('');
-            setPrioritySelected(undefined);
-            setCategorySelected(undefined);
-            setFiles([]);
-
-            onClose();
-          }}>
-            Cancelar
-          </Button>
-          <Button
-            isDisabled={userDetails?.isOnTeam != undefined ? userDetails.isOnTeam == 1 ? false : true : false}
-            color="primary"
-            onPress={() => handleCreateTicket()}
-          >
-            Criar
-          </Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

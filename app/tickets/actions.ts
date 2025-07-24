@@ -6,12 +6,56 @@ import { api } from "../_api/api";
 import ErrorHandler from "../_utils/errorHandler";
 
 interface ICreateTicketFormData {
-  title: string;
+  serviceCatalogId: number;
   description: string;
-  categoryId: number | undefined;
-  priorityId: number | undefined;
-  teamSlug: string | undefined | null; 
-  subTeamSlug: string | undefined | null;
+}
+
+export const getTicketProcessList = async () => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.get('/tickets/process', {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.process;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const createTicketProcess = async ({
+  name
+}: {
+  name: string
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.post('/tickets/process', { name }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.process;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
 }
 
 export const listTickets = async ({

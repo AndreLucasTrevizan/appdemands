@@ -92,6 +92,8 @@ export default function ModalCreateSubTeam({
         name,
       };
 
+      console.log(data);
+
       const subTeam: ISubTeam = await createSubTeam(data);
 
       addToast({
