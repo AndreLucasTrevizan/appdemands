@@ -10,6 +10,35 @@ interface ICreateTicketFormData {
   description: string;
 }
 
+export const gettingTicketWorklog = async ({
+  ticketId
+}: {
+  ticketId: string
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.get('/ticket_worklog', {
+      params: {
+        ticketId,
+      },
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticketWorklog;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
 export const getTicketProcessList = async () => {
   try {
     const signedData = await gettingSigned();

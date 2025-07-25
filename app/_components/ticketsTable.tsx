@@ -1,15 +1,23 @@
 'use client';
 
 import { ITicketReportProps } from "@/types";
-import { addToast, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { addToast, Button, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { listTickets } from "../tickets/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { SearchIcon } from "./searchIcon";
+import ModalTicketDetails from "./modalTicketDetails";
 
 export default function TicketsTable() {
+  const {
+    isOpen,
+    onClose,
+    onOpen,
+    onOpenChange
+  } = useDisclosure();
   const [loadingTickets, setLoadingTickets] = useState<boolean>(false);
   const [tickets, setTickets] = useState<ITicketReportProps[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<ITicketReportProps>();
 
   useEffect(() => {
     async function loadTickets() {
@@ -53,37 +61,55 @@ export default function TicketsTable() {
   }
 
   return (
-    <Table
-      isCompact
-      isStriped
-      topContent={topContent()}
-    >
-      <TableHeader>
-        <TableColumn>ID</TableColumn>
-        <TableColumn>TITULO</TableColumn>
-        <TableColumn>STATUS</TableColumn>
-        <TableColumn>PRIORIDADE</TableColumn>
-      </TableHeader>
-      <TableBody
-        items={tickets}
-        isLoading={loadingTickets}
-        loadingContent={<Spinner size="md" />}
-        emptyContent={
-          <div className="flex flex-col items-center gap-4">
-            <SearchIcon />
-            <span>Nenhum chamado encontrado</span>
-          </div>
-        }
+    <div>
+      {selectedTicket && (
+        <ModalTicketDetails
+          onOpen={onOpen}
+          onClose={onClose}
+          onOpenChange={onOpenChange}
+          isOpen={isOpen}
+          ticket={selectedTicket}
+          setSelectedTicket={setSelectedTicket}
+        />
+      )}
+      <Table
+        isCompact
+        isStriped
+        topContent={topContent()}
       >
-        {(item) => (
-          <TableRow key={item.id}>
-            <TableCell>{item.id}</TableCell>
-            <TableCell>{item.ticketTitle}</TableCell>
-            <TableCell>{item.ticketStatus}</TableCell>
-            <TableCell>{item.ticketPriority}</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        <TableHeader>
+          <TableColumn>ID</TableColumn>
+          <TableColumn>TITULO</TableColumn>
+          <TableColumn>STATUS</TableColumn>
+          <TableColumn>PRIORIDADE</TableColumn>
+        </TableHeader>
+        <TableBody
+          items={tickets}
+          isLoading={loadingTickets}
+          loadingContent={<Spinner size="md" />}
+          emptyContent={
+            <div className="flex flex-col items-center gap-4">
+              <SearchIcon />
+              <span>Nenhum chamado encontrado</span>
+            </div>
+          }
+        >
+          {(item) => (
+            <TableRow key={item.id}>
+              <TableCell>
+                <Button variant="light" onPress={() => {
+                  setSelectedTicket(item);
+
+                  onOpenChange();
+                }}>{item.id}</Button>
+              </TableCell>
+              <TableCell>{item.ticketTitle}</TableCell>
+              <TableCell>{item.ticketStatus}</TableCell>
+              <TableCell>{item.ticketPriority}</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

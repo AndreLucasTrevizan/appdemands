@@ -59,37 +59,73 @@ export interface IQueuesProps {
   updatedAt: Date,
 }
 
+export interface ITicketWorklogProps {
+  id: number
+  worklogDesc: string
+  createdAt: string
+  updatedAt: string
+  userName: string | undefined
+  userSlug: string | undefined
+  userAvatar: string | undefined
+  attendantName: string | undefined
+  attendantSlug: string | undefined
+  attendantAvatar: string | undefined
+}
+
 export interface ITicketReportProps {
-  id: number,
-  ticketTitle: string,
-  ticketDescription: string,
-  ticketCategory: string,
-  ticketPriority: string,
-  ticketSLA: number,
-  ticketStatus: string,
-  createdAt: string,
-  updatedAt: string,
-  avatar: string,
-  userName: string,
-  userSlug: string,
-  email: string,
-  teamName: string,
-  teamSlug: string,
-  subTeamName: string,
-  subTeamSlug: string,
+  id: number
+  ticketTitle: string
+  ticketDescription: string
+  timeWithDispatcher: number
+  timeInAttendance: number
+  timeWithUser: number
+  serviceCatalogId: number
+  ticketCategory: string
+  ticketPriority: string
+  queueId: number
+  queueName: string
+  ticketSLA: number
+  ticketStatus: string
+  createdAt: string
+  updatedAt: string
+  avatar: string
+  userName: string
+  userSlug: string
+  userPhoneNumber: string
+  userWhatsNumber: string
+  email: string
+  teamName: string
+  teamSlug: string
+  subTeamName: string
+  subTeamSlug: string
 }
 
 export interface ITicketProps {
-  id: number;
-  title: string;
-  description: string;
-  team: string;
-  priority: string;
-  category: string;
-  status: string;
-  user: IUserProps;
-  createdAt: Date,
-  updatedAt: Date
+  id: number
+  ticketTitle: string
+  ticketDescription: string
+  timeWithDispatcher: number
+  timeInAttendance: number
+  timeWithUser: number
+  serviceCatalogId: number
+  ticketCategory: string
+  ticketPriority: string
+  queueId: number
+  queueName: string
+  ticketSLA: number
+  ticketStatus: string
+  createdAt: string
+  updatedAt: string
+  avatar: string
+  userName: string
+  userSlug: string
+  userPhoneNumber: string
+  userWhatsNumber: string
+  email: string
+  teamName: string
+  teamSlug: string
+  subTeamName: string
+  subTeamSlug: string
 }
 
 export interface ITicketSLASProps {

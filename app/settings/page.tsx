@@ -24,10 +24,10 @@ import { IUsersReport } from "@/types";
 import { FaCamera, FaSave } from "react-icons/fa";
 import { useAuthContext } from "../_contexts/AuthContext";
 import Nav from "../_components/nav";
-import { FiMail, FiStar, FiUser } from "react-icons/fi";
+import { FiMail, FiPhone, FiStar, FiUser } from "react-icons/fi";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { LiaToolsSolid } from "react-icons/lia";
-import { FaTeamspeak } from "react-icons/fa6";
+import { FaTeamspeak, FaWhatsapp } from "react-icons/fa6";
 import { Key } from "@react-types/shared/src/key";
 import TicketCategoriesTable from "../_components/ticketCategoriesTable";
 import TicketPrioritiesTable from "../_components/ticketPrioritiesTable";
@@ -37,6 +37,7 @@ import ServiceCatalog from "../_components/serviceCatalog";
 import ServiceCatalogObligatoryFields from "../_components/serviceCatalogFields";
 import ServiceCatalogList from "../_components/serviceCatalogList";
 import TicketProcessTable from "../_components/ticketProcessTable";
+import { phoneMasked, whatsMasked } from "../_utils/masks";
 
 export default function SettingsPage() {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -211,6 +212,20 @@ export default function SettingsPage() {
                               startContent={<FiMail />}
                               value={user.email}
                               label="E-mail"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<FiPhone />}
+                              value={phoneMasked(user.phoneNumber)}
+                              label="Telefone"
+                              className="max-w-[430px]"
+                            />
+                            <Input
+                              readOnly
+                              startContent={<FaWhatsapp />}
+                              value={whatsMasked(user.whatsNumber)}
+                              label="Whatsapp"
                               className="max-w-[430px]"
                             />
                             <Input

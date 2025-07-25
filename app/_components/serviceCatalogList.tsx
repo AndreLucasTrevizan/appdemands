@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { Accordion, AccordionItem, addToast, Chip, Divider, Input, Spinner, Switch } from "@heroui/react";
 import { getServiceCatalog, toggleServiceStatus } from "../settings/actions";
+import ChipPriority from "./chipPriority";
 
 interface IFields {
   label: string
@@ -162,23 +163,4 @@ export default function ServiceCatalogList() {
   );
 }
 
-const ChipPriority = ({name, time}: {name: string, time: number}) => {
-  switch(name) {
-    case 'Baixa':
-      return (
-        <Chip color="success">{name} - {time}h</Chip>
-      );
-    case 'Media':
-      return (
-        <Chip color="primary">{name} - {time}h</Chip>
-      );
-    case 'Alta':
-      return (
-        <Chip color="warning">{name} - {time}h</Chip>
-      );
-    case 'Emergencia':
-      return (
-        <Chip color="danger">{name} - {time}h</Chip>
-      );
-  }
-}
+
