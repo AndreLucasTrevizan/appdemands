@@ -1,14 +1,16 @@
 'use client';
 
 import { ITicketProps, ITicketReportProps, ITicketWorklogProps } from "@/types";
-import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Snippet, Spinner, Textarea, User } from "@heroui/react";
+import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Snippet, Spinner, Textarea, Tooltip, User } from "@heroui/react";
 import ChipPriority from "./chipPriority";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
-import { FiPhone } from "react-icons/fi";
+import { FiPhone, FiSend } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { gettingTicketWorklog } from "../tickets/actions";
+import { GrAttachment } from "react-icons/gr";
+import FormSendFiles from "./formSendFiles";
 
 export default function ModalTicketDetails({
   isOpen,
@@ -26,7 +28,9 @@ export default function ModalTicketDetails({
   setSelectedTicket: Dispatch<SetStateAction<ITicketReportProps>>
 }) {
   const [loadingWorklog, setLoadingWorklog] = useState<boolean>(false);
+  const [loadingSendTicketWorklog, setLoadingSendTicketWorklog] = useState<boolean>(false);
   const [worklog, setWorklog] = useState<ITicketWorklogProps[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     async function loadTicketWorklog() {
@@ -53,6 +57,27 @@ export default function ModalTicketDetails({
     loadTicketWorklog();
   }, []);
 
+  async function sendTicketWorklog() {
+    try {
+      setLoadingSendTicketWorklog(true);
+
+
+
+      setLoadingSendTicketWorklog(false);
+    } catch (error) {
+      setLoadingSendTicketWorklog(false);
+      const errorHandler = new ErrorHandler(error);
+
+      addToast({
+        color: 'warning',
+        title: 'Aviso',
+        description: errorHandler.message,
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+    }
+  }
+
   return (
     <Modal
       size="full"
@@ -64,14 +89,14 @@ export default function ModalTicketDetails({
     >
       <ModalContent className="overflow-scroll scrollbar-hide">
         <ModalHeader>
-          <h1>{ticket.ticketTitle}</h1>
+          <h1>{ticket.id} - {ticket.ticketTitle}</h1>
         </ModalHeader>
         <Divider />
         <ModalBody>
-          <div className="w-full flex flex-row flex-wrap gap-4">
+          <div className="w-full h-full flex flex-row flex-wrap gap-4">
             <div className="flex flex-1 flex-col flex-wrap gap-4">
               <Textarea
-                value={ticket.ticketDescription}
+                value={ticket.ticketDescription ?? ""}
                 readOnly
                 label="Descrição da Solicitação"
                 labelPlacement="outside"
@@ -79,7 +104,7 @@ export default function ModalTicketDetails({
               <div className="flex flex-row flex-wrap gap-4">
                 <div className="flex flex-row w-full gap-4">
                   <Input
-                    value={ticket.ticketCategory}
+                    value={ticket.ticketCategory ?? ""}
                     label="Categoria"
                     labelPlacement="outside"
                     readOnly
@@ -89,27 +114,27 @@ export default function ModalTicketDetails({
                     <ChipPriority name={ticket.ticketPriority} time={ticket.ticketSLA} />
                   </div>
                   <Input
-                    value={ticket.ticketStatus}
+                    value={ticket.ticketStatus ?? ""}
                     label="Status"
                     labelPlacement="outside"
                     readOnly
                   />
                 </div>
                 <Input
-                  value={ticket.queueName}
+                  value={ticket.queueName ?? ""}
                   label="Fila"
                   labelPlacement="outside"
                   readOnly
                 />
                 <div className="flex flex-row w-full gap-4">
                   <Input
-                    value={ticket.teamName}
+                    value={ticket.teamName ?? ""}
                     label="Equipe"
                     labelPlacement="outside"
                     readOnly
                   />
                   <Input
-                    value={ticket.subTeamName}
+                    value={ticket.subTeamName ?? ""}
                     label="Sub-equipe"
                     labelPlacement="outside"
                     readOnly
@@ -166,9 +191,9 @@ export default function ModalTicketDetails({
                   <Spinner size="lg" label="Carregando worklog..." />
                 </div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 h-full">
                   {worklog.map((item) => (
-                    <div key={item.id}>
+                    <div className="h-full flex-1 overflow-scroll scrollbar-hidden" key={item.id}>
                       {item.userName ? (
                         <User
                           name={item.userName}
@@ -196,26 +221,38 @@ export default function ModalTicketDetails({
                       />
                     </div>
                   ))}
-                  <Textarea />
+                  <div className="flex flex-col gap-4">
+                    <Divider />
+                    <Textarea
+                      size="sm"
+                      variant="underlined"
+                      placeholder="Responder no worklog do chamado..."
+                    />
+                    <FormSendFiles
+                      files={files}
+                      setFiles={setFiles}
+                    />
+                    <div className="flex flex-row justify-between gap-4 flex-wrap">
+                      <Button color="danger" variant="flat" onPress={() => {
+                        setSelectedTicket(undefined);
+
+                        onClose();
+                      }}>
+                        Fechar
+                      </Button>
+                      <div className="flex flex-row gap-4 flex-wrap">
+                        <Button
+                          startContent={<FiSend />}
+                          color="primary"
+                        >Enviar</Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <div className="flex flex-row gap-4">
-            <Button color="danger" variant="flat" onPress={() => {
-              setSelectedTicket(undefined);
-
-              onClose();
-            }}>
-              Fechar
-            </Button>
-            <Button color="primary" onPress={() => {}}>
-              Salvar
-            </Button>
-          </div>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

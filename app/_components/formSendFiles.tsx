@@ -1,9 +1,10 @@
 'use client';
 
-import { Form, Input } from "@heroui/react";
+import { Button, Form, Input, Tooltip } from "@heroui/react";
 import { PlusIcon } from "./plusIcon";
 import { ChangeEvent, Dispatch, SetStateAction, useCallback } from "react";
 import FileItem from "./fileItem";
+import { GrAttachment } from "react-icons/gr";
 
 export default function FormSendFiles({
   files,
@@ -55,13 +56,12 @@ export default function FormSendFiles({
   }, [ files ]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4">
-        <label htmlFor="inputFile" className="flex items-center gap-2">
-          <h2>Anexos</h2>
-          <span className="border-2 rounded-full hover:cursor-pointer">
-            <PlusIcon size={20} height={20} width={20} />
-          </span>
+        <label htmlFor="inputFile" className="flex items-center gap-2 cursor-pointer">
+          <Tooltip content="Inserir anexos">
+            <GrAttachment />
+          </Tooltip>
         </label>
         <Input
           className="hidden"
