@@ -85,7 +85,11 @@ export default function ModalTicketDetails({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       closeButton
-      onClose={onClose}
+      onClose={() => {
+        setSelectedTicket(undefined);
+
+        onClose();
+      }}
     >
       <ModalContent className="overflow-scroll scrollbar-hide">
         <ModalHeader>

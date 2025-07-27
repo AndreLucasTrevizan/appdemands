@@ -353,7 +353,7 @@ export default function TicketCategoriesTable() {
         onSortChange={setSortDescriptor}
         topContent={
           <div className="flex flex-col gap-4">
-            <h1>Lista de SLAs</h1>
+            <h1>Lista de Categorias</h1>
             <div className="flex justify-between items-center">
               <Input
                 startContent={

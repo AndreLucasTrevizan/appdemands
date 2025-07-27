@@ -89,12 +89,14 @@ export const createTicketProcess = async ({
 
 export const listTickets = async ({
   byUser,
+  userId,
   byTeam,
   teamSlug,
   bySubTeam,
   subTeamSlug
 }: {
   byUser?: string,
+  userId?: number,
   byTeam?: string,
   teamSlug?: string,
   bySubTeam?: string,
@@ -111,6 +113,7 @@ export const listTickets = async ({
       params: {
         byUser,
         byTeam,
+        userId,
         teamSlug,
         bySubTeam,
         subTeamSlug

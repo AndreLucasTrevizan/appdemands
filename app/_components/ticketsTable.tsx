@@ -7,6 +7,7 @@ import { listTickets } from "../tickets/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { SearchIcon } from "./searchIcon";
 import ModalTicketDetails from "./modalTicketDetails";
+import { useAuthContext } from "../_contexts/AuthContext";
 
 export default function TicketsTable() {
   const {
@@ -15,6 +16,7 @@ export default function TicketsTable() {
     onOpen,
     onOpenChange
   } = useDisclosure();
+  const { userSigned } = useAuthContext();
   const [loadingTickets, setLoadingTickets] = useState<boolean>(false);
   const [tickets, setTickets] = useState<ITicketReportProps[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<ITicketReportProps>();
@@ -25,7 +27,8 @@ export default function TicketsTable() {
         setLoadingTickets(true);
 
         const ticketsData = await listTickets({
-          byUser: "true"
+          byUser: "true",
+          userId: userSigned.id
         });
 
         setTickets(ticketsData);

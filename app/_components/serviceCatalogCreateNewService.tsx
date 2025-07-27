@@ -9,7 +9,7 @@ import { getTicketCategoriesList, getTicketPrioritiesList } from "../tickets/act
 import { PlusIcon } from "./plusIcon";
 import { createCatalogsService, listServiceCatalogFields } from "../settings/actions";
 
-export default function ServiceCatalog() {
+export default function ServiceCatalogCreateNewService() {
   const [loadingTicketCategories, setLoadingTicketCategories] = useState(false);
   const [loadingTicketPriorities, setLoadingTicketPriorities] = useState(false);
   const [loadingCreateService, setLoadingCreateService] = useState(false);
