@@ -63,7 +63,11 @@ export const getQueueDetails = async (slug: string) => {
       throw "Você não está autenticado";
     }
 
-    const response = await api.get(`/queues/${slug}`, {
+    const response = await api.get(`/queues`, {
+      params: {
+        details: true,
+        slug
+      },
       headers: {
         Authorization: `Bearer ${signedData.token}`,
       }
@@ -85,7 +89,10 @@ export const getQueueMembers = async (slug: string) => {
       throw "Você não está autenticado";
     }
 
-    const response = await api.get(`/queues/${slug}/members`, {
+    const response = await api.get(`/queues/members`, {
+      params: {
+        slug
+      },
       headers: {
         Authorization: `Bearer ${signedData.token}`,
       }

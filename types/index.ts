@@ -61,6 +61,14 @@ export interface IQueuesProps {
   updatedAt: Date,
 }
 
+export interface IQueueAttendant {
+  id: number
+  userName: string
+  slug: string
+  email: string
+  avatar: string
+}
+
 export interface ITicketWorklogProps {
   id: number
   worklogDesc: string

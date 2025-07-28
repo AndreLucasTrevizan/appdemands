@@ -1,16 +1,17 @@
 'use client';
 
-import { ITicketProps, ITicketReportProps, ITicketWorklogProps } from "@/types";
-import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Snippet, Spinner, Textarea, Tooltip, User } from "@heroui/react";
+import { IQueueAttendant, IQueuesProps, ITicketProps, ITicketReportProps, ITicketWorklogProps } from "@/types";
+import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, User } from "@heroui/react";
 import ChipPriority from "./chipPriority";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
 import { FiPhone, FiSend } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
 import { gettingTicketWorklog } from "../tickets/actions";
 import { GrAttachment } from "react-icons/gr";
 import FormSendFiles from "./formSendFiles";
+import { getQueueMembers, listQueues } from "../queues/actions";
 
 export default function ModalTicketDetails({
   isOpen,
@@ -31,6 +32,12 @@ export default function ModalTicketDetails({
   const [loadingSendTicketWorklog, setLoadingSendTicketWorklog] = useState<boolean>(false);
   const [worklog, setWorklog] = useState<ITicketWorklogProps[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [loadingListQueues, setLoadingListQueues] = useState(false);
+  const [loadingQueueAttendants, setLoadingQueueAttendants] = useState(false);
+  const [queues, setQueues] = useState<IQueuesProps[]>([]);
+  const [selectedQueue, setSelectedQueue] = useState<SharedSelection>(new Set());
+  const [selectedQueueData, setSelectedQueueData] = useState<IQueuesProps>();
+  const [attendants, setAttendants] = useState<IQueueAttendant[]>([]);
 
   useEffect(() => {
     async function loadTicketWorklog() {
@@ -54,8 +61,73 @@ export default function ModalTicketDetails({
       }
     }
 
+    async function loadQueues() {
+      try {
+        setLoadingListQueues(true);
+
+        const response = await listQueues();
+
+        setQueues(response);
+
+        setLoadingListQueues(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        setLoadingListQueues(false);
+      }
+    }
+
     loadTicketWorklog();
+    loadQueues()
   }, []);
+
+  const queueAttendants = useMemo(() => {
+    async function loadAttendants() {
+      try {
+        setLoadingQueueAttendants(true);
+
+        const queueData = queues.find((item) => item?.id == Number(selectedQueue.currentKey));
+
+        const response: IQueueAttendant[] = await getQueueMembers(queueData?.slug);
+
+        //setAttendants(response);
+
+        setLoadingQueueAttendants(false);
+      } catch (error) {
+        setLoadingQueueAttendants(false);
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+    }
+
+    loadAttendants();
+
+    return (
+      <Select
+        label="Atendentes"
+        labelPlacement="outside"
+        items={attendants}
+        isLoading={loadingQueueAttendants}
+      >
+        {(item) => <SelectItem key={item.id}>{item.userName}</SelectItem>}
+      </Select>
+    );
+  }, [ selectedQueue ]);
 
   async function sendTicketWorklog() {
     try {
@@ -124,12 +196,20 @@ export default function ModalTicketDetails({
                     readOnly
                   />
                 </div>
-                <Input
-                  value={ticket.queueName ?? ""}
-                  label="Fila"
-                  labelPlacement="outside"
-                  readOnly
-                />
+                <div className="flex flex-row gap-4 flex-wrap">
+                  <Select
+                    label="Fila de Atendimento"
+                    labelPlacement="outside"
+                    placeholder="Selecione a fila de atendimento desse ticket"
+                    items={queues}
+                    onSelectionChange={setSelectedQueue}
+                    isLoading={loadingListQueues}
+                    isRequired
+                  >
+                    {(item) => <SelectItem key={item.id}>{item.queueName}</SelectItem>}
+                  </Select>
+                  {selectedQueue ? queueAttendants : null}
+                </div>
                 <div className="flex flex-row w-full gap-4">
                   <Input
                     value={ticket.teamName ?? ""}
