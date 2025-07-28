@@ -1,6 +1,6 @@
 'use client';
 
-import { ICreateService, IServiceCatalogField, IServiceCatalogProps, ITicketCategoryProps, ITicketPriorityProps } from "@/types";
+import { ICreateService, IQueuesProps, IServiceCatalogField, IServiceCatalogProps, ITicketCategoryProps, ITicketPriorityProps } from "@/types";
 import { Input, Textarea } from "@heroui/input";
 import { addToast, Button, Card, CardBody, Chip, Divider, Form, Listbox, ListboxItem, ScrollShadow, Select, Selection, SelectItem, SharedSelection, Spinner } from "@heroui/react";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
@@ -8,10 +8,13 @@ import ErrorHandler from "../_utils/errorHandler";
 import { getTicketCategoriesList, getTicketPrioritiesList } from "../tickets/actions";
 import { PlusIcon } from "./plusIcon";
 import { createCatalogsService, listServiceCatalogFields } from "../settings/actions";
+import { listQueues } from "../queues/actions";
+import ChipPriority from "./chipPriority";
 
 export default function ServiceCatalogCreateNewService() {
   const [loadingTicketCategories, setLoadingTicketCategories] = useState(false);
   const [loadingTicketPriorities, setLoadingTicketPriorities] = useState(false);
+  const [loadingListQueues, setLoadingListQueues] = useState(false);
   const [loadingCreateService, setLoadingCreateService] = useState(false);
   const [ticketCategories, setTicketCategories] = useState<ITicketCategoryProps[]>([]);
   const [ticketPriorities, setTicketPriorities] = useState<ITicketPriorityProps[]>([]);
@@ -20,6 +23,9 @@ export default function ServiceCatalogCreateNewService() {
   const [ticketPrioritySelected, setTicketPrioritySelected] = useState<SharedSelection>();
   const [ticketPrioritySelectedData, setTicketPrioritySelectedData] = useState<ITicketPriorityProps>();
   const [selectedServiceCatalogKeys, setSelectedServiceCatalogKeys] = useState<Selection>(new Set());
+  const [queues, setQueues] = useState<IQueuesProps[]>([]);
+  const [selectedQueue, setSelectedQueue] = useState<SharedSelection>(new Set());
+  const [selectedQueueData, setSelectedQueueData] = useState<IQueuesProps>();
   const [service, setService] = useState("");
   const [loadingListField, setLoadingListField] = useState(false);
   const [fields, setFields] = useState<IServiceCatalogField[]>([]);
@@ -96,21 +102,35 @@ export default function ServiceCatalogCreateNewService() {
       }
     }
 
-    
+    async function loadQueues() {
+      try {
+        setLoadingListQueues(true);
+
+        const response = await listQueues();
+
+        setQueues(response);
+
+        setLoadingListQueues(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        setLoadingListQueues(false);
+      }
+    }
+
     loadTicketCategoriesData();
     loadTicketPrioritiesData();
     loadFieldsData();
+    loadQueues();
   }, []);
-
-  const gettingSelectedPriority = (e: ChangeEvent<HTMLSelectElement>) => {
-    let priorityId = Number(e.target.value);
-
-    if (ticketPrioritySelected) {
-      let prioritySelected = ticketPriorities.filter((priority) => priority.id == priorityId)[0];
-
-      setTicketPrioritySelectedData(prioritySelected);
-    }
-  }
 
   const prioritiesSelect = useMemo(() => {
     let prioritiesData = [...ticketPriorities];
@@ -149,12 +169,7 @@ export default function ServiceCatalogCreateNewService() {
       setTicketPrioritySelectedData(priorityData);
 
       return (
-        <Input
-          label="Prioridade"
-          labelPlacement="outside"
-          value={priorityData.priorityName}
-          isReadOnly
-        />
+        <ChipPriority name={priorityData.priorityName} />
       );
     }
   }, [ ticketPrioritySelected ]);
@@ -197,6 +212,7 @@ export default function ServiceCatalogCreateNewService() {
       serviceData["service"] = service;
       serviceData["fields"] = JSON.stringify(listOfFields);
       serviceData["serviceDescription"] = `${description}\n\n`;
+      serviceData["queueId"] = selectedQueueData?.id;
       serviceData["ticketCategoryId"] = ticketCategorySelectedData?.id;
       serviceData["ticketPriorityId"] = ticketPrioritySelectedData?.id;
 
@@ -212,6 +228,7 @@ export default function ServiceCatalogCreateNewService() {
 
       setService("");
       setSelectedServiceCatalogKeys(new Set());
+      setSelectedQueue(undefined);
       setTicketCategorySelected(undefined);
       setTicketPrioritySelected(undefined);
       setLoadingCreateService(false);
@@ -227,6 +244,20 @@ export default function ServiceCatalogCreateNewService() {
       });
     }
   }
+
+  const queueComp = useMemo(() => {
+    let queueData = queues.find((item) => item.id == Number(selectedQueue?.currentKey));
+
+    if (queueData) {
+      setSelectedQueueData(queueData);
+
+      return (
+        <span>Fila de {queueData?.queueName}</span>
+      );
+    } else {
+      return null;
+    }
+}, [ selectedQueue ]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -271,6 +302,17 @@ export default function ServiceCatalogCreateNewService() {
               >
                 {(ticketCategory) => <SelectItem key={ticketCategory.id}>{ticketCategory.categoryName}</SelectItem>}
               </Select>
+              <Select
+                label="Fila de Atendimento"
+                labelPlacement="outside"
+                placeholder="Selecione a fila de atendimento desse ticket"
+                items={queues}
+                onSelectionChange={setSelectedQueue}
+                isLoading={loadingListQueues}
+                isRequired
+              >
+                {(item) => <SelectItem key={item.id}>{item.queueName}</SelectItem>}
+              </Select>
               {ticketCategorySelected && (
                 prioritiesSelect
               )}
@@ -312,6 +354,8 @@ export default function ServiceCatalogCreateNewService() {
                   />
                 )}
                 {priorityMemo}
+                <Divider />
+                {queueComp}
                 <Divider />
                 <span className="text-medium">{description}</span>
                 {selectedkeyComponent}

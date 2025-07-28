@@ -139,6 +139,7 @@ export default function ServiceCatalogList() {
                     <div className="flex flex-col gap-4">
                       <span>{item.categoryName}</span>
                       <ChipPriority name={item.priorityName} time={item.slaTime} />
+                      <span>Fila de {item.queueName}</span>
                       <div className="flex flex-col gap-4">
                         <span>Campos a serem preenchidos pelo usuário</span>
                         <div>

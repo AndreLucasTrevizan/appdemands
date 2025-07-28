@@ -39,6 +39,9 @@ export const listQueues = async () => {
     }
 
     const response = await api.get('/queues', {
+      params: {
+        status: 'ativo'
+      },
       headers: {
         Authorization: `Bearer ${signedData.token}`,
       }

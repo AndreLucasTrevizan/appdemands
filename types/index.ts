@@ -38,6 +38,8 @@ export interface IServiceCatalog {
   slug: string
   isActive: boolean
   ticketCategoryId: number
+  queueName: string
+  queueSlug: string
   categoryName: string
   categoryDesc: string
   categorySlug: string

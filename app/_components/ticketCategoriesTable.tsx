@@ -359,7 +359,7 @@ export default function TicketCategoriesTable() {
                 startContent={
                   <SearchIcon />
                 }
-                placeholder="Buscar sla..."
+                placeholder="Buscar categoria..."
                 type="search"
                 className="max-w-[40%]"
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -432,7 +432,7 @@ export default function TicketCategoriesTable() {
           emptyContent={
             <div className="flex flex-col gap-4 items-center justify-center">
               <SearchIcon />
-              <span>Nenhum SLA encontrado</span>
+              <span>Nenhuma categoria encontrada</span>
             </div>
           }
           isLoading={loadingCategories}
