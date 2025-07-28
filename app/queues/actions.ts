@@ -81,7 +81,13 @@ export const getQueueDetails = async (slug: string) => {
   }
 }
 
-export const getQueueMembers = async (slug: string) => {
+export const getQueueMembers = async ({
+  bySlug,
+  slug,
+}: {
+  bySlug: boolean,
+  slug?: string,
+}) => {
   try {
     const signedData = await gettingSigned();
 
@@ -89,16 +95,29 @@ export const getQueueMembers = async (slug: string) => {
       throw "Você não está autenticado";
     }
 
-    const response = await api.get(`/queues/members`, {
-      params: {
-        slug
-      },
-      headers: {
-        Authorization: `Bearer ${signedData.token}`,
-      }
-    });
+    if (bySlug) {
+      const response = await api.get(`/queues/members`, {
+        params: {
+          slug,
+        },
+        headers: {
+          Authorization: `Bearer ${signedData.token}`,
+        }
+      });
 
-    return response.data.attendants;
+      return response.data.attendants;
+    } else {
+      const response = await api.get(`/queues/members`, {
+        params: {
+          all: "true"
+        },
+        headers: {
+          Authorization: `Bearer ${signedData.token}`,
+        }
+      });
+
+      return response.data.attendants;
+    }
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

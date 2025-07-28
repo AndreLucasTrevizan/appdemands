@@ -67,6 +67,8 @@ export interface IQueueAttendant {
   slug: string
   email: string
   avatar: string
+  queueId: number
+  queueSlug: string
 }
 
 export interface ITicketWorklogProps {
@@ -94,6 +96,7 @@ export interface ITicketReportProps {
   ticketPriority: string
   queueId: number
   queueName: string
+  queueSlug: string
   ticketSLA: number
   ticketStatus: string
   createdAt: string
@@ -103,6 +106,12 @@ export interface ITicketReportProps {
   userSlug: string
   userPhoneNumber: string
   userWhatsNumber: string
+  attendantAvatar: string
+  attendantName: string
+  attendantSlug: string
+  attendantEmail: string
+  attendantPhoneNumber: string
+  attendantWhatsNumber: string
   email: string
   teamName: string
   teamSlug: string
@@ -122,6 +131,7 @@ export interface ITicketProps {
   ticketPriority: string
   queueId: number
   queueName: string
+  queueSlug: string
   ticketSLA: number
   ticketStatus: string
   createdAt: string
@@ -131,6 +141,12 @@ export interface ITicketProps {
   userSlug: string
   userPhoneNumber: string
   userWhatsNumber: string
+  attendantAvatar: string
+  attendantName: string
+  attendantSlug: string
+  attendantEmail: string
+  attendantPhoneNumber: string
+  attendantWhatsNumber: string
   email: string
   teamName: string
   teamSlug: string

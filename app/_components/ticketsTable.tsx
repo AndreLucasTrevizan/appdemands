@@ -28,7 +28,7 @@ export default function TicketsTable() {
 
         const ticketsData = await listTickets({
           byUser: "true",
-          userId: userSigned.id
+          userId: userSigned ? userSigned.id : 0
         });
 
         setTickets(ticketsData);
@@ -67,10 +67,10 @@ export default function TicketsTable() {
     <div>
       {selectedTicket && (
         <ModalTicketDetails
-          onOpen={onOpen}
-          onClose={onClose}
-          onOpenChange={onOpenChange}
-          isOpen={isOpen}
+          onOpenModalTicketDetails={onOpen}
+          onCloseModalTicketDetails={onClose}
+          onOpenChangeModalTicketDetails={onOpenChange}
+          isOpenModalTicketDetails={isOpen}
           ticket={selectedTicket}
           setSelectedTicket={setSelectedTicket}
         />

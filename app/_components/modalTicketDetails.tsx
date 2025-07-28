@@ -1,43 +1,63 @@
 'use client';
 
-import { IQueueAttendant, IQueuesProps, ITicketProps, ITicketReportProps, ITicketWorklogProps } from "@/types";
-import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, User } from "@heroui/react";
+import { IQueueAttendant, IQueuesProps, ITicketProps, ITicketReportProps, ITicketStatusProps, ITicketWorklogProps } from "@/types";
+import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, useDisclosure, User } from "@heroui/react";
 import ChipPriority from "./chipPriority";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
-import { FiPhone, FiSend } from "react-icons/fi";
+import { FiEdit, FiPhone, FiSend } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import ErrorHandler from "../_utils/errorHandler";
-import { gettingTicketWorklog } from "../tickets/actions";
+import { getTicketStatusList, gettingTicketWorklog } from "../tickets/actions";
 import { GrAttachment } from "react-icons/gr";
 import FormSendFiles from "./formSendFiles";
 import { getQueueMembers, listQueues } from "../queues/actions";
+import ModalChangeAttendant from "./modalChangeAttendant";
+import ModalChangeStatus from "./modalChangeStatus";
 
 export default function ModalTicketDetails({
-  isOpen,
-  onOpen,
-  onClose,
-  onOpenChange,
+  isOpenModalTicketDetails,
+  onOpenModalTicketDetails,
+  onCloseModalTicketDetails,
+  onOpenChangeModalTicketDetails,
   ticket,
   setSelectedTicket
 }: {
-  isOpen: boolean,
-  onOpen: () => void,
-  onClose: () => void,
-  onOpenChange: () => void,
+  isOpenModalTicketDetails: boolean,
+  onOpenModalTicketDetails: () => void,
+  onCloseModalTicketDetails: () => void,
+  onOpenChangeModalTicketDetails: () => void,
   ticket: ITicketProps,
   setSelectedTicket: Dispatch<SetStateAction<ITicketReportProps>>
 }) {
+  const {
+    isOpen: isOpenChangeAttendantModal,
+    onOpen: onOpenChangeAttendantModal,
+    onClose: onCloseChangeAttendantModal,
+    onOpenChange: onOpenChangeChangeAttendantModal
+  } = useDisclosure();
+  
+  const {
+    isOpen: isOpenChangeStatusModal,
+    onOpen: onOpenChangeStatusModal,
+    onClose: onCloseChangeStatusModal,
+    onOpenChange: onOpenChangeChangeStatusModal
+  } = useDisclosure();
   const [loadingWorklog, setLoadingWorklog] = useState<boolean>(false);
   const [loadingSendTicketWorklog, setLoadingSendTicketWorklog] = useState<boolean>(false);
   const [worklog, setWorklog] = useState<ITicketWorklogProps[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [loadingListQueues, setLoadingListQueues] = useState(false);
   const [loadingQueueAttendants, setLoadingQueueAttendants] = useState(false);
+  const [loadingTicketStatus, setLoadingTicketStatus] = useState(false);
   const [queues, setQueues] = useState<IQueuesProps[]>([]);
   const [selectedQueue, setSelectedQueue] = useState<SharedSelection>(new Set());
   const [selectedQueueData, setSelectedQueueData] = useState<IQueuesProps>();
   const [attendants, setAttendants] = useState<IQueueAttendant[]>([]);
+  const [selectedAttendant, setSelectedAttendant] = useState<IQueueAttendant>();
+  const [statusList, setStatusList] = useState<ITicketStatusProps[]>([]);
+  const [selectedTicketStatus, setSelectedTicketStatus] = useState<ITicketStatusProps>();
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     async function loadTicketWorklog() {
@@ -85,20 +105,16 @@ export default function ModalTicketDetails({
       }
     }
 
-    loadTicketWorklog();
-    loadQueues()
-  }, []);
-
-  const queueAttendants = useMemo(() => {
     async function loadAttendants() {
       try {
         setLoadingQueueAttendants(true);
 
-        const queueData = queues.find((item) => item?.id == Number(selectedQueue.currentKey));
+        const response: IQueueAttendant[] = await getQueueMembers({
+          bySlug: true,
+          slug: ticket.queueSlug
+        });
 
-        const response: IQueueAttendant[] = await getQueueMembers(queueData?.slug);
-
-        //setAttendants(response);
+        setAttendants(response);
 
         setLoadingQueueAttendants(false);
       } catch (error) {
@@ -114,26 +130,62 @@ export default function ModalTicketDetails({
         });
       }
     }
+    
+    async function loadStatus() {
+      try {
+        setLoadingTicketStatus(true);
 
+        const response: ITicketStatusProps[] = await getTicketStatusList();
+
+        setStatusList(response);
+
+        setLoadingTicketStatus(false);
+      } catch (error) {
+        setLoadingTicketStatus(false);
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          color: 'warning',
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+    }
+
+    loadTicketWorklog();
+    loadQueues()
     loadAttendants();
-
-    return (
-      <Select
-        label="Atendentes"
-        labelPlacement="outside"
-        items={attendants}
-        isLoading={loadingQueueAttendants}
-      >
-        {(item) => <SelectItem key={item.id}>{item.userName}</SelectItem>}
-      </Select>
-    );
-  }, [ selectedQueue ]);
+    loadStatus();
+  }, []);
 
   async function sendTicketWorklog() {
     try {
       setLoadingSendTicketWorklog(true);
 
+      console.log(selectedAttendant);
+      console.log(selectedTicketStatus);
+      console.log(description);
 
+      /**
+       * if (description) {
+       *    cadastra um novo worklog com a descrição
+       * }
+       * 
+       * if (selectedAttendant) {
+       *    cadastra altreação de atendente e um novo worklog
+       * }
+       * 
+       * if (statusSelected) {
+       *    cadastra alteração de status e um novo worklog
+       * }
+       * 
+       * if (files) {
+       *    cadastra a adição de anexos e um novo worklog
+       * }
+       * 
+       */
 
       setLoadingSendTicketWorklog(false);
     } catch (error) {
@@ -150,17 +202,35 @@ export default function ModalTicketDetails({
     }
   }
 
+  const selectedAttendantComp = useMemo(() => {
+    return <Input
+      value={selectedAttendant?.userName ?? "Atendente invalido"}
+      isReadOnly
+      label="Atendente"
+      labelPlacement="outside"
+    />
+  }, [ selectedAttendant ]);
+  
+  const selectedStatusComp = useMemo(() => {
+    return <Input
+      value={selectedTicketStatus?.statusName ?? "Status invalido"}
+      isReadOnly
+      label="Status"
+      labelPlacement="outside"
+    />
+  }, [ selectedTicketStatus ]);
+
   return (
     <Modal
       size="full"
       backdrop="blur"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      isOpen={isOpenModalTicketDetails}
+      onOpenChange={onOpenChangeModalTicketDetails}
       closeButton
       onClose={() => {
         setSelectedTicket(undefined);
 
-        onClose();
+        onCloseModalTicketDetails();
       }}
     >
       <ModalContent className="overflow-scroll scrollbar-hide">
@@ -184,31 +254,65 @@ export default function ModalTicketDetails({
                     label="Categoria"
                     labelPlacement="outside"
                     readOnly
+                    className="flex-1"
                   />
-                  <div className="flex flex-col items-center">
-                    <span className="mb-1">Prioridade</span>
-                    <ChipPriority name={ticket.ticketPriority} time={ticket.ticketSLA} />
+                  <div className="flex flex-1 items-end gap-4">
+                    {selectedTicketStatus ? (
+                      selectedStatusComp
+                    ) : (
+                      <Input
+                        value={ticket.ticketStatus ?? "Status não atribuido"}
+                        isReadOnly
+                        label="Status"
+                        labelPlacement="outside"
+                      />
+                    )}
+                    <ModalChangeStatus
+                      isOpen={isOpenChangeStatusModal}
+                      onOpen={onOpenChangeStatusModal}
+                      onClose={onCloseChangeStatusModal}
+                      onOpenChange={onOpenChangeChangeStatusModal}
+                      statusList={statusList}
+                      selectedStatus={selectedTicketStatus}
+                      setSelectedStatus={setSelectedTicketStatus}
+                    />
+                    <Tooltip content="Mudar status">
+                      <Button isIconOnly startContent={<FiEdit />} color="warning" onPress={() => onOpenChangeChangeStatusModal()} />
+                    </Tooltip>
                   </div>
-                  <Input
-                    value={ticket.ticketStatus ?? ""}
-                    label="Status"
-                    labelPlacement="outside"
-                    readOnly
-                  />
                 </div>
-                <div className="flex flex-row gap-4 flex-wrap">
-                  <Select
+                <div className="flex flex-row gap-4 w-full">
+                  <Input
+                    value={ticket.queueName}
                     label="Fila de Atendimento"
                     labelPlacement="outside"
-                    placeholder="Selecione a fila de atendimento desse ticket"
-                    items={queues}
-                    onSelectionChange={setSelectedQueue}
-                    isLoading={loadingListQueues}
-                    isRequired
-                  >
-                    {(item) => <SelectItem key={item.id}>{item.queueName}</SelectItem>}
-                  </Select>
-                  {selectedQueue ? queueAttendants : null}
+                    readOnly
+                    className="flex-1"
+                  />
+                  <div className="flex items-end gap-4 flex-1">
+                    {selectedAttendant ? (
+                      selectedAttendantComp
+                    ) : (
+                      <Input
+                        value={ticket.attendantName ?? "Atendente não atribuido"}
+                        isReadOnly
+                        label="Atendente"
+                        labelPlacement="outside"
+                      />
+                    )}
+                    <ModalChangeAttendant
+                      isOpen={isOpenChangeAttendantModal}
+                      onOpen={onOpenChangeAttendantModal}
+                      onClose={onCloseChangeAttendantModal}
+                      onOpenChange={onOpenChangeChangeAttendantModal}
+                      attendants={attendants}
+                      selectedAttendant={selectedAttendant}
+                      setSelectedAttendant={setSelectedAttendant}
+                    />
+                    <Tooltip content="Mudar atendente">
+                      <Button isIconOnly startContent={<FiEdit />} color="warning" onPress={() => onOpenChangeChangeAttendantModal()} />
+                    </Tooltip>
+                  </div>
                 </div>
                 <div className="flex flex-row w-full gap-4">
                   <Input
@@ -224,8 +328,9 @@ export default function ModalTicketDetails({
                     readOnly
                   />
                 </div>
-                <div className="flex flex-row gap-4 flex-wrap">
-                  
+                <div className="flex flex-col items-center">
+                  <span className="mb-1">Prioridade</span>
+                  <ChipPriority name={ticket.ticketPriority} time={ticket.ticketSLA} />
                 </div>
               </div>
               <Divider />
@@ -311,6 +416,8 @@ export default function ModalTicketDetails({
                       size="sm"
                       variant="underlined"
                       placeholder="Responder no worklog do chamado..."
+                      value={description}
+                      onValueChange={setDescription}
                     />
                     <FormSendFiles
                       files={files}
@@ -320,7 +427,7 @@ export default function ModalTicketDetails({
                       <Button color="danger" variant="flat" onPress={() => {
                         setSelectedTicket(undefined);
 
-                        onClose();
+                        onCloseModalTicketDetails();
                       }}>
                         Fechar
                       </Button>
@@ -328,6 +435,7 @@ export default function ModalTicketDetails({
                         <Button
                           startContent={<FiSend />}
                           color="primary"
+                          onPress={() => sendTicketWorklog()}
                         >Enviar</Button>
                       </div>
                     </div>
