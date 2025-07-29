@@ -8,6 +8,7 @@ import { api } from "../_api/api";
 export const handleRegisterTicketWorklog = async (
   description: string,
   ticketId: number,
+  isOpeningTicket?: string,
   files?: File[]
 ) => {
   try {
@@ -20,6 +21,7 @@ export const handleRegisterTicketWorklog = async (
     const formData = new FormData();
 
     const response = await api.post('/ticket_worklog', {
+      isOpeningTicket,
       description,
       ticketId
     }, {
@@ -45,7 +47,9 @@ export const handleRegisterTicketWorklog = async (
       });
     }
 
-    return response.data.ticketWorklog;
+
+
+    return response.data.ticket_worklog;
   } catch (error) {
     const errorHandler = new ErrorHandler(error);
 

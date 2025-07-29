@@ -50,8 +50,13 @@ export default function CriacaoDeUsuarioDeRede({
             setLoadingSendingFiles(true);
 
             await attachingTicketFiles(ticketData.id, files);
-    
-            await handleRegisterTicketWorklog(description, ticketData.id, files);
+
+            await handleRegisterTicketWorklog(
+              description,
+              ticketData.id,
+              undefined,
+              files
+            );
 
             addToast({
               color: 'success',
@@ -71,7 +76,7 @@ export default function CriacaoDeUsuarioDeRede({
             setLoading(false);
             setLoadingSendingFiles(false);
           } else {
-            await handleRegisterTicketWorklog(description, ticketData.id);
+            await handleRegisterTicketWorklog(description, ticketData.id, "true");
 
             setFiles([]);
             onClose();

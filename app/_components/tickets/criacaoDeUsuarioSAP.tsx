@@ -19,6 +19,7 @@ export default function CriacaoDeUsuarioSAP({
   onClose: () => void,
 }) {
   const [loading, setLoading] = useState(false);
+  const [loadingSendingFiles, setLoadingSendingFiles] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("");
   const [rhCode, setRhCode] = useState("");
@@ -48,7 +49,7 @@ export default function CriacaoDeUsuarioSAP({
 
             await attachingTicketFiles(ticketData.id, files);
     
-            await handleRegisterTicketWorklog(description, ticketData.id, files);
+            await handleRegisterTicketWorklog(description, ticketData.id, undefined, files);
 
             addToast({
               color: 'success',
@@ -66,7 +67,7 @@ export default function CriacaoDeUsuarioSAP({
             setLoading(false);
             setLoadingSendingFiles(false);
           } else {
-            await handleRegisterTicketWorklog(description, ticketData.id);
+            await handleRegisterTicketWorklog(description, ticketData.id, "true");
 
             setFiles([]);
             onClose();

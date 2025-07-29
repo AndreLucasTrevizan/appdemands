@@ -117,6 +117,8 @@ export default function ModalCreateTicket({
       backdrop="blur"
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
     >
       <ModalContent className="overflow-scroll scrollbar-hide">
         <ModalHeader>

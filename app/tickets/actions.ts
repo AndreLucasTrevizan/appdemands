@@ -403,3 +403,68 @@ export const createTicketStatus = async ({
     throw errorHandler.message;
   }
 }
+
+export const changeTicketStatus = async ({
+  ticketId,
+  ticketStatusId,
+}: {
+  ticketId: number,
+  ticketStatusId: number
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.patch('/ticket/change_status', {
+      ticketId,
+      ticketStatusId
+    }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticket_worklog;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const changeTicketAttendant = async ({
+  ticketId,
+  queueId,
+  attendantId
+}: {
+  ticketId: number,
+  queueId: number
+  attendantId: number
+}) => {
+  try {
+    const signedData = await gettingSigned();
+
+    if (!signedData) {
+      redirect('/sign_in');
+    }
+
+    const response = await api.patch('/ticket/change_attendant', {
+      ticketId,
+      queueId,
+      attendantId
+    }, {
+      headers: {
+        Authorization: `Bearer ${signedData.token}`,
+      }
+    });
+
+    return response.data.ticket_worklog;
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}

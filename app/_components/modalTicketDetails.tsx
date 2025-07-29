@@ -1,7 +1,7 @@
 'use client';
 
 import { IQueueAttendant, IQueuesProps, ITicketProps, ITicketReportProps, ITicketStatusProps, ITicketWorklogProps } from "@/types";
-import { addToast, Button, Divider, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, useDisclosure, User } from "@heroui/react";
+import { addToast, Button, Divider, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, useDisclosure, User } from "@heroui/react";
 import ChipPriority from "./chipPriority";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
 import { FiEdit, FiPhone, FiSend } from "react-icons/fi";
@@ -14,6 +14,7 @@ import FormSendFiles from "./formSendFiles";
 import { getQueueMembers, listQueues } from "../queues/actions";
 import ModalChangeAttendant from "./modalChangeAttendant";
 import ModalChangeStatus from "./modalChangeStatus";
+import { handleRegisterTicketWorklog } from "../ticket_worklog/actions";
 
 export default function ModalTicketDetails({
   isOpenModalTicketDetails,
@@ -164,28 +165,23 @@ export default function ModalTicketDetails({
     try {
       setLoadingSendTicketWorklog(true);
 
-      console.log(selectedAttendant);
-      console.log(selectedTicketStatus);
-      console.log(description);
+      if (description != "") {
+        const response = await handleRegisterTicketWorklog(description, ticket.id, undefined);
 
-      /**
-       * if (description) {
-       *    cadastra um novo worklog com a descrição
-       * }
-       * 
-       * if (selectedAttendant) {
-       *    cadastra altreação de atendente e um novo worklog
-       * }
-       * 
-       * if (statusSelected) {
-       *    cadastra alteração de status e um novo worklog
-       * }
-       * 
-       * if (files) {
-       *    cadastra a adição de anexos e um novo worklog
-       * }
-       * 
-       */
+        setWorklog((prevValues) => [...prevValues, response]);
+
+        addToast({
+          color: 'success',
+          title: 'Sucesso',
+          description: 'Worklog atualizado',
+          timeout: 3000,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+
+      if (files.length > 0) {
+
+      }
 
       setLoadingSendTicketWorklog(false);
     } catch (error) {
@@ -226,6 +222,7 @@ export default function ModalTicketDetails({
       backdrop="blur"
       isOpen={isOpenModalTicketDetails}
       onOpenChange={onOpenChangeModalTicketDetails}
+      isKeyboardDismissDisabled={true}
       closeButton
       onClose={() => {
         setSelectedTicket(undefined);
@@ -233,7 +230,7 @@ export default function ModalTicketDetails({
         onCloseModalTicketDetails();
       }}
     >
-      <ModalContent className="overflow-scroll scrollbar-hide">
+      <ModalContent>
         <ModalHeader>
           <h1>{ticket.id} - {ticket.ticketTitle}</h1>
         </ModalHeader>
@@ -272,9 +269,13 @@ export default function ModalTicketDetails({
                       onOpen={onOpenChangeStatusModal}
                       onClose={onCloseChangeStatusModal}
                       onOpenChange={onOpenChangeChangeStatusModal}
+                      attendant={selectedAttendant}
                       statusList={statusList}
                       selectedStatus={selectedTicketStatus}
                       setSelectedStatus={setSelectedTicketStatus}
+                      ticket={ticket}
+                      worklog={worklog}
+                      setWorklog={setWorklog}
                     />
                     <Tooltip content="Mudar status">
                       <Button isIconOnly startContent={<FiEdit />} color="warning" onPress={() => onOpenChangeChangeStatusModal()} />
@@ -308,6 +309,9 @@ export default function ModalTicketDetails({
                       attendants={attendants}
                       selectedAttendant={selectedAttendant}
                       setSelectedAttendant={setSelectedAttendant}
+                      ticket={ticket}
+                      worklog={worklog}
+                      setWorklog={setWorklog}
                     />
                     <Tooltip content="Mudar atendente">
                       <Button isIconOnly startContent={<FiEdit />} color="warning" onPress={() => onOpenChangeChangeAttendantModal()} />
@@ -374,73 +378,86 @@ export default function ModalTicketDetails({
               </div>
             </div>
             <Divider orientation="vertical" />
-            <div className="flex flex-1 flex-col flex-wrap gap-4">
+            <div className="flex bg-blue-500 overflow-scroll flex-1 flex-col flex-wrap gap-4">
               {loadingWorklog ? (
                 <div className="h-full flex flex-col items-center justify-center">
                   <Spinner size="lg" label="Carregando worklog..." />
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 h-full">
+                <div className="">
                   {worklog.map((item) => (
-                    <div className="h-full flex-1 overflow-scroll scrollbar-hidden" key={item.id}>
-                      {item.userName ? (
+                    <div className="flex-1 mb-4" key={item?.id}>
+                      {item?.userName ? (
                         <User
-                          name={item.userName}
-                        description={`${new Date(item.createdAt).toLocaleDateString('pt-br')} - ${new Date(item.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
+                          name={item?.userName}
+                        description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
                           avatarProps={{
-                            name: item.userName,
+                            name: item?.userName,
                             showFallback: true,
-                            src: `${process.env.baseUrl}/avatar/${item.userSlug}/${item.userAvatar}`
+                            src: `${process.env.baseUrl}/avatar/${item?.userSlug}/${item?.userAvatar}`
                           }}
                         />
                       ) : (
                         <User
-                          name={item.attendantName}
-                          description={`${new Date(item.createdAt).toLocaleDateString('pt-br')} - ${new Date(item.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
+                          name={item?.attendantName}
+                          description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
                           avatarProps={{
-                            name: item.attendantName,
+                            name: item?.attendantName,
                             showFallback: true,
-                            src: `${process.env.baseUrl}/avatar/${item.attendantSlug}/${item.attendantAvatar}`
+                            src: `${process.env.baseUrl}/avatar/${item?.attendantSlug}/${item?.attendantAvatar}`
                           }}
                         />
                       )}
                       <Textarea
                         className="mt-4"
-                        value={item.worklogDesc}
+                        value={item?.worklogDesc}
+                        variant="faded"
                       />
                     </div>
                   ))}
-                  <div className="flex flex-col gap-4">
-                    <Divider />
-                    <Textarea
-                      size="sm"
-                      variant="underlined"
-                      placeholder="Responder no worklog do chamado..."
-                      value={description}
-                      onValueChange={setDescription}
-                    />
-                    <FormSendFiles
-                      files={files}
-                      setFiles={setFiles}
-                    />
-                    <div className="flex flex-row justify-between gap-4 flex-wrap">
-                      <Button color="danger" variant="flat" onPress={() => {
-                        setSelectedTicket(undefined);
+                  <Divider />
+                </div>
+              )}
+              {loadingSendTicketWorklog ? (
+                <div className="flex flex-col items-center gap-4">
+                  <Spinner label="Cadastrando resposta..." size="md" />
+                </div>
+              ) : (
+                <Form
+                  onSubmit={(e) => {
+                    e.preventDefault();
 
-                        onCloseModalTicketDetails();
-                      }}>
-                        Fechar
-                      </Button>
-                      <div className="flex flex-row gap-4 flex-wrap">
-                        <Button
-                          startContent={<FiSend />}
-                          color="primary"
-                          onPress={() => sendTicketWorklog()}
-                        >Enviar</Button>
-                      </div>
+                    sendTicketWorklog()
+                  }}
+                >
+                  <Textarea
+                    size="sm"
+                    variant="underlined"
+                    placeholder="Responder no worklog do chamado..."
+                    value={description}
+                    onValueChange={setDescription}
+                  />
+                  <FormSendFiles
+                    files={files}
+                    setFiles={setFiles}
+                  />
+                  <div className="flex flex-row justify-between gap-4 flex-wrap">
+                    <Button color="danger" variant="flat" onPress={() => {
+                      setSelectedTicket(undefined);
+
+                      onCloseModalTicketDetails();
+                    }}>
+                      Cancelar
+                    </Button>
+                    <div className="flex flex-row gap-4 flex-wrap">
+                      <Button
+                        startContent={<FiSend />}
+                        color="primary"
+                        type="submit"
+                      >Enviar</Button>
                     </div>
                   </div>
-                </div>
+                </Form>
               )}
             </div>
           </div>
