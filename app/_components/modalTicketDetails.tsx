@@ -236,7 +236,7 @@ export default function ModalTicketDetails({
         </ModalHeader>
         <Divider />
         <ModalBody>
-          <div className="w-full h-full flex flex-row flex-wrap gap-4">
+          <div className="w-full flex flex-row flex-wrap gap-4">
             <div className="flex flex-1 flex-col flex-wrap gap-4">
               <Textarea
                 value={ticket.ticketDescription ?? ""}
@@ -378,90 +378,83 @@ export default function ModalTicketDetails({
               </div>
             </div>
             <Divider orientation="vertical" />
-            <div className="flex bg-blue-500 overflow-scroll flex-1 flex-col flex-wrap gap-4">
+            <div className="flex-1 h-[650px] overflow-scroll scrollbar-hide">
               {loadingWorklog ? (
-                <div className="h-full flex flex-col items-center justify-center">
-                  <Spinner size="lg" label="Carregando worklog..." />
-                </div>
+                <div></div>
               ) : (
-                <div className="">
-                  {worklog.map((item) => (
-                    <div className="flex-1 mb-4" key={item?.id}>
-                      {item?.userName ? (
-                        <User
-                          name={item?.userName}
-                        description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
-                          avatarProps={{
-                            name: item?.userName,
-                            showFallback: true,
-                            src: `${process.env.baseUrl}/avatar/${item?.userSlug}/${item?.userAvatar}`
-                          }}
-                        />
-                      ) : (
-                        <User
-                          name={item?.attendantName}
-                          description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
-                          avatarProps={{
-                            name: item?.attendantName,
-                            showFallback: true,
-                            src: `${process.env.baseUrl}/avatar/${item?.attendantSlug}/${item?.attendantAvatar}`
-                          }}
-                        />
-                      )}
-                      <Textarea
-                        className="mt-4"
-                        value={item?.worklogDesc}
-                        variant="faded"
+                worklog.map((item) => (
+                  <div className="flex-1 mb-4" key={item?.id}>
+                    {item?.userName ? (
+                      <User
+                        name={item?.userName}
+                      description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
+                        avatarProps={{
+                          name: item?.userName,
+                          showFallback: true,
+                          src: `${process.env.baseUrl}/avatar/${item?.userSlug}/${item?.userAvatar}`
+                        }}
                       />
-                    </div>
-                  ))}
-                  <Divider />
-                </div>
-              )}
-              {loadingSendTicketWorklog ? (
-                <div className="flex flex-col items-center gap-4">
-                  <Spinner label="Cadastrando resposta..." size="md" />
-                </div>
-              ) : (
-                <Form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-
-                    sendTicketWorklog()
-                  }}
-                >
-                  <Textarea
-                    size="sm"
-                    variant="underlined"
-                    placeholder="Responder no worklog do chamado..."
-                    value={description}
-                    onValueChange={setDescription}
-                  />
-                  <FormSendFiles
-                    files={files}
-                    setFiles={setFiles}
-                  />
-                  <div className="flex flex-row justify-between gap-4 flex-wrap">
-                    <Button color="danger" variant="flat" onPress={() => {
-                      setSelectedTicket(undefined);
-
-                      onCloseModalTicketDetails();
-                    }}>
-                      Cancelar
-                    </Button>
-                    <div className="flex flex-row gap-4 flex-wrap">
-                      <Button
-                        startContent={<FiSend />}
-                        color="primary"
-                        type="submit"
-                      >Enviar</Button>
-                    </div>
+                    ) : (
+                      <User
+                        name={item?.attendantName}
+                        description={`${new Date(item?.createdAt).toLocaleDateString('pt-br')} - ${new Date(item?.createdAt).toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' })}`}
+                        avatarProps={{
+                          name: item?.attendantName,
+                          showFallback: true,
+                          src: `${process.env.baseUrl}/avatar/${item?.attendantSlug}/${item?.attendantAvatar}`
+                        }}
+                      />
+                    )}
+                    <Textarea
+                      className="mt-4"
+                      value={item?.worklogDesc}
+                      variant="faded"
+                    />
                   </div>
-                </Form>
+                ))
               )}
             </div>
           </div>
         </ModalBody>
+        <ModalFooter className="flex flex-row gap-4">
+          <div className="flex-1"></div>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              sendTicketWorklog()
+            }}
+            className="flex-1"
+          >
+            <Textarea
+              size="sm"
+              variant="underlined"
+              placeholder="Responder no worklog do chamado..."
+              value={description}
+              onValueChange={setDescription}
+            />
+            <FormSendFiles
+              files={files}
+              setFiles={setFiles}
+            />
+            <div className="flex flex-row justify-between gap-4 flex-wrap">
+              <Button color="danger" variant="flat" onPress={() => {
+                setSelectedTicket(undefined);
+
+                onCloseModalTicketDetails();
+              }}>
+                Cancelar
+              </Button>
+              <div className="flex flex-row gap-4 flex-wrap">
+                <Button
+                  startContent={<FiSend />}
+                  color="primary"
+                  type="submit"
+                >Enviar</Button>
+              </div>
+            </div>
+          </Form>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
