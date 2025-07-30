@@ -1,7 +1,7 @@
 'use client';
 
 import { IQueueAttendant, IQueuesProps, ITicketProps, ITicketReportProps, ITicketStatusProps, ITicketWorklogProps } from "@/types";
-import { addToast, Button, Divider, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, useDisclosure, User } from "@heroui/react";
+import { addToast, Button, Chip, Divider, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, SharedSelection, Snippet, Spinner, Textarea, Tooltip, useDisclosure, User } from "@heroui/react";
 import ChipPriority from "./chipPriority";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
 import { FiEdit, FiPhone, FiSend } from "react-icons/fi";
@@ -332,9 +332,15 @@ export default function ModalTicketDetails({
                     readOnly
                   />
                 </div>
-                <div className="flex flex-col items-center">
-                  <span className="mb-1">Prioridade</span>
-                  <ChipPriority name={ticket.ticketPriority} time={ticket.ticketSLA} />
+                <div className="flex flex-row gap-4">
+                  <div className="flex flex-col items-center">
+                    <span className="mb-1">Prioridade</span>
+                    <ChipPriority name={ticket.ticketPriority} time={ticket.ticketSLA} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="mb-1">Tempo com Dispatcher</span>
+                    <Chip>{Math.floor((ticket.timeWithDispatcher /  60) / 60)}h</Chip>
+                  </div>
                 </div>
               </div>
               <Divider />
