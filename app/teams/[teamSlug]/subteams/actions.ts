@@ -105,6 +105,8 @@ export const addingMembersOnClientSubTeam = async (data: IAddSubTeamClientMember
       throw "Você não está autenticado";
     }
 
+    console.log(data);
+
     const response = await api.post("/subteams/members", data, {
       headers: {
         Authorization: `Bearer ${signedData.token}`,

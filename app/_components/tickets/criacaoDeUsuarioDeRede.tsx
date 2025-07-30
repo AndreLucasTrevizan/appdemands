@@ -31,7 +31,7 @@ export default function CriacaoDeUsuarioDeRede({
         try {
           setLoading(true);
 
-          let description = `${catalog.serviceDescription}Nome: ${name}\nFilial/Unidade: ${plant}\nSetor: ${sector}\nTelefone: ${phoneNumber}\nWhatsapp: ${whatsNumber}`;
+          let description = `${catalog.serviceDescription}Nome: ${name}\nFilial/Unidade: ${plant}\nSetor: ${sector}\nTelefone: ${phoneNumber}\nWhatsApp: ${whatsNumber}`;
 
           const ticketData: ITicketProps = await createTicket({
             serviceCatalogId: catalog.id,
@@ -151,8 +151,8 @@ export default function CriacaoDeUsuarioDeRede({
               <Input
                 value={whatsNumber}
                 onValueChange={setWhatsNumber}
-                placeholder="Informe o Whatsapp do novo usuário"
-                label="Whatsapp"
+                placeholder="Informe o WhatsApp do novo usuário"
+                label="WhatsApp"
                 labelPlacement="outside"
                 type="text"
                 className="flex-1"
@@ -181,7 +181,7 @@ export default function CriacaoDeUsuarioDeRede({
               <span>Filial/Unidade: {plant}</span>
               <span>Setor: {sector}</span>
               <span>Telefone: {phoneNumber}</span>
-              <span>Whatsapp: {whatsNumber}</span>
+              <span>WhatsApp: {whatsNumber}</span>
               <Divider />
               <FormSendFiles files={files} setFiles={setFiles} />
               <div className="flex flex-row gap-4 flex-wrap">

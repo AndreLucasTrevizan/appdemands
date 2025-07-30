@@ -10,7 +10,7 @@ export const changingPassword = async ({
 }: {
   email: string,
   password: string,
-  confirmPassword: string,
+  confirmPassword: string
 }) => {
   try {
     const response = await api.post('/reset-password', {

@@ -69,7 +69,7 @@ export default function FormChangePassword() {
         await changingPassword({
           email: getCookie('email')!,
           password,
-          confirmPassword,
+          confirmPassword
         });
 
         addToast({

@@ -55,7 +55,7 @@ export default function QueueDetailsPage({
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href="/queues">Filas de Atendimento</BreadcrumbItem>
-          <BreadcrumbItem>Fila de {queue.queueName}</BreadcrumbItem>
+          <BreadcrumbItem>Fila de {queue?.queueName}</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
         {!queue ? (
