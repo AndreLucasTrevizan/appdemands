@@ -53,12 +53,12 @@ export const createUser = async ({
   isAttendant,
   userName,
   email,
-  positionId
+  authProfileId
 }: {
   isAttendant: string,
   userName: string,
   email: string,
-  positionId: number,
+  authProfileId: number,
 }) => {
   try {
     const signedData = await gettingSigned();
@@ -72,7 +72,7 @@ export const createUser = async ({
           isAttendant,
           userName,
           email,
-          positionId
+          authProfileId
         }, {
         headers: {
           Authorization: `Bearer ${signedData.token}`,
@@ -85,7 +85,7 @@ export const createUser = async ({
           isAttendant,
           userName,
           email,
-          positionId
+          authProfileId
         }, {
         headers: {
           Authorization: `Bearer ${signedData.token}`,
@@ -100,4 +100,5 @@ export const createUser = async ({
     throw errorHandler.message;
   }
 }
+
 

@@ -53,8 +53,7 @@ const tableColumns: IAttendantTableColumns[] = [
   {name: 'TELEFONE', uid: 'TELEFONE', sortable: false},
   {name: 'WHATSAPP', uid: 'WHATSAPP', sortable: false},
   {name: 'EMAIL VERIFICADO', uid: 'EMAIL VERIFICADO', sortable: true},
-  {name: 'FUNÇÃO', uid: 'FUNÇÃO', sortable: true},
-  {name: 'FUNÇÃO SLUG', uid: 'FUNÇÃO SLUG', sortable: true},
+  {name: 'PERFIL DE AUTORIZAÇÃO', uid: 'PERFIL DE AUTORIZAÇÃO', sortable: true},
   {name: 'EQUIPE', uid: 'EQUIPE', sortable: true},
   {name: 'EQUIPE SLUG', uid: 'EQUIPE SLUG', sortable: true},
   {name: 'CRIADO EM', uid: 'CRIADO EM', sortable: true},
@@ -197,12 +196,12 @@ export default function AttendantsTable() {
           const cmpUpdatedAt = updatedAtA < updatedAtB ? -1 : updatedAtA > updatedAtB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpUpdatedAt : cmpUpdatedAt;
-        case "FUNÇÃO":
-          const positionA = a["positionName" as keyof IAttendantsReport] as number;
-          const positionB = b["positionName" as keyof IAttendantsReport] as number;
-          const cmpPosition = positionA < positionB ? -1 : positionA > positionB ? 1 : 0;
+        case "PERFIL DE AUTORIZAÇÃO":
+          const authProfileA = a["authProfile" as keyof IAttendantsReport] as number;
+          const authProfileB = b["authProfile" as keyof IAttendantsReport] as number;
+          const cmpauthProfile = authProfileA < authProfileB ? -1 : authProfileA > authProfileB ? 1 : 0;
 
-          return sortDescriptor.direction === "descending" ? -cmpPosition : cmpPosition;
+          return sortDescriptor.direction === "descending" ? -cmpauthProfile : cmpauthProfile;
         case "EQUIPE":
           const teamA = a["teamName" as keyof IAttendantsReport] as number;
           const teamB = b["team" as keyof IAttendantsReport] as number;
@@ -313,8 +312,8 @@ export default function AttendantsTable() {
         );
       case "STATUS":
         return (
-          <Chip className="capitalize" color={statusColorMap[attendant.status]} size="sm" variant="flat">
-            {attendant.status}
+          <Chip className="capitalize" color={statusColorMap[attendant.userStatus]} size="sm" variant="flat">
+            {attendant.userStatus}
           </Chip>
         );
       case "EMAIL VERIFICADO": 
@@ -331,13 +330,9 @@ export default function AttendantsTable() {
         return (
           <span>{attendant.teamSlug ? attendant.teamSlug : "Sem equipe"}</span>
         )
-      case "FUNÇÃO":
+      case "PERFIL DE AUTORIZAÇÃO":
         return (
-          <span>{attendant.positionName}</span>
-        )
-      case "FUNÇÃO SLUG":
-        return (
-          <span>{attendant.positionSlug}</span>
+          <span>{attendant.authProfile}</span>
         )
       case "ACTIONS":
         return (

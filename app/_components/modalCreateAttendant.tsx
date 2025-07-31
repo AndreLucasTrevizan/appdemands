@@ -1,6 +1,6 @@
 'use client';
 
-import { IAttendantsReport, IPositionProps, IUsersReport } from "@/types";
+import { IAttendantsReport, IAuthProfiles, IUsersReport } from "@/types";
 import {
   addToast,
   Button,
@@ -17,9 +17,9 @@ import {
 } from "@heroui/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FiMail, FiUser } from "react-icons/fi";
-import { listPositions } from "../positions/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { createUser } from "../users/actions";
+import { fetchAllAuthProfiles } from "../settings/profile_authorizations/actions";
 
 export default function ModalCreateAttendant({
   isOpen,
@@ -38,23 +38,23 @@ export default function ModalCreateAttendant({
 }) {
   const [userName, setUserName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [positionId, setPositionId] = useState<string>('');
-  const [positions, setPositions] = useState<IPositionProps[]>([]);
+  const [profileId, setProfileId] = useState<string>('');
+  const [profiles, setProfiles] = useState<IAuthProfiles[]>([]);
   const [loadingCreateAttendant, setLoadingCreateAttendant] = useState<boolean>(false);
-  const [loadingListPositions, setLoadingListPositions] = useState<boolean>(false);
+  const [loadingAuthProfiles, setLoadingAuthProfiles] = useState<boolean>(false);
 
   useEffect(() => {
-    async function loadListPositions() {
+    async function loadAllAuthProfiles() {
       try {
-        setLoadingListPositions(true);
+        setLoadingAuthProfiles(true);
 
-        const data = await listPositions();
+        const data = await fetchAllAuthProfiles();
 
-        setPositions(data);
+        setProfiles(data);
 
-        setLoadingListPositions(false);
+        setLoadingAuthProfiles(false);
       } catch (error) {
-        setLoadingListPositions(false);
+        setLoadingAuthProfiles(false);
 
         const errorHandler = new ErrorHandler(error);
 
@@ -68,14 +68,19 @@ export default function ModalCreateAttendant({
       }
     }
 
-    loadListPositions();
+    loadAllAuthProfiles();
   }, []);
 
   async function handleCreateAttendant() {
     try {
       setLoadingCreateAttendant(true);
 
-      const attendant = await createUser({isAttendant: "true", userName, email, positionId: Number(positionId) });
+      const attendant = await createUser({
+        isAttendant: "true",
+        userName,
+        email,
+        authProfileId: Number(profileId)
+      });
 
       setAttendants(prevArray => [...prevArray, attendant]);
 
@@ -92,12 +97,12 @@ export default function ModalCreateAttendant({
       setLoadingCreateAttendant(false);
       setUserName("");
       setEmail("");
-      setPositionId("");
+      setProfileId("");
     } catch (error) {
       setLoadingCreateAttendant(false);
       setUserName("");
       setEmail("");
-      setPositionId("");
+      setProfileId("");
       
       onClose();
 
@@ -148,17 +153,17 @@ export default function ModalCreateAttendant({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)} className="flex-1"
               />
-              {loadingListPositions ? (
+              {loadingAuthProfiles ? (
                 <Spinner size="md" />
               ) : (
                 <Select
-                  onChange={(e) => setPositionId(e.target.value)}
-                  label="Função do atendente"
+                  onChange={(e) => setProfileId(e.target.value)}
+                  label="Perfil de Autorização"
                   labelPlacement="outside"
                   className="flex-2"
                 >
-                  {positions.map(((position) => (
-                    <SelectItem key={position.id}>{position.positionName}</SelectItem>
+                  {profiles.map(((profile) => (
+                    <SelectItem key={profile.id}>{profile.label}</SelectItem>
                   )))}
                 </Select>
               )}

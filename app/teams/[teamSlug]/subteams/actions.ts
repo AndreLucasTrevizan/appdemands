@@ -105,8 +105,6 @@ export const addingMembersOnClientSubTeam = async (data: IAddSubTeamClientMember
       throw "Você não está autenticado";
     }
 
-    console.log(data);
-
     const response = await api.post("/subteams/members", data, {
       headers: {
         Authorization: `Bearer ${signedData.token}`,
@@ -169,6 +167,30 @@ export const listUserSubTeams = async () => {
     
     if (signedData) {
       const response = await api.get(`/mine/subteams`, {
+        headers: {
+          Authorization: `Bearer ${signedData.token}`
+        }
+      });
+
+      return response.data.subTeams;
+    }
+  } catch (error) {
+    const errorHandler = new ErrorHandler(error);
+
+    throw errorHandler.message;
+  }
+}
+
+export const listSubTeamsFromTeam = async (teamId: number) => {
+  try {
+    const signedData = await gettingSigned();
+    
+    if (signedData) {
+      const response = await api.get(`/subteams`, {
+        params: {
+          fromTeam: true,
+          teamId 
+        },
         headers: {
           Authorization: `Bearer ${signedData.token}`
         }

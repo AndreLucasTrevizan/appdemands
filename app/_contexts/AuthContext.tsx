@@ -9,29 +9,39 @@ import {
 } from 'react';
 
 import { setCookie, getCookie, deleteCookie } from 'cookies-next';
-import { gettingSigned } from '../_components/actions';
-import { IAvatarResponse, IPositionProps } from '@/types';
+import { fetchUserAuthProfilePermissions, gettingSigned } from '../_components/actions';
+import { IAvatarResponse, IUserProfileAuthorizations } from '@/types';
 
 export interface IUserSignedProps {
-  id: number;
-  userName: string;
-  email: string;
-  slug: string;
-  avatar: string;
-  isOnTeam: boolean;
-  teamSlug: string;
-  isAttendant: boolean;
-  position: IPositionProps,
-  createdAt: Date;
-  updatedAt: Date;
-  token: string;
+  id: number
+  avatar?: string
+  userName: string
+  userSlug: string
+  email: string
+  userStatus: string
+  emailVerified: boolean
+  phoneNumber: string
+  whatsNumber: string
+  isFirstLogin: boolean,
+  isOnTeam: boolean,
+  isAttendant: boolean,
+  authProfile: string
+  teamName?: string
+  teamSlug?: string
+  subTeamName?: string 
+  subTeamSlug?: string
+  createdAt: Date
+  updatedAt: Date
+  token: string
 }
 
 interface IAuthContextProps {
   signed: boolean,
   userSigned: IUserSignedProps | undefined,
+  userProfileAuths: IUserProfileAuthorizations | undefined,
   updateSignedAvatar: (value: string) => void,
   settingUserSigned: (data: IUserSignedProps) => void;
+  settingUserProfileAuths: (data: IUserProfileAuthorizations) => void;
   settingUserAvatar: (response: IAvatarResponse) => void;
 }
 
@@ -43,15 +53,16 @@ export const useAuthContext = () => {
 
 export default function AuthProvider({ children }: {children: ReactNode}) {
   const [signed, setSigned] = useState<boolean>(false);
-  const [userSigned, setUserSigned] = useState<IUserSignedProps | undefined>(undefined);
+  const [userSigned, setUserSigned] = useState<IUserSignedProps>();
+  const [userProfileAuths, setUserProfileAuths] = useState<IUserProfileAuthorizations>();
 
   useEffect(() => {
     async function loadData() {
-      const signedData = await gettingSigned();
+      const signedData = await getCookie('demands_signed_data');
+      const permission = await fetchUserAuthProfilePermissions();
 
-      console.log(signedData);
-
-      setUserSigned(signedData);
+      setUserSigned(JSON.parse(signedData as string));
+      setUserProfileAuths(permission);
       setSigned(true);
     }
 
@@ -61,29 +72,34 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
   const settingUserSigned = (data: IUserSignedProps) => {
     setUserSigned(data);
   }
+  
+  const settingUserProfileAuths = (data: IUserProfileAuthorizations) => {
+    setUserProfileAuths(data);
+  }
 
   const settingUserAvatar = (response: IAvatarResponse) => {
     if (userSigned) {
       const data = userSigned;
-      (data as IUserSignedProps).avatar = response.avatar;
+      data.avatar = response.avatar;
       setUserSigned(data);
     }
   }
 
   function updateSignedAvatar(value: string) {
-    let signed = userSigned;
+    if (userSigned) {
+      userSigned.avatar = value;
 
-    (signed as IUserSignedProps).avatar = value;
+      let hasCookie = getCookie('demands_signed_data');
 
-    let hasCookie = getCookie('demands_signed_data');
+      if (hasCookie) {
+        setCookie("demands_signed_data", JSON.stringify(userSigned)); 
+      } else {
+        deleteCookie('demands_signed_data');
+        setCookie("demands_signed_data", JSON.stringify(userSigned)); 
+      }
 
-    if (hasCookie) {
-      setCookie("demands_signed_data", JSON.stringify(signed)); 
-    } else {
-      deleteCookie('demands_signed_data');
-      setCookie("demands_signed_data", JSON.stringify(signed)); 
+      setUserSigned(userSigned);
     }
-    setUserSigned(signed);
   }
 
   return (
@@ -92,7 +108,9 @@ export default function AuthProvider({ children }: {children: ReactNode}) {
       userSigned,
       updateSignedAvatar,
       settingUserSigned,
-      settingUserAvatar
+      settingUserAvatar,
+      userProfileAuths,
+      settingUserProfileAuths
     }}>
       {children}
     </AuthContext.Provider>

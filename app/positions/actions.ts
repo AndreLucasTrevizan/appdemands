@@ -4,28 +4,6 @@ import { api } from "../_api/api";
 import { gettingSigned } from "../_components/actions";
 import ErrorHandler from "../_utils/errorHandler";
 
-export const listPositions = async () => {
-  try {
-    const signedData = await gettingSigned();
-
-    if (!signedData) {
-      throw "Você não está autenticado";
-    }
-
-    const response = await api.get('/positions', {
-      headers: {
-        Authorization: `Bearer ${signedData.token}`,
-      }
-    });
-
-    return response.data.positions;
-  } catch (error) {
-    const errorHandler = new ErrorHandler(error);
-
-    throw errorHandler.message;
-  }
-}
-
 export const createPositions = async ({
   positionName
 }: {

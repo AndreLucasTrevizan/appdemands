@@ -51,8 +51,7 @@ const tableColumns: IUserTableColumns[] = [
   {name: 'TELEFONE', uid: 'TELEFONE', sortable: false},
   {name: 'WHATSAPP', uid: 'WHATSAPP', sortable: false},
   {name: 'EMAIL VERIFICADO', uid: 'EMAIL VERIFICADO', sortable: true},
-  {name: 'FUNÇÃO', uid: 'FUNÇÃO', sortable: true},
-  {name: 'FUNÇÃO SLUG', uid: 'FUNÇÃO SLUG', sortable: true},
+  {name: 'PERFIL DE AUTORIZAÇÃO', uid: 'PERFIL DE AUTORIZAÇÃO', sortable: true},
   {name: 'EQUIPE', uid: 'EQUIPE', sortable: true},
   {name: 'EQUIPE SLUG', uid: 'EQUIPE SLUG', sortable: true},
   {name: 'CRIADO EM', uid: 'CRIADO EM', sortable: true},
@@ -76,7 +75,7 @@ const statusEmailColorMap = {
   0: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["ID", "NOME", "STATUS", "EMAIL VERIFICADO", "FUNÇÃO", "EQUIPE", "ACTIONS"];
+const INITIAL_VISIBLE_COLUMNS = ["ID", "NOME", "STATUS", "EMAIL VERIFICADO", "PERFIL DE AUTORIZAÇÃO", "EQUIPE", "ACTIONS"];
 
 export default function UsersTable() {
   const { isOpen, onClose, onOpenChange, onOpen } = useDisclosure();
@@ -196,12 +195,12 @@ export default function UsersTable() {
           const cmpUpdatedAt = updatedAtA < updatedAtB ? -1 : updatedAtA > updatedAtB ? 1 : 0;
 
           return sortDescriptor.direction === "descending" ? -cmpUpdatedAt : cmpUpdatedAt;
-        case "FUNÇÃO":
-          const positionA = a["positionName" as keyof IUsersReport] as number;
-          const positionB = b["positionName" as keyof IUsersReport] as number;
-          const cmpPosition = positionA < positionB ? -1 : positionA > positionB ? 1 : 0;
+        case "PERFIL DE ACESSO":
+          const authProfileA = a["authProfile" as keyof IUsersReport] as number;
+          const authProfileB = b["authProfile" as keyof IUsersReport] as number;
+          const cmpauthProfile = authProfileA < authProfileB ? -1 : authProfileA > authProfileB ? 1 : 0;
 
-          return sortDescriptor.direction === "descending" ? -cmpPosition : cmpPosition;
+          return sortDescriptor.direction === "descending" ? -cmpauthProfile : cmpauthProfile;
         case "EQUIPE":
           const teamA = a["teamName" as keyof IUsersReport] as number;
           const teamB = b["team" as keyof IUsersReport] as number;
@@ -330,13 +329,9 @@ export default function UsersTable() {
         return (
           <span>{user.teamSlug ? user.teamSlug : "Sem equipe"}</span>
         )
-      case "FUNÇÃO":
+      case "PERFIL DE AUTORIZAÇÃO":
         return (
-          <span>{user.positionName}</span>
-        )
-      case "FUNÇÃO SLUG":
-        return (
-          <span>{user.positionSlug}</span>
+          <span>{user.authProfile}</span>
         )
       case "ACTIONS":
         return (

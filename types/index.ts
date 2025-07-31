@@ -209,14 +209,12 @@ export interface IUsersReport {
   userName: string,
   userSlug: string,
   email: string,
-  status: string,
+  userStatus: string,
   phoneNumber: string | undefined,
   whatsNumber: string | undefined,
   emailVerified: number ,
   isOnTeam: number,
-  isAttendant: number,
-  positionName: string,
-  positionSlug: string,
+  authProfile: string,
   teamName: string | undefined,
   teamSlug: string | undefined,
   subTeamName: string | undefined,
@@ -231,14 +229,13 @@ export interface IAttendantsReport {
   userName: string,
   userSlug: string,
   email: string,
-  status: string,
+  userStatus: string,
   phoneNumber: string | undefined,
   whatsNumber: string | undefined,
   emailVerified: number ,
   isOnTeam: number,
   isAttendant: number,
-  positionName: string,
-  positionSlug: string,
+  authProfile: string,
   teamName: string | undefined,
   teamSlug: string | undefined,
   subTeamName: string | undefined,
@@ -276,7 +273,6 @@ export interface IUserProps {
   emailVerified: boolean,
   isOnTeam: boolean,
   isAttendant: boolean,
-  position: IPositionProps,
   createdAt: Date,
   updatedAt: Date,
 }
@@ -291,7 +287,6 @@ export interface IAttendantProps {
   emailVerified: boolean,
   isOnTeam: boolean,
   isAttendant: boolean,
-  position: IPositionProps,
   createdAt: Date,
   updatedAt: Date,
 }
@@ -318,25 +313,71 @@ export interface IDemandProps {
   user: IUserProps;
 }
 
-export interface IPositionProps {
-  id: number;
-  positionName: string;
-  slug: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface IUserProfileProps {
   id: number;
   userName: string;
   email: string;
   avatar: string;
   slug: string;
-  position: IPositionProps;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface IAvatarResponse {
   avatar: string;
+}
+
+export interface IUserProfileAuthorizations {
+  canOpenTicket: boolean
+  canCreateQueue: boolean
+  canEditQueue: boolean
+  canBlockQueue: boolean
+  canRemoveQueue: boolean
+  canSeeTeamTickets: boolean
+  canSeeTeam: boolean
+  canCreateTeam: boolean
+  canEditTeam: boolean
+  canRemoveTeam: boolean
+  canCreateSubTeam: boolean
+  canSeeSubTeam: boolean
+  canEditSubTeam: boolean
+  canRemoveSubTeam: boolean
+  canAddSubTeamMember: boolean
+  canRemoveSubTeamMember: boolean
+  canCreateServiceCatalog: boolean
+  canSeeServiceCatalog: boolean
+  canEditServiceCatalog: boolean
+  canRemoveServiceCatalog: boolean
+  canSeeSLA: boolean
+  canCreateSLA: boolean
+  canEditSLA: boolean
+  canRemoveSLA: boolean
+  canSeePriority: boolean
+  canCreatePriority: boolean
+  canEditPriority: boolean
+  canRemovePriority: boolean
+  canSeeStatus: boolean
+  canCreateStatus: boolean
+  canEditStatus: boolean
+  canRemoveStatus: boolean
+  canSeeCategory: boolean
+  canCreateCategory: boolean
+  canEditCategory: boolean
+  canRemoveCategory: boolean
+  canEditUser: boolean
+  canBlockUser: boolean
+  canCreateUser: boolean
+  canSeeUser: boolean
+  canCreateAuthProfile: boolean
+  canSeeAuthProfile: boolean
+  canRemoveAuthProfile: boolean
+  canEditAuthProfile: boolean
+}
+
+export interface IAuthProfiles {
+  id: number
+  label: string
+  slug: string
+  createdAt: Date;
+  updatedAt: Date;
 }

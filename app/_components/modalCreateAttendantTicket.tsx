@@ -14,21 +14,19 @@ import {
   Spinner,
   User
 } from "@heroui/react";
-import { useEffect, useMemo, useState } from "react";
-import { IServiceCatalog, IUsersReport } from "@/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { IServiceCatalog } from "@/types";
 import ErrorHandler from "../_utils/errorHandler";
 import { FiMail, FiPhone } from "react-icons/fi";
-import {
-  getuserSignedForTicket
-} from "../tickets/actions";
-import { PlusIcon } from "./plusIcon";
 import { FaWhatsapp } from "react-icons/fa6";
 import { getServiceCatalog } from "../settings/actions";
 import CreateTicketInputsGeneration from "./createTicketInputsGeneration";
 import { phoneMasked, whatsMasked } from "../_utils/masks";
 import { useAuthContext } from "../_contexts/AuthContext";
+import { ITeams, listTeams } from "../teams/actions";
+import { ISubTeam, listSubTeamsFromTeam } from "../teams/[teamSlug]/subteams/actions";
 
-export default function ModalCreateTicket({
+export default function ModalCreateAttendantTicket({
   isOpen,
   onOpen,
   onClose,
@@ -43,8 +41,16 @@ export default function ModalCreateTicket({
     userSigned
   } = useAuthContext();
   const [loadingCatalog, setLoadingCatalog] = useState(false);
+  const [loadingTeams, setLoadingTeams] = useState(false);
+  const [loadingSubTeams, setLoadingSubTeams] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingAttendants, setLoadingAttendants] = useState(false);
   const [catalog, setCatalog] = useState<IServiceCatalog[]>([]);
   const [catalogSelected, setCatalogSelected] = useState<SharedSelection>(new Set());
+  const [teamSelected, setTeamSelected] = useState<SharedSelection>(new Set());
+  const [subTeamSelected, setSubTeamSelected] = useState<SharedSelection>(new Set());
+  const [teams, setTeams] = useState<ITeams[]>([]);
+  const [subTeams, setSubTeams] = useState<ISubTeam[]>([]);
 
   useEffect(() => {
     async function loadServiceCatalog() {
@@ -71,7 +77,31 @@ export default function ModalCreateTicket({
       }
     }
 
+    async function loadTeamsData() {
+      try {
+        setLoadingTeams(true);
+
+        const teams = await listTeams();
+
+        setTeams(teams);
+
+        setLoadingTeams(false);
+      } catch (error) {
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+
+        setLoadingTeams(false);
+      }
+    }
+
     loadServiceCatalog();
+    loadTeamsData()
   }, []);
 
   const inputs = useMemo(() => {
@@ -85,6 +115,46 @@ export default function ModalCreateTicket({
       />
     )
   }, [ catalogSelected, isOpen ]);
+
+  useEffect(() => {
+    async function updateSubTeams() {
+      try {
+        setLoadingSubTeams(true);
+        
+        const response = await listSubTeamsFromTeam(1);
+
+        setSubTeams(response);
+        
+        setLoadingSubTeams(false);
+      } catch (error) {
+        setLoadingSubTeams(false);
+        const errorHandler = new ErrorHandler(error);
+
+        addToast({
+          title: 'Aviso',
+          description: errorHandler.message,
+          timeout: 3000,
+          shouldShowTimeoutProgress: true
+        });
+      }
+    }
+
+    updateSubTeams();
+  }, [ teamSelected ]);
+
+  const subTeamsSelect = useMemo(() => {
+    return (
+      <Select
+        items={subTeams}
+        selectedKeys={subTeamSelected}
+        onSelectionChange={setSubTeamSelected}
+        label="Selecionar Sub-equipe"
+        labelPlacement="outside"
+      >
+        {(item) => <SelectItem key={item.id}>{item.subTeamName}</SelectItem>}
+      </Select>
+    )
+  }, [ subTeams ]);
 
   return (
     <Modal
@@ -118,6 +188,22 @@ export default function ModalCreateTicket({
                   {(item) => <SelectItem key={item.id}>{item.service}</SelectItem>}
                 </Select>
               )}
+              {loadingTeams ? (
+                <div className="p-4">
+                  <Spinner size="sm" />
+                </div>
+              ) : (
+                <Select
+                  items={teams}
+                  label="Selecionar Equipe"
+                  labelPlacement="outside"
+                  selectedKeys={teamSelected}
+                  onSelectionChange={setTeamSelected}
+                >
+                  {(item) => <SelectItem key={item.id}>{item.teamName}</SelectItem>}
+                </Select>
+              )}
+              {subTeamsSelect}
               <Divider />
               <div className="flex gap-4 flex-wrap">
                 <div className="flex flex-col items-start flex-1">

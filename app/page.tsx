@@ -16,19 +16,31 @@ import { LuLayoutGrid, LuLayoutList  } from "react-icons/lu";
 import { FcInfo } from "react-icons/fc";
 import TicketsTable from "./_components/ticketsTable";
 import MyTeamInfo from "./_components/myTeamInfo";
+import { useAuthContext } from "./_contexts/AuthContext";
+import ModalCreateAttendantTicket from "./_components/modalCreateAttendantTicket";
 
 export default function Home() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const { userSigned } = useAuthContext();
 
   return (
     <DefaultLayout>
       <Nav />
-      <ModalCreateTicket
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-        onOpenChange={onOpenChange}
-      />
+      {userSigned?.isAttendant ? (
+        <ModalCreateTicket
+          isOpen={isOpen}
+          onOpen={onOpen}
+          onClose={onClose}
+          onOpenChange={onOpenChange}
+        />
+      ) : (
+        <ModalCreateAttendantTicket
+          isOpen={isOpen}
+          onOpen={onOpen}
+          onClose={onClose}
+          onOpenChange={onOpenChange}
+        />
+      )}
       <div className="flex flex-col gap-4 px-4 pb-4">
         <h1>Bem-vindo ao Portal de Chamados da T.I Tirol</h1>
         <div>

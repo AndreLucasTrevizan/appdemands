@@ -5,7 +5,7 @@ import Nav from "@/app/_components/nav";
 import TicketProcessTable from "@/app/_components/ticketProcessTable";
 import { BreadcrumbItem, Breadcrumbs, Divider } from "@heroui/react";
 
-export default function TicketProcess() {
+export default function ProfileAuthorizations() {
   return (
     <DefaultLayout>
       <Nav />
@@ -13,10 +13,9 @@ export default function TicketProcess() {
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href="/settings">Configurações</BreadcrumbItem>
-          <BreadcrumbItem>Processos de Chamados</BreadcrumbItem>
+          <BreadcrumbItem>Perfis de Autorização</BreadcrumbItem>
         </Breadcrumbs>
         <Divider />
-        <TicketProcessTable />
       </div>
     </DefaultLayout>
   );

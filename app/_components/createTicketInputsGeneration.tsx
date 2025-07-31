@@ -3,6 +3,7 @@
 import { IServiceCatalog, IUsersReport } from "@/types";
 import CriacaoDeUsuarioDeRede from "./tickets/criacaoDeUsuarioDeRede";
 import CriacaoDeUsuarioSAP from "./tickets/criacaoDeUsuarioSAP";
+import { IUserSignedProps } from "../_contexts/AuthContext";
 
 export default function CreateTicketInputsGeneration({
   catalog,
@@ -10,7 +11,7 @@ export default function CreateTicketInputsGeneration({
   onClose
 }: {
   catalog: IServiceCatalog,
-  user?: IUsersReport,
+  user?: IUserSignedProps,
   onClose: () => void,
 }) {
 

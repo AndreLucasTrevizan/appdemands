@@ -6,14 +6,14 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useState } from "react";
 
 import ErrorHandler from "../_utils/errorHandler";
-import { useAuthContext } from "../_contexts/AuthContext";
+import { IUserSignedProps, useAuthContext } from "../_contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
-import { handleLogin } from "./actions";
+import { fetchUserAuthProfilePermissions, handleLogin } from "./actions";
 import { FiLock, FiMail } from "react-icons/fi";
 
 export default function FormSignIn() {
   const router = useRouter();
-  const { settingUserSigned } = useAuthContext();
+  const { settingUserSigned, settingUserProfileAuths } = useAuthContext();
   const setCookie = useSetCookie();
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,6 +21,10 @@ export default function FormSignIn() {
   const [password, setPassword] = useState('');
 
   const toggleVisible = () => setIsVisible(!isVisible);
+
+  async function settingCookies(data: IUserSignedProps) {
+    setCookie("demands_signed_data", JSON.stringify(data));
+  }
 
   const handleSignIn = async () => {
     try {
@@ -41,9 +45,12 @@ export default function FormSignIn() {
           color: 'primary',
         });
   
-        setCookie("demands_signed_data", JSON.stringify(data));
-  
+        await settingCookies(data);
+        
+        const profilePermissions = await fetchUserAuthProfilePermissions();
+        
         settingUserSigned(data);
+        settingUserProfileAuths(profilePermissions);
   
         window.location.reload();
       }

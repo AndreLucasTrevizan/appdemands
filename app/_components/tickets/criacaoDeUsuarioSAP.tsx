@@ -8,6 +8,7 @@ import { handleRegisterTicketWorklog } from "@/app/ticket_worklog/actions";
 import ErrorHandler from "@/app/_utils/errorHandler";
 import FileItem from "../fileItem";
 import FormSendFiles from "../formSendFiles";
+import { IUserSignedProps } from "@/app/_contexts/AuthContext";
 
 export default function CriacaoDeUsuarioSAP({
   catalog,
@@ -15,7 +16,7 @@ export default function CriacaoDeUsuarioSAP({
   onClose
 }: {
   catalog: IServiceCatalog,
-  user?: IUsersReport,
+  user?: IUserSignedProps,
   onClose: () => void,
 }) {
   const [loading, setLoading] = useState(false);

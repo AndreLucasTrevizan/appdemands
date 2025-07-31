@@ -1,6 +1,6 @@
 'use client';
 
-import { IPositionProps, IUsersReport } from "@/types";
+import { IAuthProfiles, IUsersReport } from "@/types";
 import {
   addToast,
   Button,
@@ -17,9 +17,9 @@ import {
 } from "@heroui/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FiMail, FiUser } from "react-icons/fi";
-import { listPositions } from "../positions/actions";
 import ErrorHandler from "../_utils/errorHandler";
 import { createUser } from "../users/actions";
+import { fetchAllAuthProfiles } from "../settings/profile_authorizations/actions";
 
 export default function ModalCreateUser({
   isOpen,
@@ -38,23 +38,23 @@ export default function ModalCreateUser({
 }) {
   const [userName, setUserName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [positionId, setPositionId] = useState<string>('');
-  const [positions, setPositions] = useState<IPositionProps[]>([]);
+  const [profileId, setProfileId] = useState<string>('');
+  const [profiles, setProfiles] = useState<IAuthProfiles[]>([]);
   const [loadingCreateUser, setLoadingCreateUser] = useState<boolean>(false);
-  const [loadingListPositions, setLoadingListPositions] = useState<boolean>(false);
+  const [loadingAuthProfiles, setLoadingAuthProfiles] = useState<boolean>(false);
   
   useEffect(() => {
-    async function loadListPositions() {
+    async function loadAllAuthProfiles() {
       try {
-        setLoadingListPositions(true);
+        setLoadingAuthProfiles(true);
 
-        const data = await listPositions();
+        const data = await fetchAllAuthProfiles();
 
-        setPositions(data);
+        setProfiles(data);
 
-        setLoadingListPositions(false);
+        setLoadingAuthProfiles(false);
       } catch (error) {
-        setLoadingListPositions(false);
+        setLoadingAuthProfiles(false);
 
         const errorHandler = new ErrorHandler(error);
 
@@ -68,14 +68,19 @@ export default function ModalCreateUser({
       }
     }
 
-    loadListPositions();
+    loadAllAuthProfiles();
   }, []);
 
   async function handleCreateUser() {
     try {
       setLoadingCreateUser(true);
 
-      const user = await createUser({isAttendant: "false", userName, email, positionId: Number(positionId) });
+      const user = await createUser({
+        isAttendant: "false",
+        userName,
+        email,
+        authProfileId: Number(profileId)
+      });
 
       setUsers(prevArray => [...prevArray, user]);
 
@@ -92,12 +97,12 @@ export default function ModalCreateUser({
       setLoadingCreateUser(false);
       setUserName("");
       setEmail("");
-      setPositionId("");
+      setProfileId("");
     } catch (error) {
       setLoadingCreateUser(false);
       setUserName("");
       setEmail("");
-      setPositionId("");
+      setProfileId("");
       
       onClose();
 
@@ -146,13 +151,13 @@ export default function ModalCreateUser({
               onChange={(e) => setEmail(e.target.value)} className="flex-1"
             />
             <Select
-              onChange={(e) => setPositionId(e.target.value)}
-              label="Função do usuário"
+              onChange={(e) => setProfileId(e.target.value)}
+              label="Perfil de Autorização"
               labelPlacement="outside"
               className="flex-2"
             >
-              {positions.map(((position) => (
-                <SelectItem key={position.id}>{position.positionName}</SelectItem>
+              {profiles.map(((profile) => (
+                <SelectItem key={profile.id}>{profile.label}</SelectItem>
               )))}
             </Select>
             <span>Lembrando que senha inicial do usuário vai ser <strong>inicial</strong>.</span>

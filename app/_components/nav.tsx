@@ -38,54 +38,21 @@ interface IMenuItem {
 }
 
 export default function Nav() {
-  const { userSigned } = useAuthContext();
+  const { userSigned, userProfileAuths } = useAuthContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const pathname = usePathname();
 
   const menuAdminItems: IMenuItem[] = [
     {
-      route: '/',
-      name: 'Home',
-      icon: <FaHouse />
-    },
-    {
-      route: '/teams',
-      name: 'Equipes',
-      icon: <FaTeamspeak />
-    },
-    {
-      route: '/users',
-      name: 'Usuários',
-      icon: <FaUsers />
-    },
-    {
       route: '/settings',
       name: 'Configurações',
       icon: <FaGear />
-    },
-    {
-      route: '/positions',
-      name: 'Funções de Usuário',
-      icon: <RiUserSettingsLine />
     },
     {
       route: '/queues',
       name: 'Filas de Atendimento',
       icon: <HiQueueList />
     }
-  ];
-
-  const menuItems: IMenuItem[] = [
-    {
-      route: '/',
-      name: 'Home',
-      icon: <FaHouse />
-    },
-    {
-      route: '/settings',
-      name: 'Configurações',
-      icon: <FaGear />
-    },
   ];
 
   const handleLogout = async () => {
@@ -114,7 +81,7 @@ export default function Nav() {
                 avatarProps={{
                   name: (userSigned as IUserSignedProps)?.userName,
                   showFallback: true,
-                  src: `${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.slug}/${(userSigned as IUserSignedProps)?.avatar}`
+                  src: `${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.userSlug}/${(userSigned as IUserSignedProps)?.avatar}`
                 }}
                 name={`${(userSigned as IUserSignedProps)?.userName}`}
                 description={`@${(userSigned as IUserSignedProps)?.email}`}
@@ -132,33 +99,44 @@ export default function Nav() {
                   <Avatar
                     name={(userSigned as IUserSignedProps)?.userName}
                     isBordered
-                    src={`${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.slug}/${(userSigned as IUserSignedProps)?.avatar}`}
+                    src={`${process.env.baseUrl}/avatar/${(userSigned as IUserSignedProps)?.userSlug}/${(userSigned as IUserSignedProps)?.avatar}`}
                     showFallback
                   />
                   <span>{(userSigned as IUserSignedProps)?.userName}</span>
                   <ThemeSwitch />
                 </div>
                 <Divider />
-                {(userSigned as IUserSignedProps)?.isAttendant || (userSigned as IUserSignedProps)?.position.slug == "administrador" ? (
-                  menuAdminItems.map((item) => (
-                    <Link key={item.name} href={item.route}>
-                      <Button
-                        className="w-full"
-                        variant="light"
-                        startContent={item.icon}
-                      >{item.name}</Button>
-                    </Link>
-                  ))
-                ) : (
-                  menuItems.map((item) => (
-                    <Link key={item.name} href={item.route}>
-                      <Button
-                        className="w-full"
-                        variant="light"
-                        startContent={item.icon}
-                      >{item.name}</Button>
-                    </Link>
-                  ))
+                <Link href='/'>
+                  <Button
+                    className="w-full"
+                    variant="light"
+                    startContent={<FaHouse />}
+                  >Home</Button>
+                </Link>
+                <Link href='/settings'>
+                  <Button
+                    className="w-full"
+                    variant="light"
+                    startContent={<FaGear />}
+                  >Configurações</Button>
+                </Link>
+                {userProfileAuths?.canSeeTeam && (
+                  <Link href='/teams'>
+                    <Button
+                      className="w-full"
+                      variant="light"
+                      startContent={<FaTeamspeak />}
+                    >Equipes</Button>
+                  </Link>
+                )}
+                {userProfileAuths?.canSeeUser && (
+                  <Link href='/users'>
+                    <Button
+                      className="w-full"
+                      variant="light"
+                      startContent={<FaUsers />}
+                    >Usuários</Button>
+                  </Link>
                 )}
                 <Button
                   onPress={() => handleLogout()}

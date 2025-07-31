@@ -20,8 +20,7 @@ import TeamComponent from "../_components/team";
 import Nav from "../_components/nav";
 import ModalCreateTeam from "../_components/modalCreateTeam";
 import { FiRefreshCcw } from "react-icons/fi";
-import { IUserSignedProps, useAuthContext } from "../_contexts/AuthContext";
-import { gettingSigned } from "../_components/actions";
+import { useAuthContext } from "../_contexts/AuthContext";
 import { SearchIcon } from "../_components/searchIcon";
 
 export default function TeamsPage() {
@@ -233,19 +232,19 @@ export default function TeamsPage() {
               onChange={(e) => setFilterValueTeams(e.target.value)}
             />
           </div>
-          {loading ? (
+          {!userSigned ? (
             <div className="flex items-start p-8">
               <Spinner size="md" />
             </div>
           ) : (
-            (userSigned as IUserSignedProps)?.position.positionName == 'administrador' || (userSigned as IUserSignedProps)?.isAttendant ? (
+            userSigned?.isAttendant && (
               <div className="flex items-start justify-start gap-4 flex-wrap">
                 {teams.length == 0 && <span>Nenhuma equipe disponível</span>}
                 {filteredTeams.map((team) => (
                   <TeamComponent key={team.id} team={team} />
                 ))}
               </div>
-            ) : null
+            )
           )}
         </div>
       </div>
